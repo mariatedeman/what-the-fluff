@@ -24,16 +24,17 @@ export default async function Page() {
     return <div>Ingen data hittad. Checka Row Level Security (RLS) inställningarna!</div>
   }
 
-  return (
-    <>
-    <h2>Test</h2>
+  // return (
+  //   <section className='h-svh flex flex-col justify-center items-center gap-2'>
 
-    <ul>
-      {users?.map((user: User) => (
-        <li key={user.id}>{user.name}</li>
-      ))}
-    </ul>
+  //     <h2 className='text-4xl'>Välkommen</h2>
 
-      </>
-  )
+  //     <ul>
+  //       {users?.map((user: User) => (
+  //         <li key={user.id}>{user.name}</li>
+  //       ))}
+  //     </ul>
+
+  //   </section>
+  // )
 }
