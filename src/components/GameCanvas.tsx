@@ -83,11 +83,18 @@ export default function GameCanvas() {
   const [stackedItems, setStackedItems] = useState<FallingItem[]>([]);
   // REF COPY OF FALLING ITEMS, USED SO THE ANIMATION LOOP CAN READ THE LATEST ARRAY
   const itemsRef = useRef<FallingItem[]>([]);
+  // REF COPY OF STACKED ITEMS, USED SO COLLISION TARGET HEIGHT STAYS UP TO DATE
+  const stackedItemsRef = useRef<FallingItem[]>([]);
 
   // KEEP THE ITEMS REF UPDATED WHEN THE STATE CHANGES
   useEffect(() => {
     itemsRef.current = items;
   }, [items]);
+
+  // KEEP THE STACK REF UPDATED WHEN THE STACK CHANGES
+  useEffect(() => {
+    stackedItemsRef.current = stackedItems;
+  }, [stackedItems]);
 
   // EFFECT: Update falling items position every frame using delta time
   useEffect(() => {
@@ -115,12 +122,15 @@ export default function GameCanvas() {
           moved.x < catcherX + CATCHER_WIDTH &&
           moved.x + moved.size > catcherX;
 
-        // Y-AXIS OVERLAP BETWEEN THE ITEM AND THE CATCHER
-        const hitsCatcherY =
-          moved.y + moved.size >= CATCHER_Y &&
-          moved.y <= CATCHER_Y + CATCHER_HEIGHT;
+        const stackTopY =
+          CATCHER_Y - stackedItemsRef.current.length * moved.size;
 
-        const caught = overlapsX && hitsCatcherY;
+        // Y-AXIS OVERLAP BETWEEN THE ITEM AND THE CATCHER
+        const hitsStackY =
+          moved.y + moved.size >= stackTopY &&
+          moved.y <= stackTopY + moved.size;
+
+        const caught = overlapsX && hitsStackY;
 
         // WHEN AN ITEM HITS THE CATCHER, MOVE IT TO THE CAUGHT LIST
         if (caught) {
