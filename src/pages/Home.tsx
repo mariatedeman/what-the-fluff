@@ -1,5 +1,14 @@
+import Button from "../components/Button";
+import Modal from "../components/Modal";
+import GetUsers from "../components/TestStuff";
+
 export default function Home() {
-    return (
-        <h1>Home</h1>
-    )
+  return (
+    <div>
+      <h1>Home</h1>
+      <Button to="/Game"> To Game </Button>
+      <GetUsers/>
+      <Modal />
+    </div>
+  );
 }

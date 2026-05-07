@@ -1,17 +1,12 @@
 import { createClient } from '@supabase/supabase-js'
+import type { Database } from '../types/database'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseAnonKey =
-  import.meta.env.VITE_SUPABASE_ANON_KEY ??
-  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ??
-  import.meta.env.VITE_SUPABASE_KEY
+const supabasePublishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error(
-    'Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY (or VITE_SUPABASE_PUBLISHABLE_KEY) in environment',
-  )
+if (!supabaseUrl || !supabasePublishableKey) {
+  throw new Error('Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY in environment')
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
-
+export const supabase = createClient<Database>(supabaseUrl, supabasePublishableKey)
 export default supabase
