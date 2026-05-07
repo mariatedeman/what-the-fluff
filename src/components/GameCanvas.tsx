@@ -60,8 +60,14 @@ export default function GameCanvas() {
     x: number,
     y: number,
     size: number,
-    speed: number
+    speed: number,
+    color: Color,
   }
+
+  // Decides permitted values
+  type Color = "pink" | "blue" | "green";
+  // Array to randomize from
+  const colors: Color[] = ["pink", "blue", "green"]
 
   // STATE: List of all falling items on canvas
   const [items, setItems] = useState<FallingItem[]>([]);
@@ -70,6 +76,7 @@ export default function GameCanvas() {
   useEffect(() => {
     let frameId: number;
     let lastTime: number = performance.now();
+    const canvasHeight = canvasRef.current?.getBoundingClientRect().height ?? 0;
 
     const tick = (time: number) => {
       const delta = (time - lastTime) / 1000;
@@ -80,6 +87,7 @@ export default function GameCanvas() {
           ...item,
           y: item.y + item.speed * delta,
         }))
+        .filter((item) => item.y < canvasHeight + item.size)
       );
 
       frameId = requestAnimationFrame(tick);
@@ -89,6 +97,7 @@ export default function GameCanvas() {
     return () => cancelAnimationFrame(frameId);
   }, []);
 
+  
   // HELPER: Create a new falling item with random x position
   const createNewItem = (canvasWidth: number): FallingItem => ({
     id: Date.now(),
@@ -96,7 +105,9 @@ export default function GameCanvas() {
     y: -24,
     size: 24,
     speed: 180,
+    color: colors[Math.floor(Math.random() * colors.length)]
   });
+  
 
   // EFFECT: Spawn new falling items at regular intervals
   useEffect(() => {
@@ -118,6 +129,7 @@ export default function GameCanvas() {
       ref={canvasRef}
       className="relative w-full bg-blue-100 overflow-hidden h-150"
     >
+      {/* Falling items */}
       {items.map((item) => (
         <div key={item.id}
               style={{
@@ -126,7 +138,7 @@ export default function GameCanvas() {
                 top: item.y,
                 width: item.size,
                 height: item.size,
-                backgroundColor: "black",
+                backgroundColor: item.color,
                 borderRadius: "50%",
               }}      
         />
