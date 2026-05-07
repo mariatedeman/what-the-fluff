@@ -1,9 +1,63 @@
 import { useState, useEffect, useRef } from "react";
 
+  //---------------------------//
+  //--------- HELPERS ---------//
+  //---------------------------//
+
 // CATCHER SIZE AND Y-POSITION FROM TOP OF CANVAS, IN PIXELS
 const CATCHER_WIDTH = 70;
 const CATCHER_HEIGHT = 16;
 const CATCHER_Y = 500;
+const ITEM_SIZE = 24;
+
+// Decides permitted values for item colors.
+type Color = "pink" | "blue" | "green";
+
+// Shared item model used both while items fall and after they are stacked.
+type FallingItem = {
+  id: number;
+  x: number;
+  y: number;
+  size: number;
+  speed: number;
+  color: Color;
+};
+
+// Array to randomize from when spawning a new item.
+const colors: Color[] = ["pink", "blue", "green"];
+
+// Create a new falling item with a random horizontal position and color.
+function createNewItem(canvasWidth: number): FallingItem {
+  return {
+    id: Date.now(),
+    x: Math.random() * (canvasWidth - ITEM_SIZE),
+    y: -ITEM_SIZE,
+    size: ITEM_SIZE,
+    speed: 180,
+    color: colors[Math.floor(Math.random() * colors.length)],
+  };
+}
+
+// Add a new item to the top of the stack and remove the top three if they match.
+function removeThreeInRow(prevStack: FallingItem[], incoming: FallingItem): FallingItem[] {
+  const next = [...prevStack, incoming];
+
+  if (next.length < 3) return next;
+
+  const a = next[next.length - 1];
+  const b = next[next.length - 2];
+  const c = next[next.length - 3];
+
+  if (a.color === b.color && b.color === c.color) {
+    return next.slice(0, -3);
+  }
+
+  return next;
+}
+
+  //---------------------------//
+  //------- GAME CANVAS -------//
+  //---------------------------//
 
 export default function GameCanvas() {
   // CATCHER'S HORIZONTAL POSITION, UPDATES ON MOUSE MOVEMENT
@@ -13,6 +67,8 @@ export default function GameCanvas() {
 
   // REF TO THE CANVAS-DIV, USED TO READ ITS SIZE AND POSITION
   const canvasRef = useRef<HTMLDivElement>(null);
+  // REF THAT STORES THE LATEST CANVAS HEIGHT SO THE RAF LOOP DOES NOT HAVE TO MEASURE IT EVERY FRAME
+  const canvasHeightRef = useRef(0);
 
   // CENTER THE CATCHER ON FIRST RENDER
   useEffect(() => {
@@ -31,8 +87,11 @@ export default function GameCanvas() {
     if (!canvasRef.current) return;
     const observer = new ResizeObserver(() => {
       const rect = canvasRef.current!.getBoundingClientRect();
+      canvasHeightRef.current = rect.height;
       setCatcherX((prev) => Math.min(prev, rect.width - CATCHER_WIDTH));
     });
+    // Capture the initial canvas height immediately so the RAF loop has a cached value from the start.
+    canvasHeightRef.current = canvasRef.current.getBoundingClientRect().height;
     observer.observe(canvasRef.current);
     return () => observer.disconnect();
   }, []);
@@ -48,6 +107,8 @@ export default function GameCanvas() {
 
       // CLAMP SO THE CATCHER STAYS INSIDE THE CANVAS
       const clampedX: number = Math.max(0, Math.min(rawX, rect.width - CATCHER_WIDTH));
+      // Keep ref in sync immediately so the RAF loop sees the latest value
+      catcherXRef.current = clampedX;
       setCatcherX(clampedX);
     };
 
@@ -62,25 +123,11 @@ export default function GameCanvas() {
   //------ FALLING ITEMS ------//
   //---------------------------//
 
-  // Decides permitted values
-  type Color = "pink" | "blue" | "green";
-
-  // Array to randomize from
-  const colors: Color[] = ["pink", "blue", "green"];
-
-  type FallingItem = {
-    id: number,
-    x: number,
-    y: number,
-    size: number,
-    speed: number,
-    color: Color,
-  }
-
   // STATE: List of all falling items on canvas
   const [items, setItems] = useState<FallingItem[]>([]);
   // STATE: Items that have been caught and are now stacked on top of the catcher
   const [stackedItems, setStackedItems] = useState<FallingItem[]>([]);
+  
   // REF COPY OF FALLING ITEMS, USED SO THE ANIMATION LOOP CAN READ THE LATEST ARRAY
   const itemsRef = useRef<FallingItem[]>([]);
   // REF COPY OF STACKED ITEMS, USED SO COLLISION TARGET HEIGHT STAYS UP TO DATE
@@ -153,7 +200,7 @@ export default function GameCanvas() {
       lastTime = time;
 
       // READ THE CURRENT CANVAS HEIGHT ON EACH FRAME SO RESIZING STAYS CORRECT
-      const canvasHeight = canvasRef.current?.getBoundingClientRect().height ?? 0;
+      const canvasHeight = canvasHeightRef.current;
       const result = moveAndCatchItems(
         itemsRef.current,
         delta,
@@ -183,17 +230,6 @@ export default function GameCanvas() {
   }, []);
 
   
-  // HELPER: Create a new falling item with random x position
-  const createNewItem = (canvasWidth: number): FallingItem => ({
-    id: Date.now(),
-    x: Math.random() * (canvasWidth - 24),
-    y: -24,
-    size: 24,
-    speed: 180,
-    color: colors[Math.floor(Math.random() * colors.length)]
-  });
-  
-
   // EFFECT: Spawn new falling items at regular intervals
   useEffect(() => {
     const spawnInterval = setInterval(() => {
@@ -202,34 +238,16 @@ export default function GameCanvas() {
       if (!canvasWidth) return;
 
       const newItem = createNewItem(canvasWidth);
-      setItems(prev => [...prev, newItem]);
+      // Update state and keep itemsRef in sync immediately to avoid races
+      setItems((prev) => {
+        const next = [...prev, newItem];
+        itemsRef.current = next;
+        return next;
+      });
     }, 1000); // Spawn interval in milliseconds
 
       return () => clearInterval(spawnInterval);
   }, [])
-
-
-
-  // IF COLORS THREE IN A ROW, REMOVE
-  function removeThreeInRow (prevStack: FallingItem[], incoming: FallingItem): FallingItem[] {
-    // ADD THE NEW ITEM TO THE END OF THE STACK
-    const next = [...prevStack, incoming];
-
-    // ONLY CHECK FOR A MATCH WHEN THERE ARE AT LEAST THREE ITEMS
-    if (next.length < 3) return next;
-
-    // LOOK AT THE THREE MOST RECENT ITEMS ONLY
-    const a = next[next.length - 1];
-    const b = next[next.length - 2];
-    const c = next[next.length - 3];
-
-    // IF ALL THREE COLORS MATCH, REMOVE THEM FROM THE STACK
-    if (a.color === b.color && b.color === c.color) {
-      return next.slice(0, -3)
-    }
-
-    return next;
-  }
 
 
 
@@ -255,14 +273,12 @@ export default function GameCanvas() {
         />
       ))}
       
-            {/* STACKED ITEMS: THESE HAVE BEEN CAUGHT AND NOW SIT ON TOP OF THE CATCHER */}
+      {/* STACKED ITEMS: THESE HAVE BEEN CAUGHT AND NOW SIT ON TOP OF THE CATCHER */}
       {stackedItems.map((item, index) => (
         <div key={`stack-${item.id}`}
               style={{
-                position: "absolute",
-                      // CENTER EACH STACKED ITEM OVER THE CATCHER
-                left: catcherX + (CATCHER_WIDTH - item.size) / 2,
-                      // PLACE EACH NEW ITEM ABOVE THE PREVIOUS ONE IN THE STACK
+                position: "absolute", // CENTER EACH STACKED ITEM OVER THE CATCHER
+                left: catcherX + (CATCHER_WIDTH - item.size) / 2, // PLACE EACH NEW ITEM ABOVE THE PREVIOUS ONE IN THE STACK
                 top: CATCHER_Y - item.size * (index + 1),
                 width: item.size,
                 height: item.size,
@@ -272,7 +288,7 @@ export default function GameCanvas() {
         />
       ))}
 
-            {/* THE CATCHER: THIS IS THE TARGET THAT THE FALLING ITEMS LAND ON */}
+      {/* THE CATCHER: THIS IS THE TARGET THAT THE FALLING ITEMS LAND ON */}
       <div
         style={{
           position: "absolute",
