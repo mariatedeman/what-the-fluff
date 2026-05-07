@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <div>
       <h1>Home</h1>
-      <Button to="/Game"> To Game </Button>
+      <Button to="/game"> To Game </Button>
       <GetUsers/>
       <Modal />
     </div>

@@ -7,7 +7,7 @@ const base ="flex items-center justify-center cursor-pointer";
 
 const variants: Record<Variant, string> = {
   primary: "bg-black py-2 px-4 rounded-xl text-white font-bold",
-  secondary: "bg-green",
+  secondary: "bg-accent",
 };
 
 interface ButtonProps {
