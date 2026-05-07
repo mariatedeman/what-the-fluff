@@ -19,6 +19,17 @@ export default function GameCanvas() {
     setCatcherX(rect.width / 2 - CATCHER_WIDTH / 2);
   }, []);
 
+  // CENTER THE CATCHER IF SCREENSIZE CHANGE THE SIZE OF THE CANVAS
+  useEffect(() => {
+    if (!canvasRef.current) return;
+    const observer = new ResizeObserver(() => {
+      const rect = canvasRef.current!.getBoundingClientRect();
+      setCatcherX((prev) => Math.min(prev, rect.width - CATCHER_WIDTH));
+    });
+    observer.observe(canvasRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   // FOLLOW THE MOUSE HORIZONTALLY
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
