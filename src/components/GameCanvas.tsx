@@ -37,10 +37,10 @@ export default function GameCanvas() {
       const rect = canvasRef.current.getBoundingClientRect();
 
       // MOUSE POSITION RELATIVE TO CANVAS, CENTERED ON THE CATCHER
-      const rawX = e.clientX - rect.left - CATCHER_WIDTH / 2;
+      const rawX: number = e.clientX - rect.left - CATCHER_WIDTH / 2;
 
       // CLAMP SO THE CATCHER STAYS INSIDE THE CANVAS
-      const clampedX = Math.max(0, Math.min(rawX, rect.width - CATCHER_WIDTH));
+      const clampedX: number = Math.max(0, Math.min(rawX, rect.width - CATCHER_WIDTH));
       setCatcherX(clampedX);
     };
 
@@ -48,12 +48,90 @@ export default function GameCanvas() {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
+
+
+
+  //---------------------------//
+  //------ FALLING ITEMS ------//
+  //---------------------------//
+
+  type FallingItem = {
+    id: number,
+    x: number,
+    y: number,
+    size: number,
+    speed: number
+  }
+
+  // STATE: List of all falling items on canvas
+  const [items, setItems] = useState<FallingItem[]>([]);
+
+  // EFFECT: Update falling items position every frame using delta time
+  useEffect(() => {
+    let frameId: number;
+    let lastTime: number = performance.now();
+
+    const tick = (time: number) => {
+      const delta = (time - lastTime) / 1000;
+      lastTime = time;
+
+      setItems((prevItems) => 
+        prevItems.map((item) => ({
+          ...item,
+          y: item.y + item.speed * delta,
+        }))
+      );
+
+      frameId = requestAnimationFrame(tick);
+    };
+
+    frameId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frameId);
+  }, []);
+
+  // HELPER: Create a new falling item with random x position
+  const createNewItem = (canvasWidth: number): FallingItem => ({
+    id: Date.now(),
+    x: Math.random() * (canvasWidth - 24),
+    y: -24,
+    size: 24,
+    speed: 180,
+  });
+
+  // EFFECT: Spawn new falling items at regular intervals
+  useEffect(() => {
+    const spawnInterval = setInterval(() => {
+      const canvasWidth = canvasRef.current?.getBoundingClientRect().width;
+      if (!canvasWidth) return;
+
+      const newItem = createNewItem(canvasWidth);
+      setItems(prev => [...prev, newItem]);
+    }, 1000); // Spawn interval in milliseconds
+
+      return () => clearInterval(spawnInterval);
+  }, [])
+
+
   return (
     // position: relative SO THE CATCHER CAN USE position: absolute INSIDE IT
     <div
       ref={canvasRef}
-      className="relative w-full bg-blue-100 overflow-hidden h-[600px]"
+      className="relative w-full bg-blue-100 overflow-hidden h-150"
     >
+      {items.map((item) => (
+        <div key={item.id}
+              style={{
+                position: "absolute",
+                left: item.x,
+                top: item.y,
+                width: item.size,
+                height: item.size,
+                backgroundColor: "black",
+                borderRadius: "50%",
+              }}      
+        />
+      ))}
+
       <div
         style={{
           position: "absolute",
