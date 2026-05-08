@@ -1,6 +1,5 @@
 import Button from "../components/Button";
 import Modal from "../components/Modal";
-import GetUsers from "../components/TestStuff";
 import { useHighscore } from "../hooks/useHighscores";
 
 export default function Home() {
@@ -19,7 +18,6 @@ export default function Home() {
       </div>
 
       <Button to="/game"> To Game </Button>
-      <GetUsers />
       <Modal />
     </div>
   );

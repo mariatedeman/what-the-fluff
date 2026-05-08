@@ -9,18 +9,22 @@ export function useHighscore() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetch = async () => {
       try {
         const data = await getHighscore();
-        setHighscore(data);
+        if (isMounted) setHighscore(data);
       } catch {
-        setError("Could not fetch highscore");
+        if (isMounted) setError("Could not fetch highscore");
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
     fetch();
+
+    return () => { isMounted = false };
   }, []);
 
   return { highscore, loading, error };
@@ -32,20 +36,24 @@ export function useHighscoresWithUsers() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-      const fetch = async () => {
-        try {
-          const data = await getHighscoresWithUsers()
-          setHighscores(data)
-        } catch {
-          setError("Could not fetch highscores")
-        } finally {
-          setLoading(false)
-        }
-      }
+  useEffect(() => {
+    let isMounted = true;
 
-      fetch()
-    }, [])
+    const fetch = async () => {
+      try {
+        const data = await getHighscoresWithUsers();
+        if (isMounted) setHighscores(data);
+      } catch {
+        if (isMounted) setError("Could not fetch highscores");
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    fetch();
+
+    return () => { isMounted = false };
+  }, [])
 
   return { highscores, loading, error };
 }
