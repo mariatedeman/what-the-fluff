@@ -33,7 +33,7 @@ function createNewItem(canvasWidth: number): FallingItem {
     x: Math.random() * (canvasWidth - ITEM_SIZE),
     y: -ITEM_SIZE,
     size: ITEM_SIZE,
-    speed: 180,
+    speed: 300,
     color: colors[Math.floor(Math.random() * colors.length)],
   };
 }
@@ -127,6 +127,8 @@ export default function GameCanvas() {
   const [items, setItems] = useState<FallingItem[]>([]);
   // STATE: Items that have been caught and are now stacked on top of the catcher
   const [stackedItems, setStackedItems] = useState<FallingItem[]>([]);
+  // STATE: Number of caught items
+  let [caughtItems, setCaughtItems] = useState<number>(0);
   
   // REF COPY OF FALLING ITEMS, USED SO THE ANIMATION LOOP CAN READ THE LATEST ARRAY
   const itemsRef = useRef<FallingItem[]>([]);
@@ -220,6 +222,7 @@ export default function GameCanvas() {
             prevStack
           )
         );
+        setCaughtItems(prev => prev + 1)
       }
 
       frameId = requestAnimationFrame(tick);
@@ -244,7 +247,7 @@ export default function GameCanvas() {
         itemsRef.current = next;
         return next;
       });
-    }, 1000); // Spawn interval in milliseconds
+    }, 500); // Spawn interval in milliseconds
 
       return () => clearInterval(spawnInterval);
   }, [])
@@ -253,7 +256,9 @@ export default function GameCanvas() {
 
 
   return (
-    // position: relative SO THE CATCHER CAN USE position: absolute INSIDE IT
+    <>
+    <div>Stacked items: {caughtItems} </div>
+    {/* position: relative SO THE CATCHER CAN USE position: absolute INSIDE IT */}
     <div
       ref={canvasRef}
       className="relative w-full bg-blue-100 overflow-hidden h-150"
@@ -300,5 +305,6 @@ export default function GameCanvas() {
         }}
       />
     </div>
+  </>
   );
 }
