@@ -21,7 +21,7 @@ type FallingItem = {
   size: number;
   speed: number;
   type: "item" | "raindrop";
-  color: Color;
+  color: Color | undefined;
 };
 
 // Array to randomize from when spawning a new item.
@@ -132,7 +132,7 @@ export default function GameCanvas() {
   // STATE: Items that have been caught and are now stacked on top of the catcher
   const [stackedItems, setStackedItems] = useState<FallingItem[]>([]);
   // STATE: Number of caught items
-  let [caughtItems, setCaughtItems] = useState<number>(0);
+  const [caughtItems, setCaughtItems] = useState<number>(0);
   
   // REF COPY OF FALLING ITEMS, USED SO THE ANIMATION LOOP CAN READ THE LATEST ARRAY
   const itemsRef = useRef<FallingItem[]>([]);
@@ -231,24 +231,31 @@ export default function GameCanvas() {
 
       // ADD CAUGHT ITEMS TO THE STACK, THEN LET THE STACK LOGIC RESOLVE 3-IN-A-ROW
       if (result.newlyCaught.length > 0) {
+        // COMPUTE THE NEXT STACK OUTSIDE THE UPDATER (no side effects in updater)
+        const nextStack = result.newlyCaught.reduce(
+          (stack, caughtItem) => removeThreeInRow(stack, caughtItem),
+          stackedItemsRef.current  // Use ref instead of prevStack for pure computation
+        );
+
+        // CHECK IF ANY CAUGHT ITEMS ARE RAINDROPS (GAME OVER CONDITION)
         const caughtRaindrops = result.newlyCaught.filter(item => item.type === "raindrop").length;
-        if (caughtRaindrops > 0) setIsGameOver(true);
-        
-        setStackedItems((prevStack) => {
-          const nextStack =  result.newlyCaught.reduce(
-            (stack, caughtItem) => removeThreeInRow(stack, caughtItem),
-            prevStack
-          );
+        if (caughtRaindrops > 0) {
+          setIsGameOver(true);
+          isGameOverRef.current = true;  // STOP IMMEDIATELY INSTEAD OF WAITING FOR STATE UPDATE
+        }
 
-          // CHECK IF STACK REACHES THE TOP OF THE CANVAS (GAME OVER CONDITION)
-          const stackTopY = CATCHER_Y - nextStack.length * ITEM_SIZE;
-          if (stackTopY <= 0) setIsGameOver(true);
+        // CHECK IF STACK REACHES THE TOP OF THE CANVAS (GAME OVER CONDITION)
+        const stackTopY = CATCHER_Y - nextStack.length * ITEM_SIZE;
+        if (stackTopY <= 0) {
+          setIsGameOver(true);
+          isGameOverRef.current = true;  // STOP IMMEDIATELY INSTEAD OF WAITING FOR STATE UPDATE
+        }
 
-          return nextStack;
-        });
-        
+        // UPDATE STATE WITH PURE COMPUTED VALUE (no side effects in updater)
+        setStackedItems(nextStack);
+
+        // ONLY COUNT REGULAR ITEMS
         const caughtRegularItems = result.newlyCaught.filter(item => item.type === "item").length;
-      
         if (caughtRegularItems > 0) {
           setCaughtItems(prev => prev + caughtRegularItems)
         }
@@ -270,7 +277,7 @@ export default function GameCanvas() {
       if (isGameOverRef.current) return;
       
       // READ THE CURRENT CANVAS WIDTH RIGHT BEFORE SPAWNING SO RESIZES ARE HANDLED CORRECTLY
-      const canvasWidth: number = canvasRef.current?.getBoundingClientRect().width;
+      const canvasWidth: number | undefined = canvasRef.current?.getBoundingClientRect().width;
       if (!canvasWidth) return;
 
       const newItem = createNewItem(canvasWidth);
