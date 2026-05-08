@@ -20,6 +20,7 @@ type FallingItem = {
   y: number;
   size: number;
   speed: number;
+  type: "item" | "raindrop";
   color: Color;
 };
 
@@ -28,13 +29,15 @@ const colors: Color[] = ["pink", "blue", "green"];
 
 // Create a new falling item with a random horizontal position and color.
 function createNewItem(canvasWidth: number): FallingItem {
+  const isRaindrop = Math.random() > 0.7;
   return {
     id: Date.now(),
     x: Math.random() * (canvasWidth - ITEM_SIZE),
     y: -ITEM_SIZE,
     size: ITEM_SIZE,
-    speed: 180,
-    color: colors[Math.floor(Math.random() * colors.length)],
+    speed: 300,
+    type: isRaindrop ? "raindrop" : "item",
+    color: isRaindrop ? undefined : colors[Math.floor(Math.random() * colors.length)],
   };
 }
 
@@ -60,6 +63,7 @@ function removeThreeInRow(prevStack: FallingItem[], incoming: FallingItem): Fall
   //---------------------------//
 
 export default function GameCanvas() {
+  const [isGameOver, setIsGameOver] = useState<boolean>(false);
   // CATCHER'S HORIZONTAL POSITION, UPDATES ON MOUSE MOVEMENT
   const [catcherX, setCatcherX] = useState(0);
   // REF VERSION OF CATCHER X, USED INSIDE THE ANIMATION LOOP SO IT ALWAYS HAS THE LATEST VALUE
@@ -127,11 +131,16 @@ export default function GameCanvas() {
   const [items, setItems] = useState<FallingItem[]>([]);
   // STATE: Items that have been caught and are now stacked on top of the catcher
   const [stackedItems, setStackedItems] = useState<FallingItem[]>([]);
+  // STATE: Number of caught items
+  let [caughtItems, setCaughtItems] = useState<number>(0);
   
   // REF COPY OF FALLING ITEMS, USED SO THE ANIMATION LOOP CAN READ THE LATEST ARRAY
   const itemsRef = useRef<FallingItem[]>([]);
   // REF COPY OF STACKED ITEMS, USED SO COLLISION TARGET HEIGHT STAYS UP TO DATE
   const stackedItemsRef = useRef<FallingItem[]>([]);
+  
+  // REF GAME OVER
+  const isGameOverRef = useRef(false);
 
   // KEEP THE ITEMS REF UPDATED WHEN THE STATE CHANGES
   useEffect(() => {
@@ -143,11 +152,15 @@ export default function GameCanvas() {
     stackedItemsRef.current = stackedItems;
   }, [stackedItems]);
 
+  useEffect(() => {
+    isGameOverRef.current = isGameOver;
+  }, [isGameOver]);
+
   // EFFECT: Update falling items position every frame using delta time
   useEffect(() => {
     let frameId: number;
     let lastTime: number = performance.now();
-
+    
     // MOVE EVERY ITEM, CHECK CATCHER COLLISION, AND RETURN THE UPDATED LISTS
     function moveAndCatchItems(
       prevItems: FallingItem[],
@@ -169,7 +182,7 @@ export default function GameCanvas() {
           moved.x < catcherX + CATCHER_WIDTH &&
           moved.x + moved.size > catcherX;
 
-        const stackTopY =
+        const stackTopY: number =
           CATCHER_Y - stackedItemsRef.current.length * moved.size;
 
         // Y-AXIS OVERLAP BETWEEN THE ITEM AND THE CATCHER
@@ -177,7 +190,7 @@ export default function GameCanvas() {
           moved.y + moved.size >= stackTopY &&
           moved.y <= stackTopY + moved.size;
 
-        const caught = overlapsX && hitsStackY;
+        const caught: boolean = overlapsX && hitsStackY;
 
         // WHEN AN ITEM HITS THE CATCHER, MOVE IT TO THE CAUGHT LIST
         if (caught) {
@@ -195,7 +208,11 @@ export default function GameCanvas() {
     }
 
     // MAIN ANIMATION LOOP: UPDATE FALLING ITEMS EVERY FRAME
+  
     const tick = (time: number) => {
+      // STOP THE ANIMATION LOOP IF THE GAME IS OVER
+      if (isGameOverRef.current) return;
+      
       const delta = (time - lastTime) / 1000;
       lastTime = time;
 
@@ -214,12 +231,28 @@ export default function GameCanvas() {
 
       // ADD CAUGHT ITEMS TO THE STACK, THEN LET THE STACK LOGIC RESOLVE 3-IN-A-ROW
       if (result.newlyCaught.length > 0) {
-        setStackedItems((prevStack) =>
-          result.newlyCaught.reduce(
+        const caughtRaindrops = result.newlyCaught.filter(item => item.type === "raindrop").length;
+        if (caughtRaindrops > 0) setIsGameOver(true);
+        
+        setStackedItems((prevStack) => {
+          const nextStack =  result.newlyCaught.reduce(
             (stack, caughtItem) => removeThreeInRow(stack, caughtItem),
             prevStack
-          )
-        );
+          );
+
+          // CHECK IF STACK REACHES THE TOP OF THE CANVAS (GAME OVER CONDITION)
+          const stackTopY = CATCHER_Y - nextStack.length * ITEM_SIZE;
+          if (stackTopY <= 0) setIsGameOver(true);
+
+          return nextStack;
+        });
+        
+        const caughtRegularItems = result.newlyCaught.filter(item => item.type === "item").length;
+      
+        if (caughtRegularItems > 0) {
+          setCaughtItems(prev => prev + caughtRegularItems)
+        }
+      
       }
 
       frameId = requestAnimationFrame(tick);
@@ -229,12 +262,15 @@ export default function GameCanvas() {
     return () => cancelAnimationFrame(frameId);
   }, []);
 
-  
+
   // EFFECT: Spawn new falling items at regular intervals
   useEffect(() => {
     const spawnInterval = setInterval(() => {
+      // STOP SPAWNING NEW ITEMS IF THE GAME IS OVER
+      if (isGameOverRef.current) return;
+      
       // READ THE CURRENT CANVAS WIDTH RIGHT BEFORE SPAWNING SO RESIZES ARE HANDLED CORRECTLY
-      const canvasWidth = canvasRef.current?.getBoundingClientRect().width;
+      const canvasWidth: number = canvasRef.current?.getBoundingClientRect().width;
       if (!canvasWidth) return;
 
       const newItem = createNewItem(canvasWidth);
@@ -244,7 +280,7 @@ export default function GameCanvas() {
         itemsRef.current = next;
         return next;
       });
-    }, 1000); // Spawn interval in milliseconds
+    }, 500); // Spawn interval in milliseconds
 
       return () => clearInterval(spawnInterval);
   }, [])
@@ -253,7 +289,10 @@ export default function GameCanvas() {
 
 
   return (
-    // position: relative SO THE CATCHER CAN USE position: absolute INSIDE IT
+    <>
+    <div>Stacked items: {caughtItems} </div>
+    {isGameOver && <div>Game over</div>}
+    {/* position: relative SO THE CATCHER CAN USE position: absolute INSIDE IT */}
     <div
       ref={canvasRef}
       className="relative w-full bg-blue-100 overflow-hidden h-150"
@@ -268,8 +307,8 @@ export default function GameCanvas() {
                 width: item.size,
                 height: item.size,
                 borderRadius: "50%",
-                backgroundColor: item.color,
-              }}      
+                backgroundColor: item.type === "raindrop" ? "gray" : item.color,
+              }}
         />
       ))}
       
@@ -300,5 +339,6 @@ export default function GameCanvas() {
         }}
       />
     </div>
+  </>
   );
 }
