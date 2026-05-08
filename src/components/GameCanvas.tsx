@@ -20,6 +20,7 @@ type FallingItem = {
   y: number;
   size: number;
   speed: number;
+  type: "item" | "raindrop";
   color: Color;
 };
 
@@ -28,13 +29,15 @@ const colors: Color[] = ["pink", "blue", "green"];
 
 // Create a new falling item with a random horizontal position and color.
 function createNewItem(canvasWidth: number): FallingItem {
+  const isRaindrop = Math.random() > 0.7;
   return {
     id: Date.now(),
     x: Math.random() * (canvasWidth - ITEM_SIZE),
     y: -ITEM_SIZE,
     size: ITEM_SIZE,
     speed: 300,
-    color: colors[Math.floor(Math.random() * colors.length)],
+    type: isRaindrop ? "raindrop" : "item",
+    color: isRaindrop ? undefined : colors[Math.floor(Math.random() * colors.length)],
   };
 }
 
@@ -228,6 +231,9 @@ export default function GameCanvas() {
 
       // ADD CAUGHT ITEMS TO THE STACK, THEN LET THE STACK LOGIC RESOLVE 3-IN-A-ROW
       if (result.newlyCaught.length > 0) {
+        const caughtRaindrops = result.newlyCaught.filter(item => item.type === "raindrop").length;
+        if (caughtRaindrops > 0) setIsGameOver(true);
+        
         setStackedItems((prevStack) => {
           const nextStack =  result.newlyCaught.reduce(
             (stack, caughtItem) => removeThreeInRow(stack, caughtItem),
@@ -239,9 +245,13 @@ export default function GameCanvas() {
           if (stackTopY <= 0) setIsGameOver(true);
 
           return nextStack;
+        });
+        
+        const caughtRegularItems = result.newlyCaught.filter(item => item.type === "item").length;
+      
+        if (caughtRegularItems > 0) {
+          setCaughtItems(prev => prev + caughtRegularItems)
         }
-        );
-        setCaughtItems(prev => prev + 1)
       
       }
 
@@ -297,8 +307,8 @@ export default function GameCanvas() {
                 width: item.size,
                 height: item.size,
                 borderRadius: "50%",
-                backgroundColor: item.color,
-              }}      
+                backgroundColor: item.type === "raindrop" ? "gray" : item.color,
+              }}
         />
       ))}
       
