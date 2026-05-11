@@ -64,15 +64,23 @@ function removeThreeInRow(prevStack: FallingItem[], incoming: FallingItem): Fall
 
 export default function GameCanvas() {
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
+
   // CATCHER'S HORIZONTAL POSITION, UPDATES ON MOUSE MOVEMENT
   const [catcherX, setCatcherX] = useState(0);
+
   // REF VERSION OF CATCHER X, USED INSIDE THE ANIMATION LOOP SO IT ALWAYS HAS THE LATEST VALUE
   const catcherXRef = useRef(0);
 
   // REF TO THE CANVAS-DIV, USED TO READ ITS SIZE AND POSITION
   const canvasRef = useRef<HTMLDivElement>(null);
+
   // REF THAT STORES THE LATEST CANVAS HEIGHT SO THE RAF LOOP DOES NOT HAVE TO MEASURE IT EVERY FRAME
   const canvasHeightRef = useRef(0);
+
+  // REF THAT STORES LATEST KEY PRESS AND INPUT METHOD
+  const keysPressed = useRef({ left: false, right: false});
+  const inputMethod = useRef<'mouse' | 'touch' | 'keyboard' | null>(null)
+  
 
   // CENTER THE CATCHER ON FIRST RENDER
   useEffect(() => {
@@ -100,7 +108,7 @@ export default function GameCanvas() {
     return () => observer.disconnect();
   }, []);
 
-  // FOLLOW THE MOUSE HORIZONTALLY
+  // HANDLE MOUSE CONTROL --> FOLLOW THE MOUSE HORIZONTALLY
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (!canvasRef.current) return;
@@ -118,6 +126,57 @@ export default function GameCanvas() {
 
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
+
+  // HANDLE TOUCH CONTROL --> FOLLOW TOUCH MOVEMENT HORIZONTALLY
+  useEffect(() => {
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!canvasRef.current) return;
+      const rect = canvasRef.current.getBoundingClientRect();
+      
+      // Use the first finger's position (ignore multi-touch)
+      const touch = e.touches[0];
+      // TOUCH POSITION RELATIVE TO CANVAS, CENTERED ON THE CATCHER
+      const rawX = touch.clientX - rect.left - CATCHER_WIDTH / 2;
+      // CLAMP SO THE CATCHER STAYS INSIDE THE CANVAS
+      const clampedX = Math.max(0, Math.min(rawX, rect.width - CATCHER_WIDTH));
+
+      catcherXRef.current = clampedX;
+      setCatcherX(clampedX);
+      inputMethod.current = "touch";
+    };
+
+    window.addEventListener("touchmove", handleTouchMove);
+    return () => window.removeEventListener("touchmove", handleTouchMove);
+  }, []);
+
+
+  // HANDLE KEYBOARD CONTROL --> LEFT AND RIGHT
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") {
+        keysPressed.current.left = true;
+      } else if (e.key === "ArrowRight") {
+        keysPressed.current.right = true;
+      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") {
+        keysPressed.current.left = false;
+      } else if (e.key === "ArrowRight") {
+        keysPressed.current.right = false;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+    
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
   }, []);
 
 
@@ -215,6 +274,24 @@ export default function GameCanvas() {
       
       const delta = (time - lastTime) / 1000;
       lastTime = time;
+
+      // KEYBOARD CONTROL: UPDATE POSITION IF KEYS ARE PRESSED
+      // Only process keyboard input if arrow keys are being held down
+      if (keysPressed.current.left || keysPressed.current.right) {
+        // Speed in pixels per second - tuned for responsive gameplay
+        const CATCHER_SPEED = 800;
+        let newX = catcherXRef.current;
+
+        if (keysPressed.current.left) newX -= CATCHER_SPEED * delta;
+        if (keysPressed.current.right) newX += CATCHER_SPEED * delta;
+
+        const canvasWidth = canvasRef.current?.getBoundingClientRect().width || 0;
+        newX = Math.max(0, Math.min(newX, canvasWidth - CATCHER_WIDTH));
+
+        catcherXRef.current = newX;
+        setCatcherX(newX);
+        inputMethod.current = "keyboard";
+      }
 
       // READ THE CURRENT CANVAS HEIGHT ON EACH FRAME SO RESIZING STAYS CORRECT
       const canvasHeight = canvasHeightRef.current;
