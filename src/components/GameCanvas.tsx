@@ -88,8 +88,11 @@ export default function GameCanvas() {
     {/* position: relative SO THE CATCHER CAN USE position: absolute INSIDE IT */}
     <div
       ref={canvasRef}
-      className="relative w-full bg-blue-100 overflow-hidden h-150"
+      className="relative w-full overflow-hidden h-150"
     >
+      {/* BACKGROUND WITH BLEND MODE - STAYS BEHIND ALL OBJECTS */}
+      <div className="absolute inset-0 bg-bg mix-blend-exclusion" />
+
       {/* FALLING ITEMS: THESE ARE STILL MOVING DOWNWARD */}
       {items.map((item) => (
         <div key={item.id}
@@ -101,7 +104,7 @@ export default function GameCanvas() {
                 height: item.size,
               }}
         >
-          <FallingItems type={item.type} color={item.color} size={item.size} />
+          <FallingItems type={item.type} color={item.color} size={item.size}/>
         </div>
       ))}
       
