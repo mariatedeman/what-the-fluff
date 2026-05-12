@@ -7,6 +7,9 @@
   --color-border: var(--border);
   --color-accent: var(--accent);
   --color-accent-border: var(--accent-border);
+ 
+  --color-button-primary: var(--button-primary);
+  --color-button-secondary: var(--button-secondary);
 
   --color-pink-dark: #ED7EC8;
   --color-pink-light: #ffcaed;
@@ -30,13 +33,16 @@
   --yellow: #fcbd00;
 
   --text: #171717;
-  --text-h: #ED7EC8;
+  --text-h: #var(--pink-dark);
   --bg: #f5edd7be;
-  --border: #A5CC61;
-  --accent: #fcbd00;
-  --accent-border: #fcbd00;
+  --border: var(--green-dark);
+  --accent: var(--yellow);
+  --accent-border: var(--yellow);
   --shadow:
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+
+  --button-primary: var(--pink-dark);
+  --button-secondary: var(--green-dark);
 
   --font-body: Poppins, system-ui, 'Segoe UI', Roboto, sans-serif;
   --font-h: Modak, system-ui, 'Segoe UI', Roboto, sans-serif;
