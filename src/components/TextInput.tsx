@@ -2,6 +2,7 @@ export default function TextInput({ children }) {
     return (
         <form>
             <div className="relative h-12 w-3xs m-1 group justify-self-center">
+                {/* Transparent bg */}
                 <div className="
                     absolute inset-0 
                     bg-bg mix-blend-exclusion 

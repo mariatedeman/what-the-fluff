@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 
 type Variant = "primary" | "secondary";
-type ButtonWidth = "small" | "full";
+// type ButtonWidth = "small" | "full";
 
 type ButtonProps = {
     children: string,
@@ -9,7 +9,6 @@ type ButtonProps = {
     type?: "button" | "submit",
     href?: string,
     onClick?: () => void,
-    width: ButtonWidth,
 }
 
 const variants: Record<Variant, string> = {
@@ -17,24 +16,23 @@ const variants: Record<Variant, string> = {
     secondary: "bg-button-secondary",
 }
 
-const buttonWidth: Record<ButtonWidth, string> = {
-    small: "w-3xs",
-    full: "w-full",
-}
+// const buttonWidth: Record<ButtonWidth, string> = {
+//     small: "w-3xs",
+//     full: "w-full",
+// }
 
 
 export function Button({ 
     children, 
     variant, 
     href,
-    width,
     ...props
     } : ButtonProps ) {
 
         const buttonStyles: string = `
             flex items-center justify-center self-center
-            m-1 px-4 h-12 ${buttonWidth[width]}
-            text-white font-bold font-body
+            m-1 px-4 h-12 w-full
+            text-white font-bold text-xl font-h
             rounded-xl cursor-pointer 
             ${variants[variant]}
         `;

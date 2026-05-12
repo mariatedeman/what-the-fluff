@@ -9,35 +9,33 @@ export default function Home() {
             
             <Layout>
 
-            <section className="flex flex-col gap-4">
-                <div className="flex flex-col">
-                    <TextInput>
-                        Name
-                    </TextInput>
-                    <TextInput>
-                        API key
-                    </TextInput>
-                </div>
+                <section className="flex flex-col self-center gap-4 w-3xs">
+                    <div className="flex flex-col">
+                        <TextInput>
+                            Name
+                        </TextInput>
+                        <TextInput>
+                            API key
+                        </TextInput>
+                    </div>
 
-                <div className="flex">
-                    <Button 
-                        width="small"
-                        variant="primary" 
-                        type="button" 
-                        href="/game"
-                    >
-                            Play game
-                    </Button>
-                    <Button 
-                        width="small"
-                        variant="secondary" 
-                        type="submit" 
-                        onClick={() => console.log("Click")}
-                    >
-                            Scoreboard
-                    </Button>
-                </div>
-            </section>
+                    <div className="flex flex-col">
+                        <Button 
+                            variant="primary" 
+                            type="button" 
+                            href="/game"
+                        >
+                                Play game
+                        </Button>
+                        <Button 
+                            variant="secondary" 
+                            type="submit" 
+                            onClick={() => console.log("Click")}
+                        >
+                                Scoreboard
+                        </Button>
+                    </div>
+                </section>
             </Layout>
         </>
     )
