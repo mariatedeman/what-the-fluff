@@ -1,9 +1,9 @@
 // CATCHER SIZE AND Y-POSITION FROM TOP OF CANVAS, IN PIXELS
-export const CATCHER_WIDTH = 70;
-export const CATCHER_HEIGHT = 16;
+export const CATCHER_WIDTH = 24;
+export const CATCHER_HEIGHT = 52;
 export const CATCHER_SPEED = 800;
 export const CATCHER_Y = 500;
-export const ITEM_SIZE = 24;
+export const ITEM_SIZE = 30;
 export const SPAWN_INTERVAL = 500;
 
 // Decides permitted values for item colors.

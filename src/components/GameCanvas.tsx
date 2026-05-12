@@ -7,6 +7,10 @@ import { useKeyboardInput } from "../hooks/useKeyboardInput";
 import { useTouchInput } from "../hooks/useTouchInput";
 import { useMouseInput } from "../hooks/useMouseInput";
 
+// Components
+import { FallingItems } from "./FallingItems";
+import { Catcher } from "./Catcher";
+
 
 export default function GameCanvas() {
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
@@ -74,7 +78,7 @@ export default function GameCanvas() {
     setCaughtItems,
     isGameOver, setIsGameOver,
     catcherXRef
-    );
+  );
 
   
   return (
@@ -95,10 +99,10 @@ export default function GameCanvas() {
                 top: item.y,
                 width: item.size,
                 height: item.size,
-                borderRadius: "50%",
-                backgroundColor: item.type === "raindrop" ? "gray" : item.color,
               }}
-        />
+        >
+          <FallingItems type={item.type} color={item.color} size={item.size} />
+        </div>
       ))}
       
       {/* STACKED ITEMS: THESE HAVE BEEN CAUGHT AND NOW SIT ON TOP OF THE CATCHER */}
@@ -106,14 +110,15 @@ export default function GameCanvas() {
         <div key={`stack-${item.id}`}
               style={{
                 position: "absolute", // CENTER EACH STACKED ITEM OVER THE CATCHER
-                left: catcherX + (CATCHER_WIDTH - item.size) / 2, // PLACE EACH NEW ITEM ABOVE THE PREVIOUS ONE IN THE STACK
-                top: CATCHER_Y - item.size * (index + 1),
+                left: catcherX + (CATCHER_WIDTH - item.size) / 2, // PLACE EACH NEW ITEM ON TOP OF THE PREVIOUS ONE IN THE STACK
+                top: CATCHER_Y - (item.size - 12) * (index + 1),
                 width: item.size,
                 height: item.size,
-                borderRadius: "50%",
-                backgroundColor: item.color,
-              }}      
-        />
+                zIndex: 100,
+              }}
+        >
+          <FallingItems type={item.type} color={item.color} size={item.size} />
+        </div>
       ))}
 
       {/* THE CATCHER: THIS IS THE TARGET THAT THE FALLING ITEMS LAND ON */}
@@ -124,10 +129,11 @@ export default function GameCanvas() {
           top: CATCHER_Y,
           width: CATCHER_WIDTH,
           height: CATCHER_HEIGHT,
-          backgroundColor: "black",
         }}
-      />
-    </div>
+      >
+        <Catcher width={CATCHER_WIDTH} height={CATCHER_HEIGHT} />
+      </div>
+      </div>
   </>
   );
 }
