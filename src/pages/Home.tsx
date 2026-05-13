@@ -1,10 +1,28 @@
-import { Button } from "../components/Buttons";
+import Button from "../components/Button";
+import Modal from "../components/Modal";
+import { useHighscore } from "../hooks/useHighscores";
+
 import TextInput from "../components/TextInput";
 import { Layout } from "../components/layout/Layout";
 
 export default function Home() {
-    return (  
-        <Layout>
+  const { highscore, loading, error } = useHighscore();
+
+  if (loading) return <p>Laddar...</p>;
+  if (error) return <p>{error}</p>;
+
+  return (
+    <Layout>
+    <div className="flex flex-col items-center gap-8">
+
+      <div className="p-4 border-2 w-fit">
+        <h2>HIGHSCORE:</h2>
+        <p>{highscore?.score}</p>
+      </div>
+
+      <Button to="/game"> To Game </Button>
+      <Modal />
+    </div>
 
             <section className="flex flex-col self-center gap-4 w-3xs">
                 <div className="flex flex-col">
@@ -15,7 +33,7 @@ export default function Home() {
                 <div className="flex flex-col">
                     <Button 
                         variant="primary" 
-                        href="/game"
+                        to="/game"
                     >
                             Play game
                     </Button>
