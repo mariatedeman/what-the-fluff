@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { CATCHER_WIDTH } from "../models/GameTypes";
 
 export function useTouchInput(
-    canvasRef: React.RefObject<HTMLElement>,
+    canvasRef: React.RefObject<HTMLElement | null>,
     catcherXRef: { current: number },
     setCatcherX: React.Dispatch<React.SetStateAction<number>>
 ) {

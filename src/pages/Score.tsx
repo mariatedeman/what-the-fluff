@@ -1,3 +1,7 @@
+import { Layout } from "../components/layout/Layout";
+import { ScoreBoardRow } from "../components/ScoreBoardRow";
+
+import { useHighscoresWithUsers } from "../hooks/useHighscores";
 import { useState } from "react";
 import { useScores } from "../hooks/useScores";
 import type { ScoresSort } from "../types";
@@ -9,7 +13,8 @@ export default function Score() {
   const { scores, loading, error } = useScores({ sort, difficulty });
 
   return (
-    <div className="p-6">
+    <Layout>
+    <div>
       <h1>Score</h1>
 
 
@@ -65,5 +70,17 @@ export default function Score() {
         ))}
       </ol>
     </div>
-  );
+
+            <ScoreBoardRow placement={1} name="Maria" score={22}>
+            </ScoreBoardRow>
+            <ScoreBoardRow placement={2} name="Maria" score={20}>
+            </ScoreBoardRow>
+            <ScoreBoardRow placement={3} name="Maria" score={19}>
+            </ScoreBoardRow>
+            <ScoreBoardRow placement={4} name="Maria" score={15}>
+            </ScoreBoardRow>
+            <ScoreBoardRow placement={5} name="Maria" score={12}>
+            </ScoreBoardRow>
+        </Layout>
+    )
 }

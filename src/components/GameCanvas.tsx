@@ -1,11 +1,17 @@
 import { useState, useEffect, useRef } from "react";
-import { CATCHER_WIDTH, CATCHER_HEIGHT, CATCHER_Y, type FallingItem } from "../models/GameTypes";
+import { CATCHER_WIDTH, CATCHER_HEIGHT, CATCHER_Y, type FallingItem, STACK_OVERLAP_PX } from "../models/GameTypes";
 
 // Hooks
 import { useGameAnimation } from "../hooks/useGameAnimation";
 import { useKeyboardInput } from "../hooks/useKeyboardInput";
 import { useTouchInput } from "../hooks/useTouchInput";
 import { useMouseInput } from "../hooks/useMouseInput";
+
+// Components
+import { FallingItems } from "./FallingItems";
+import { Catcher } from "./Catcher";
+import { Layout } from "./layout/Layout";
+import { Modal } from "./Modal";
 
 
 export default function GameCanvas() {
@@ -47,7 +53,7 @@ export default function GameCanvas() {
 
   // REFS
   const catcherXRef = useRef(0); // CATCHER X, USED INSIDE ANIMATION LOOP TO ALWAYS HAS THE LATEST VALUE
-  const canvasRef = useRef<HTMLDivElement>(null); // CANVAS-DIV, USED TO READ ITS SIZE AND POSITION
+  const canvasRef = useRef<HTMLElement>(null); // CANVAS-DIV, USED TO READ ITS SIZE AND POSITION
   const canvasHeightRef = useRef(0); // CANVAS HEIGHT SO RAF LOOP DOES NOT HAVE TO MEASURE IT EVERY FRAME
   const canvasWidthRef = useRef(0); // CANVAS WIDTH SO THE RAF LOOP DOES NOT HAVE TO MEASURE IT EVERY FRAME
   const keysPressed = useRef({ left: false, right: false}); // REF THAT STORES LATEST KEY PRESS AND INPUT METHOD
@@ -74,60 +80,97 @@ export default function GameCanvas() {
     setCaughtItems,
     isGameOver, setIsGameOver,
     catcherXRef
-    );
+  );
 
   
   return (
-    <>
-    <div>Stacked items: {caughtItems} </div>
-    {isGameOver && <div>Game over</div>}
-    {/* position: relative SO THE CATCHER CAN USE position: absolute INSIDE IT */}
-    <div
-      ref={canvasRef}
-      className="relative w-full bg-blue-100 overflow-hidden h-150"
-    >
-      {/* FALLING ITEMS: THESE ARE STILL MOVING DOWNWARD */}
-      {items.map((item) => (
-        <div key={item.id}
-              style={{
-                position: "absolute",
-                left: item.x,
-                top: item.y,
-                width: item.size,
-                height: item.size,
-                borderRadius: "50%",
-                backgroundColor: item.type === "raindrop" ? "gray" : item.color,
-              }}
-        />
-      ))}
+    <Layout>
       
-      {/* STACKED ITEMS: THESE HAVE BEEN CAUGHT AND NOW SIT ON TOP OF THE CATCHER */}
-      {stackedItems.map((item, index) => (
-        <div key={`stack-${item.id}`}
-              style={{
-                position: "absolute", // CENTER EACH STACKED ITEM OVER THE CATCHER
-                left: catcherX + (CATCHER_WIDTH - item.size) / 2, // PLACE EACH NEW ITEM ABOVE THE PREVIOUS ONE IN THE STACK
-                top: CATCHER_Y - item.size * (index + 1),
-                width: item.size,
-                height: item.size,
-                borderRadius: "50%",
-                backgroundColor: item.color,
-              }}      
-        />
-      ))}
+      {/* position: relative SO THE CATCHER CAN USE position: absolute INSIDE IT */}
+      <section
+        ref={canvasRef}
+        className="
+          relative w-full overflow-hidden h-150 
+          rounded-2xl border-2 border-border border-dashed
+        ">
+          
+          {isGameOver && 
+            <Modal>
+              <h3 className="text-7xl">Game over</h3>
+            </Modal>}
+              
 
-      {/* THE CATCHER: THIS IS THE TARGET THAT THE FALLING ITEMS LAND ON */}
-      <div
-        style={{
-          position: "absolute",
-          left: catcherX,
-          top: CATCHER_Y,
-          width: CATCHER_WIDTH,
-          height: CATCHER_HEIGHT,
-          backgroundColor: "black",
-        }}
-      />
-    </div>
-  </>
+        {/* BACKGROUND WITH BLEND MODE - STAYS BEHIND ALL OBJECTS */}
+        <div className="absolute inset-0 bg-bg mix-blend-exclusion" />
+
+        {/* FALLING ITEMS: THESE ARE STILL MOVING DOWNWARD */}
+        {items.map((item) => (
+          <div key={item.id}
+                style={{
+                  position: "absolute",
+                  left: item.x,
+                  top: item.y,
+                  width: item.size,
+                  height: item.size,
+                }}
+          >
+            <FallingItems type={item.type} color={item.color} size={item.size} />
+          </div>
+        ))}
+        
+        {/* STACKED ITEMS: THESE HAVE BEEN CAUGHT AND NOW SIT ON TOP OF THE CATCHER */}
+        {stackedItems.map((item, index) => (
+          <div key={`stack-${item.id}`}
+                style={{
+                  position: "absolute", // CENTER EACH STACKED ITEM OVER THE CATCHER
+                  left: catcherX + (CATCHER_WIDTH - item.size) / 2, // PLACE EACH NEW ITEM ON TOP OF THE PREVIOUS ONE IN THE STACK
+                  top: CATCHER_Y - (item.size - STACK_OVERLAP_PX) * (index + 1),
+                  width: item.size,
+                  height: item.size,
+                  zIndex: 30,
+                }}
+          >
+            <FallingItems type={item.type} color={item.color} size={item.size} />
+          </div>
+        ))}
+
+        {/* THE CATCHER: THIS IS THE TARGET THAT THE FALLING ITEMS LAND ON */}
+        <div
+          style={{
+            position: "absolute",
+            left: catcherX,
+            top: CATCHER_Y,
+            width: CATCHER_WIDTH,
+            height: CATCHER_HEIGHT,
+          }}
+        >
+          <Catcher width={CATCHER_WIDTH} height={CATCHER_HEIGHT} />
+        </div>
+      </section>
+
+      <section className="relative w-full">
+        {/* Score display */}
+        <div className="relative w-full h-20 border-2 border-border border-dashed rounded-2xl">
+          {/* Background with blend mode */}
+          <div className="absolute inset-0 bg-bg mix-blend-exclusion rounded-2xl pointer-events-none" />
+          
+          {/* Content */}
+          <div className="
+            relative z-10 
+            w-full h-full 
+            flex items-center justify-center
+            text-white font-h
+          ">
+
+            <div className="text-center">
+              <span></span>
+              <span className="text-6xl text-green-dark">    
+                {caughtItems}
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </Layout>
   );
 }
