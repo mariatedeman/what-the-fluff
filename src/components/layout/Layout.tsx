@@ -1,4 +1,6 @@
-export function Layout({ children } ) {
+import type { LayoutProps } from "../../models/Types";
+
+export function Layout({ children }: LayoutProps) {
     return (
        <main className="
             flex flex-col

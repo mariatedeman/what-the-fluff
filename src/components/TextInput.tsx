@@ -1,4 +1,6 @@
-export default function TextInput({ children }) {
+import type { TextInputProps } from "../models/Types";
+
+export default function TextInput({placeholder}: TextInputProps) {
     return (
         <form>
             <div className="relative h-12 w-3xs m-1 group justify-self-center">
@@ -17,7 +19,7 @@ export default function TextInput({ children }) {
                         bg-transparent outline-none
                         text-center font-body text-white
                         rounded-2xl border-2 border-border border-dashed" 
-                    placeholder={ children }
+                    placeholder={ placeholder }
                 />
             </div>
         </form>

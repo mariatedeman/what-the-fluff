@@ -1,4 +1,6 @@
-export function Modal({ children }) {
+import type { ModalPops } from "../models/Types";
+
+export function Modal({ children }: ModalPops) {
     return (
         <>
             <div 

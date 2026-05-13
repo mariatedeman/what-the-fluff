@@ -1,19 +1,20 @@
 import { Layout } from "../components/layout/Layout";
-import { ScoreBoard } from "../components/ScoreBoard";
+import { ScoreBoardRow } from "../components/ScoreBoardRow";
+import type { ScoreProps } from "../models/Types";
 
-export default function Score({ children }) {
+export default function Score({ children }: ScoreProps) {
     return (
         <Layout>
-            <ScoreBoard placement={1} name="Maria" score={22}>
-            </ScoreBoard>
-            <ScoreBoard placement={2} name="Maria" score={20}>
-            </ScoreBoard>
-            <ScoreBoard placement={3} name="Maria" score={19}>
-            </ScoreBoard>
-            <ScoreBoard placement={4} name="Maria" score={15}>
-            </ScoreBoard>
-            <ScoreBoard placement={5} name="Maria" score={12}>
-            </ScoreBoard>
+            <ScoreBoardRow placement={1} name="Maria" score={22}>
+            </ScoreBoardRow>
+            <ScoreBoardRow placement={2} name="Maria" score={20}>
+            </ScoreBoardRow>
+            <ScoreBoardRow placement={3} name="Maria" score={19}>
+            </ScoreBoardRow>
+            <ScoreBoardRow placement={4} name="Maria" score={15}>
+            </ScoreBoardRow>
+            <ScoreBoardRow placement={5} name="Maria" score={12}>
+            </ScoreBoardRow>
         </Layout>
     )
 }

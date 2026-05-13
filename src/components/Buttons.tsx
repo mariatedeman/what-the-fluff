@@ -1,30 +1,14 @@
 import { Link } from "react-router-dom";
-
-type Variant = "primary" | "secondary";
-// type ButtonWidth = "small" | "full";
-
-type ButtonProps = {
-    children: string,
-    variant: Variant,
-    type?: "button" | "submit",
-    href?: string,
-    onClick?: () => void,
-}
+import type { Variant, ButtonProps } from "../models/Types";
 
 const variants: Record<Variant, string> = {
     primary: "bg-button-primary",
     secondary: "bg-button-secondary",
 }
 
-// const buttonWidth: Record<ButtonWidth, string> = {
-//     small: "w-3xs",
-//     full: "w-full",
-// }
-
-
 export function Button({ 
-    children, 
-    variant, 
+    children,
+    variant,
     href,
     ...props
     } : ButtonProps ) {

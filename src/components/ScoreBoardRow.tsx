@@ -1,12 +1,7 @@
-import { Layout } from "./layout/Layout";
+import type { ScoreBoardRow } from "../models/Types";
 
-type ScoreBoardRow = {
-    placement: number,
-    name: string,
-    score: number,
-}
 
-export function ScoreBoard({placement, name, score}: ScoreBoardRow) {
+export function ScoreBoardRow({placement, name, score}: ScoreBoardRow) {
 
     return (
 
