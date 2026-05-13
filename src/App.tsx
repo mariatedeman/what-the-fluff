@@ -4,6 +4,8 @@ import Game from './pages/Game'
 import Score from './pages/Score'
 import Nav from './components/Nav'
 
+import Test from './pages/Test'
+
 function App() {
   return (
     <>
@@ -13,6 +15,9 @@ function App() {
         <Route path="/game" element={<Game />} />
         <Route path="/score" element={<Score />} />
         <Route path="*" element={<div>404 - Page not found</div>} />
+
+        {/* TEMPORARY TEST PAGE */}
+        <Route path='test' element={<Test />} />
       </Routes>
     </>
   )
