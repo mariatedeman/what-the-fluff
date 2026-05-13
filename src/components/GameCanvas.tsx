@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { CATCHER_WIDTH, CATCHER_HEIGHT, CATCHER_Y, type FallingItem } from "../models/GameTypes";
+import { CATCHER_WIDTH, CATCHER_HEIGHT, CATCHER_Y, type FallingItem, STACK_OVERLAP_PX } from "../models/GameTypes";
 
 // Hooks
 import { useGameAnimation } from "../hooks/useGameAnimation";
@@ -124,7 +124,7 @@ export default function GameCanvas() {
                 style={{
                   position: "absolute", // CENTER EACH STACKED ITEM OVER THE CATCHER
                   left: catcherX + (CATCHER_WIDTH - item.size) / 2, // PLACE EACH NEW ITEM ON TOP OF THE PREVIOUS ONE IN THE STACK
-                  top: CATCHER_Y - (item.size - 12) * (index + 1),
+                  top: CATCHER_Y - (item.size - STACK_OVERLAP_PX) * (index + 1),
                   width: item.size,
                   height: item.size,
                   zIndex: 30,

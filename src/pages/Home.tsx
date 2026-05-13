@@ -15,7 +15,6 @@ export default function Home() {
                 <div className="flex flex-col">
                     <Button 
                         variant="primary" 
-                        type="button" 
                         href="/game"
                     >
                             Play game

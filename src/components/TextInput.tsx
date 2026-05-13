@@ -2,7 +2,6 @@ import type { TextInputProps } from "../models/Types";
 
 export default function TextInput({placeholder}: TextInputProps) {
     return (
-        <form>
             <div className="relative h-12 w-3xs m-1 group justify-self-center">
                 {/* Transparent bg */}
                 <div className="
@@ -22,6 +21,5 @@ export default function TextInput({placeholder}: TextInputProps) {
                     placeholder={ placeholder }
                 />
             </div>
-        </form>
     )
 }

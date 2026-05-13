@@ -1,8 +1,7 @@
 import { Layout } from "../components/layout/Layout";
 import { ScoreBoardRow } from "../components/ScoreBoardRow";
-import type { ScoreProps } from "../models/Types";
 
-export default function Score({ children }: ScoreProps) {
+export default function Score() {
     return (
         <Layout>
             <ScoreBoardRow placement={1} name="Maria" score={22}>

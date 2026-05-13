@@ -1,21 +1,19 @@
+ import type { MouseEventHandler, ReactNode } from 'react';
+
 export interface LayoutProps {
-    children: React.ReactNode;
+    children: ReactNode;
 }
 
 export interface ModalPops {
-    children: React.ReactNode;
+    children: ReactNode;
 }
 
 export interface TextInputProps {
-    children?: React.ReactNode,
+    children?: ReactNode,
     placeholder?: string,
 }
 
 // SCORES
-export interface ScoreProps {
-    children: React.ReactNode;
-}
-
 export type ScoreBoardRow = {
     placement: number,
     name: string,
@@ -25,10 +23,21 @@ export type ScoreBoardRow = {
 // BUTTONS
 export type Variant = "primary" | "secondary";
 
-export interface ButtonProps {
-    children: string,
-    variant: Variant,
-    type?: "button" | "submit",
-    href?: string,
-    onClick?: () => void,
+interface BaseButtonProps {
+    children: string;
+    variant: Variant;
 }
+
+interface ButtonElementProps extends BaseButtonProps {
+    type?: "button" | "submit";
+    onClick?: MouseEventHandler<HTMLButtonElement>;
+    href?: never;
+}
+
+interface LinkElementProps extends BaseButtonProps {
+    href: string;
+    type?: never;
+    onClick?: never;
+}
+
+export type ButtonProps = ButtonElementProps | LinkElementProps;

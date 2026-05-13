@@ -5,6 +5,7 @@ export const CATCHER_SPEED = 800;
 export const CATCHER_Y = 500;
 export const ITEM_SIZE = 30;
 export const SPAWN_INTERVAL = 500;
+export const STACK_OVERLAP_PX = 12;
 
 // Decides permitted values for item colors.
 export type Color = "pink" | "yellow" | "green";

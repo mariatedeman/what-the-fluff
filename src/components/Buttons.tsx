@@ -9,7 +9,9 @@ const variants: Record<Variant, string> = {
 export function Button({ 
     children,
     variant,
+    type,
     href,
+    onClick,
     ...props
     } : ButtonProps ) {
 
@@ -24,14 +26,18 @@ export function Button({
         if (href) {
             return (
                 <Link
-                    to={href} className={buttonStyles} {...props}>
+                    to={href} className={buttonStyles}>
                     { children }
                 </Link>
             )
         }
 
         return (
-            <button className={buttonStyles}{...props}>
+            <button 
+                className={buttonStyles} 
+                type={type} 
+                onClick={onClick}
+            >
                 { children }
             </button>
         )

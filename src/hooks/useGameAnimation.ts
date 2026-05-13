@@ -9,6 +9,7 @@ import {
   ITEM_SIZE,
   CATCHER_SPEED,
   SPAWN_INTERVAL,
+  STACK_OVERLAP_PX,
 } from "../models/GameTypes";
 
 // Helpers
@@ -78,7 +79,7 @@ export function useGameAnimation(
           moved.x + moved.size > catcherX;
 
         const stackTopY: number =
-          CATCHER_Y - (moved.size - 12) * stackedItemsRef.current.length;
+          CATCHER_Y - (moved.size -STACK_OVERLAP_PX) * stackedItemsRef.current.length;
 
         // Y-AXIS OVERLAP BETWEEN THE ITEM AND THE CATCHER
         const hitsStackY =
@@ -156,7 +157,7 @@ export function useGameAnimation(
         }
 
         // CHECK IF STACK REACHES THE TOP OF THE CANVAS (GAME OVER CONDITION)
-        const stackTopY = CATCHER_Y - (ITEM_SIZE - 12) * nextStack.length;
+        const stackTopY = CATCHER_Y - (ITEM_SIZE - STACK_OVERLAP_PX) * nextStack.length;
         if (stackTopY <= 0) {
           setIsGameOver(true);
           isGameOverRef.current = true;  // STOP IMMEDIATELY INSTEAD OF WAITING FOR STATE UPDATE
