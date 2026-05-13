@@ -16,8 +16,8 @@ function App() {
         <Route path="/score" element={<Score />} />
         <Route path="*" element={<div>404 - Page not found</div>} />
 
-        {/* TEMPORARY TEST PAGE */}
-        <Route path='test' element={<Test />} />
+        {/* TEMPORARY TEST PAGE — ONLY MOUNTED IN DEV (npm run dev), STRIPPED FROM PRODUCTION BUILD */}
+        {import.meta.env.DEV && <Route path='test' element={<Test />} />}
       </Routes>
     </>
   )
