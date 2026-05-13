@@ -5,18 +5,20 @@ import TextInput from "../components/TextInput";
 import { Layout } from "../components/layout/Layout";
 
 export default function Home() {
-  const { highscore, loading, error } = useHighscore();
-
-  if (loading) return <p>Laddar...</p>;
-  if (error) return <p>{error}</p>;
+  const { highestScore, loading, error } = useHighestScore();
 
   return (
     <Layout>
     <div className="flex flex-col items-center gap-8">
 
-      <div className="p-4 w-fit">
-        <h2>HIGHSCORE</h2>
-        <p>{highscore?.score}</p>
+      <div className="p-4 border-2 w-fit">
+        <h2>HIGHSCORE:</h2>
+        <p>
+          {loading && "Laddar..."}
+          {error && "Kunde inte hämta highscore."}
+          {highestScore &&
+            `${highestScore.score} poäng av ${highestScore.player_name}`}
+        </p>
       </div>
 
     </div>
