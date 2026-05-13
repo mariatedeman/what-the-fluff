@@ -26,7 +26,13 @@ Deno.serve(async (req) => {
   try {
     const { session_id, score } = await req.json();
 
-    if (typeof session_id !== "number" || typeof score !== "number") {
+    // VALIDATE INPUT TYPES BEFORE SENDING TO DB
+    // Number.isInteger() ENSURES session_id IS A POSITIVE INTEGER (REJECTS NaN, Infinity, DECIMALS)
+    // Number.isFinite() ENSURES score IS A REAL NUMBER (REJECTS NaN, Infinity)
+    if (
+      !Number.isInteger(session_id) || session_id <= 0 ||
+      !Number.isFinite(score) || score < 0
+    ) {
       return new Response(
         JSON.stringify({ success: false, error: "Invalid input" }),
         {
