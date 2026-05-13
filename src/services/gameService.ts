@@ -1,26 +1,92 @@
 import { supabase } from "../lib/supabase";
-import type { Score, ScoreWithUser } from "../types";
+import type {
+  GameSession,
+  GetScoresParams,
+  PlayerOptions,
+  StartSessionResponse,
+  SubmitScoreResponse,
+} from "../types";
 
-export const getHighscore = async (): Promise<Score | null> => {
+
+// FETCH THE HIGHEST SCORE FROM DB
+export async function getHighestScore(): Promise<GameSession | null> {
   const { data, error } = await supabase
-    .from("scores")
+    .from("game_sessions")
     .select("*")
+    .not("score", "is", null)
     .order("score", { ascending: false })
     .limit(1)
     .single();
 
-  if (error) throw error;
+  if (error) {
+    console.error("Error fetching highest score:", error);
+    throw new Error("Could not fetch highest score");
+  }
+
+  return data;
+}
+
+// FETCH SCORES FROM game_sessions
+// TOP 10 BEST SCORES AS DEFAULT
+// WILL NOT GET SCORES IF COLUMN IS NULL
+export const getScores = async ({
+  sort = "best",
+  difficulty,
+}: GetScoresParams = {}): Promise<GameSession[]> => {
+  let query = supabase
+    .from("game_sessions")
+    .select("*")
+    .not("score", "is", null)
+    .order("score", { ascending: sort === "worst" })
+    .limit(10);
+
+  if (difficulty !== undefined) {
+    query = query.eq("difficulty", difficulty);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error("getScores error:", error);
+    return [];
+  }
+
   return data;
 };
 
 
-export const getHighscoresWithUsers = async (): Promise<ScoreWithUser[]> => {
-  const { data, error } = await supabase
-    .from("scores")
-    .select(`*, users(name)`)
-    .order("score", { ascending: false })
-    .limit(10);
+// START SESSION VIA EDGE FUNCTION
+// INSERTs a game_sessions row without score and returns the new row id.
+export const startSession = async (
+  opts: PlayerOptions
+): Promise<StartSessionResponse> => {
+  const { data, error } = await supabase.functions.invoke("start-session", {
+    body: opts,
+  });
 
-  if (error) throw error;
-  return data ?? [];
+  if (error) {
+    console.error("start-session error:", error);
+    return { success: false, error: "Something went wrong" };
+  }
+
+  return data as StartSessionResponse;
+};
+
+
+// SUBMIT SCORE VIA EDGE FUNCTION
+// UPDATEs the existing game_sessions row identified by sessionId with the final score.
+export const submitScore = async (
+  sessionId: number,
+  score: number
+): Promise<SubmitScoreResponse> => {
+  const { data, error } = await supabase.functions.invoke("submit-score", {
+    body: { session_id: sessionId, score },
+  });
+
+  if (error) {
+    console.error("submit-score error:", error);
+    return { success: false, error: "Something went wrong" };
+  }
+
+  return data as SubmitScoreResponse;
 };

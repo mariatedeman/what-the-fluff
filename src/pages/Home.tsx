@@ -1,12 +1,9 @@
 import Button from "../components/Button";
 import Modal from "../components/Modal";
-import { useHighscore } from "../hooks/useHighscores";
+import { useHighestScore } from "../hooks/useHighestScore";
 
 export default function Home() {
-  const { highscore, loading, error } = useHighscore();
-
-  if (loading) return <p>Laddar...</p>;
-  if (error) return <p>{error}</p>;
+  const { highestScore, loading, error } = useHighestScore();
 
   return (
     <div className="flex flex-col items-center gap-8">
@@ -14,7 +11,12 @@ export default function Home() {
 
       <div className="p-4 border-2 w-fit">
         <h2>HIGHSCORE:</h2>
-        <p>{highscore?.score}</p>
+        <p>
+          {loading && "Laddar..."}
+          {error && "Kunde inte hämta highscore."}
+          {highestScore &&
+            `${highestScore.score} poäng av ${highestScore.player_name}`}
+        </p>
       </div>
 
       <Button to="/game"> To Game </Button>
