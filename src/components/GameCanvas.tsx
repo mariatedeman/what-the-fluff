@@ -11,7 +11,7 @@ import { useMouseInput } from "../hooks/useMouseInput";
 import { FallingItems } from "./FallingItems";
 import { Catcher } from "./Catcher";
 import { Layout } from "./layout/Layout";
-import { Modal } from "./modals/Modal";
+import { Modal } from "./Modal";
 
 
 export default function GameCanvas() {

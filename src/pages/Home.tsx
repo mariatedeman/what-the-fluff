@@ -4,9 +4,7 @@ import { Layout } from "../components/layout/Layout";
 
 export default function Home() {
     return (
-        <>
-            <h1>Home</h1>
-            
+        <>           
             <Layout>
 
                 <section className="flex flex-col self-center gap-4 w-3xs">

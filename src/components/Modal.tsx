@@ -4,11 +4,9 @@ export function Modal({ children }) {
             <div 
                 style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}
                 className="
-                    absolute inset-0
+                    absolute inset-0 z-50
                     flex flex-col items-center justify-center
-                    z-50
-                "
-            >
+                ">
                     {children}
             </div>
         </>
