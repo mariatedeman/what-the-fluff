@@ -22,7 +22,7 @@ export function useScores({
 
 
   // useEffect RUNS AFTER MOUNT AND AFTER ANY OF THE DEPENDENCIES CHANGE
-  // DEPENDENCY ARRAY [sort, difficulty, limit] = RE-RUNS WHEN ANY OF THESE CHANGE
+  // DEPENDENCY ARRAY [sort, difficulty] = RE-RUNS WHEN ANY OF THESE CHANGE
   useEffect(() => {
 
     // FLAG TO TRACK IF COMPONENT IS STILL MOUNTED
