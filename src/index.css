@@ -33,7 +33,7 @@
   --yellow: #fcbd00;
 
   --text: #171717;
-  --text-h: #var(--pink-dark);
+  --text-h: var(--pink-dark);
   --bg: #f5edd7be;
   --border: var(--green-dark);
   --accent: var(--yellow);
@@ -81,7 +81,8 @@ body {
 }
 
 h1,
-h2 {
+h2, 
+h3 {
   font-family: var(--font-h);
   font-weight: 500;
   color: var(--text-h);

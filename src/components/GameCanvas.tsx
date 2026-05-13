@@ -11,6 +11,7 @@ import { useMouseInput } from "../hooks/useMouseInput";
 import { FallingItems } from "./FallingItems";
 import { Catcher } from "./Catcher";
 import { Layout } from "./layout/Layout";
+import { Modal } from "./modals/Modal";
 
 
 export default function GameCanvas() {
@@ -84,7 +85,7 @@ export default function GameCanvas() {
   
   return (
     <Layout>
-      {isGameOver && <div>Game over</div>}
+      
       {/* position: relative SO THE CATCHER CAN USE position: absolute INSIDE IT */}
       <section
         ref={canvasRef}
@@ -92,6 +93,12 @@ export default function GameCanvas() {
           relative w-full overflow-hidden h-150 
           rounded-2xl border-2 border-border border-dashed
         ">
+          
+          {isGameOver && 
+            <Modal>
+              <h3 className="text-7xl">Game over</h3>
+            </Modal>}
+              
 
         {/* BACKGROUND WITH BLEND MODE - STAYS BEHIND ALL OBJECTS */}
         <div className="absolute inset-0 bg-bg mix-blend-exclusion" />
@@ -120,7 +127,7 @@ export default function GameCanvas() {
                   top: CATCHER_Y - (item.size - 12) * (index + 1),
                   width: item.size,
                   height: item.size,
-                  zIndex: 100,
+                  zIndex: 30,
                 }}
           >
             <FallingItems type={item.type} color={item.color} size={item.size} />
