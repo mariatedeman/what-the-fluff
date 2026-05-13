@@ -1,5 +1,4 @@
-import Button from "../components/Button";
-import Modal from "../components/Modal";
+import { Button } from "../components/Buttons";
 import { useHighscore } from "../hooks/useHighscores";
 
 import TextInput from "../components/TextInput";
@@ -15,13 +14,11 @@ export default function Home() {
     <Layout>
     <div className="flex flex-col items-center gap-8">
 
-      <div className="p-4 border-2 w-fit">
-        <h2>HIGHSCORE:</h2>
+      <div className="p-4 w-fit">
+        <h2>HIGHSCORE</h2>
         <p>{highscore?.score}</p>
       </div>
 
-      <Button to="/game"> To Game </Button>
-      <Modal />
     </div>
 
             <section className="flex flex-col self-center gap-4 w-3xs">
@@ -32,11 +29,10 @@ export default function Home() {
 
                 <div className="flex flex-col">
                     <Button 
+                        children="Play game"
                         variant="primary" 
-                        to="/game"
-                    >
-                            Play game
-                    </Button>
+                        href="/game"
+                    />
                     <Button 
                         variant="secondary" 
                         type="submit" 
