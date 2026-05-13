@@ -17,7 +17,7 @@ const corsHeaders = {
 // Deno.serve STARTS A WEBSERVER THAT LISTENS FOR INCOMING REQUESTS
 Deno.serve(async (req) => {
 
-  // HANDELING PREFLIGHT-REQUEST - CORS
+  // HANDLING PREFLIGHT-REQUEST - CORS
   // BEFORE A REAL REQUEST IS MADE (EG POST) THE BROWSER 
   // ASK FOR PERMISSION 
   // WITH METHOD "OPTIONS"
@@ -56,11 +56,12 @@ Deno.serve(async (req) => {
     // VALIDATE INPUT TYPES BEFORE SENDING TO DB
     // IF NOT VALID RETURN 400 ERROR
     // INSTEAD OF LETTING POSTGRES REJECT WITH AN OPAQUE MESSAGE
+    // Number.isFinite() REJECTS NaN AND Infinity (typeof === "number" DOES NOT)
     if (
       typeof player_name !== "string" ||
       player_name.trim().length === 0 ||
-      typeof difficulty !== "number" ||
-      typeof stake_amount !== "number"
+      !Number.isFinite(difficulty) || difficulty <= 0 ||
+      !Number.isFinite(stake_amount) || stake_amount < 0
     ) {
       return new Response(
         JSON.stringify({ success: false, error: "Invalid input" }),

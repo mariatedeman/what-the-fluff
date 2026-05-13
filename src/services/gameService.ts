@@ -9,6 +9,8 @@ import type {
 
 
 // FETCH THE HIGHEST SCORE FROM DB
+// Uses .maybeSingle() which returns null when there are 0 rows
+// (vs .single() which would throw — bad UX when the leaderboard is empty)
 export async function getHighestScore(): Promise<GameSession | null> {
   const { data, error } = await supabase
     .from("game_sessions")
@@ -16,7 +18,7 @@ export async function getHighestScore(): Promise<GameSession | null> {
     .not("score", "is", null)
     .order("score", { ascending: false })
     .limit(1)
-    .single();
+    .maybeSingle();
 
   if (error) {
     console.error("Error fetching highest score:", error);
