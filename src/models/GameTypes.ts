@@ -7,7 +7,7 @@ export const ITEM_SIZE = 30;
 export const SPAWN_INTERVAL = 500;
 
 // Decides permitted values for item colors.
-export type Color = "pink" | "blue" | "green";
+export type Color = "pink" | "yellow" | "green";
 
 // Shared item model used both while items fall and after they are stacked.
 export type FallingItem = {
@@ -21,6 +21,6 @@ export type FallingItem = {
 };
 
 // Array to randomize from when spawning a new item.
-export const colors: Color[] = ["pink", "blue", "green"];
+export const colors: Color[] = ["pink", "yellow", "green"];
 
 export type KeysPressed = { left: boolean; right: boolean };
