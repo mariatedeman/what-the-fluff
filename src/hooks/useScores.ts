@@ -4,8 +4,8 @@ import type { GameSession, GetScoresParams } from "../types";
 
 
 // REACT-HOOK THAT FETCHES SCORES FROM game_sessions
-// RE-FETCHES WHENEVER sort / difficulty / limit CHANGES
-// DEFAULTS: sort="best", limit=10, difficulty=undefined (NO FILTER)
+// RE-FETCHES WHENEVER sort / difficulty CHANGES
+// DEFAULTS: sort="best" difficulty=undefined (NO FILTER)
 export function useScores({
   sort = "best",
   difficulty,
