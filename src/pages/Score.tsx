@@ -1,7 +1,6 @@
 import { Layout } from "../components/layout/Layout";
 import { ScoreBoardRow } from "../components/ScoreBoardRow";
 
-import { useHighscoresWithUsers } from "../hooks/useHighscores";
 import { useState } from "react";
 import { useScores } from "../hooks/useScores";
 import type { ScoresSort } from "../types";
