@@ -1,5 +1,3 @@
-import type { RefObject } from "react";
-
 interface GameCanvasProps {
   children: React.ReactNode,
   ref?: React.RefObject<HTMLDivElement | HTMLElement | null>

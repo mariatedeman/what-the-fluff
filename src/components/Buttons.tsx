@@ -12,7 +12,6 @@ export function Button({
     type,
     href,
     onClick,
-    ...props
     } : ButtonProps ) {
 
         const buttonStyles: string = `

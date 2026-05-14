@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { CATCHER_WIDTH, CATCHER_HEIGHT, CATCHER_Y, type FallingItem, STACK_OVERLAP_PX } from "../../models/GameTypes";
+import { CATCHER_WIDTH, type FallingItem } from "../../models/GameTypes";
 
 // Hooks
 import { useGameAnimation } from "../../hooks/useGameAnimation";
@@ -8,8 +8,6 @@ import { useTouchInput } from "../../hooks/useTouchInput";
 import { useMouseInput } from "../../hooks/useMouseInput";
 
 // Components
-import { FallingItemsSVG } from "./FallingItemsSVG";
-import { CatcherSVG } from "./CatcherSVG";
 import { Layout } from "../layout/Layout";
 import { Modal } from "../Modal";
 import { GameStats } from "../GameStats";
@@ -108,7 +106,7 @@ export default function GameScreen() {
 
         {/* THE CATCHER: THIS IS THE TARGET THAT THE FALLING ITEMS LAND ON */}
         <Catcher catcherX={catcherX}></Catcher>
-        
+
       </GameCanvas>
 
       <InfoPlate direction="row" height={22}>
