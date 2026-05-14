@@ -1,4 +1,4 @@
-import { FallingItems } from "./FallingItems";
+import { FallingItemsSVG } from "./FallingItemsSVG";
 import { 
     type FallingItem as FallingItemType,
     CATCHER_WIDTH, 
@@ -25,7 +25,7 @@ export function StackedItemsLayer({ items, catcherX }: Props) {
                         zIndex: 30,
                     }}
                 >
-                <FallingItems type={item.type} color={item.color} size={item.size} />
+                <FallingItemsSVG type={item.type} color={item.color} size={item.size} />
                 </div>
             ))}
         </>

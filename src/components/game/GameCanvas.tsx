@@ -8,14 +8,14 @@ import { useTouchInput } from "../../hooks/useTouchInput";
 import { useMouseInput } from "../../hooks/useMouseInput";
 
 // Components
-import { FallingItems } from "./FallingItems";
-import { Catcher } from "./Catcher";
+import { FallingItemsSVG } from "./FallingItemsSVG";
+import { CatcherSVG } from "./CatcherSVG";
 import { Layout } from "../layout/Layout";
 import { Modal } from "../Modal";
 import { GameStats } from "../GameStats";
 import { InfoPlate } from "../InfoPlate";
-import { FallingItemsLayer } from "./FallingItemsLayer";
-import { StackedItemsLayer } from "./StackedItemsLayer";
+import { FallingItemsLayer } from "./FallingItemsDisplay";
+import { StackedItemsLayer } from "./StackedItemsDisplay";
 
 
 export default function GameCanvas() {
@@ -107,6 +107,8 @@ export default function GameCanvas() {
 
         {/* FALLING ITEMS: THESE ARE STILL MOVING DOWNWARD */}
         <FallingItemsLayer items={items}/>
+
+        {/* STACKED ITEMS: THESE ARE STACKED ON CATCHER */}
         <StackedItemsLayer items={stackedItems} catcherX={catcherX}/>
 
   
@@ -120,7 +122,7 @@ export default function GameCanvas() {
             height: CATCHER_HEIGHT,
           }}
         >
-          <Catcher width={CATCHER_WIDTH} height={CATCHER_HEIGHT} />
+          <CatcherSVG width={CATCHER_WIDTH} height={CATCHER_HEIGHT} />
         </div>
       </section>
 

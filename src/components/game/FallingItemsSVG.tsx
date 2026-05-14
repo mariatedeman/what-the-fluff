@@ -1,6 +1,6 @@
 // Returns correct svg for cotton candy or raindrop
 
-export function FallingItems({ 
+export function FallingItemsSVG({ 
     type, 
     color, 
     size

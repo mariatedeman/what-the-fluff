@@ -1,4 +1,4 @@
-import { FallingItems } from "./FallingItems";
+import { FallingItemsSVG } from "./FallingItemsSVG";
 import { type FallingItem as FallingItemType } from "../../models/GameTypes";
 
 interface Props {
@@ -20,7 +20,7 @@ export function FallingItemsLayer({ items }: Props) {
                     }}
                 >
 
-                <FallingItems type={item.type} color={item.color} size={item.size} />
+                <FallingItemsSVG type={item.type} color={item.color} size={item.size} />
             </div>
             ))}
         </>

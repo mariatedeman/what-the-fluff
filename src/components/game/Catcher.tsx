@@ -1,7 +1,20 @@
-export function Catcher({ width, height }: { width: number; height: number }) {
-  return (
-    <svg width={width} height={height} viewBox="0 0 24 52">
-      <use href="/catcher.svg" />
-    </svg>
-  );
+import { CATCHER_HEIGHT, CATCHER_WIDTH, CATCHER_Y } from "../../models/GameTypes";
+import { CatcherSVG } from "./CatcherSVG";
+
+export function Catcher(catcherX: number) {
+    return (
+        <>
+            <div
+                style={{
+                    position: "absolute",
+                    left: catcherX,
+                    top: CATCHER_Y,
+                    width: CATCHER_WIDTH,
+                    height: CATCHER_HEIGHT,
+                }}
+            >
+                <CatcherSVG width={CATCHER_WIDTH} height={CATCHER_HEIGHT} />
+            </div>
+        </>
+    )
 }
