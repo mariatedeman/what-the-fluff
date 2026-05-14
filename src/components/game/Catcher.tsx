@@ -1,7 +1,7 @@
 import { CATCHER_HEIGHT, CATCHER_WIDTH, CATCHER_Y } from "../../models/GameTypes";
 import { CatcherSVG } from "./CatcherSVG";
 
-export function Catcher(catcherX: number) {
+export function Catcher({ catcherX }: {catcherX: number}) {
     return (
         <>
             <div
