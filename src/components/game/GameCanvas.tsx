@@ -14,6 +14,8 @@ import { Layout } from "../layout/Layout";
 import { Modal } from "../Modal";
 import { GameStats } from "../GameStats";
 import { InfoPlate } from "../InfoPlate";
+import { FallingItemsLayer } from "./FallingItemsLayer";
+import { StackedItemsLayer } from "./StackedItemsLayer";
 
 
 export default function GameCanvas() {
@@ -95,47 +97,19 @@ export default function GameCanvas() {
           relative w-full overflow-hidden h-150 
           rounded-2xl border-2 border-border border-dashed
         ">
+          {/* BACKGROUND WITH BLEND MODE - STAYS BEHIND ALL OBJECTS */}
+          <div className="absolute inset-0 bg-bg mix-blend-exclusion" />
           
           {isGameOver && 
             <Modal>
               <h3 className="text-7xl">Game over</h3>
             </Modal>}
-              
-
-        {/* BACKGROUND WITH BLEND MODE - STAYS BEHIND ALL OBJECTS */}
-        <div className="absolute inset-0 bg-bg mix-blend-exclusion" />
 
         {/* FALLING ITEMS: THESE ARE STILL MOVING DOWNWARD */}
-        {items.map((item) => (
-          <div key={item.id}
-                style={{
-                  position: "absolute",
-                  left: item.x,
-                  top: item.y,
-                  width: item.size,
-                  height: item.size,
-                }}
-          >
-            <FallingItems type={item.type} color={item.color} size={item.size} />
-          </div>
-        ))}
-        
-        {/* STACKED ITEMS: THESE HAVE BEEN CAUGHT AND NOW SIT ON TOP OF THE CATCHER */}
-        {stackedItems.map((item, index) => (
-          <div key={`stack-${item.id}`}
-                style={{
-                  position: "absolute", // CENTER EACH STACKED ITEM OVER THE CATCHER
-                  left: catcherX + (CATCHER_WIDTH - item.size) / 2, // PLACE EACH NEW ITEM ON TOP OF THE PREVIOUS ONE IN THE STACK
-                  top: CATCHER_Y - (item.size - STACK_OVERLAP_PX) * (index + 1),
-                  width: item.size,
-                  height: item.size,
-                  zIndex: 30,
-                }}
-          >
-            <FallingItems type={item.type} color={item.color} size={item.size} />
-          </div>
-        ))}
+        <FallingItemsLayer items={items}/>
+        <StackedItemsLayer items={stackedItems} catcherX={catcherX}/>
 
+  
         {/* THE CATCHER: THIS IS THE TARGET THAT THE FALLING ITEMS LAND ON */}
         <div
           style={{
