@@ -1,17 +1,19 @@
 import { useState, useEffect, useRef } from "react";
-import { CATCHER_WIDTH, CATCHER_HEIGHT, CATCHER_Y, type FallingItem, STACK_OVERLAP_PX } from "../models/GameTypes";
+import { CATCHER_WIDTH, CATCHER_HEIGHT, CATCHER_Y, type FallingItem, STACK_OVERLAP_PX } from "../../models/GameTypes";
 
 // Hooks
-import { useGameAnimation } from "../hooks/useGameAnimation";
-import { useKeyboardInput } from "../hooks/useKeyboardInput";
-import { useTouchInput } from "../hooks/useTouchInput";
-import { useMouseInput } from "../hooks/useMouseInput";
+import { useGameAnimation } from "../../hooks/useGameAnimation";
+import { useKeyboardInput } from "../../hooks/useKeyboardInput";
+import { useTouchInput } from "../../hooks/useTouchInput";
+import { useMouseInput } from "../../hooks/useMouseInput";
 
 // Components
 import { FallingItems } from "./FallingItems";
 import { Catcher } from "./Catcher";
-import { Layout } from "./layout/Layout";
-import { Modal } from "./Modal";
+import { Layout } from "../layout/Layout";
+import { Modal } from "../Modal";
+import { GameStats } from "../GameStats";
+import { InfoPlate } from "../InfoPlate";
 
 
 export default function GameCanvas() {
@@ -148,29 +150,12 @@ export default function GameCanvas() {
         </div>
       </section>
 
-      <section className="relative w-full">
-        {/* Score display */}
-        <div className="relative w-full h-20 border-2 border-border border-dashed rounded-2xl">
-          {/* Background with blend mode */}
-          <div className="absolute inset-0 bg-bg mix-blend-exclusion rounded-2xl pointer-events-none" />
-          
-          {/* Content */}
-          <div className="
-            relative z-10 
-            w-full h-full 
-            flex items-center justify-center
-            text-white font-h
-          ">
+      <InfoPlate direction="row" height={22}>
+        <GameStats stat={"10"} size={2} font={"body"} color="white"></GameStats>
+        <GameStats stat={caughtItems} size={6} font={"main"} color="green"></GameStats>
+        <GameStats stat={"HS"} size={2} font={"body"} color="white"></GameStats>
+      </InfoPlate>
 
-            <div className="text-center">
-              <span></span>
-              <span className="text-6xl text-green-dark">    
-                {caughtItems}
-              </span>
-            </div>
-          </div>
-        </div>
-      </section>
     </Layout>
   );
 }

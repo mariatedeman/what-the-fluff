@@ -4,7 +4,7 @@ export interface LayoutProps {
     children: ReactNode;
 }
 
-export interface ModalPops {
+export interface ModalProps {
     children: ReactNode;
 }
 
@@ -16,8 +16,8 @@ export interface TextInputProps {
 // SCORES
 export type ScoreBoardRow = {
     placement: number,
-    name: string,
-    score: number,
+    name: string | undefined,
+    score: number | null,
 }
 
 // BUTTONS
