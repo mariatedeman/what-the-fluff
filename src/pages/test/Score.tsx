@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { startSession, submitScore } from "../services/gameService";
-import type { StartSessionResponse, SubmitScoreResponse } from "../types";
+import { startSession, submitScore } from "../../services/gameService";
+import type { StartSessionResponse, SubmitScoreResponse } from "../../types";
 
-export default function Test() {
+export default function TestScore() {
   const [playerName, setPlayerName] = useState("test-player");
   const [difficulty, setDifficulty] = useState(1);
   const [stakeAmount, setStakeAmount] = useState(10);
@@ -57,7 +57,8 @@ export default function Test() {
 
   return (
     <div style={{ padding: 24, maxWidth: 520 }}>
-      <h1>Test game-session flow</h1>
+      <h1>TestScore</h1>
+      <h2>Test game-session flow</h2>
       <section style={{ marginBottom: 24 }}>
         <h2>1. Start session</h2>
 
