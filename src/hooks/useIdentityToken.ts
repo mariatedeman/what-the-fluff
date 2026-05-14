@@ -2,25 +2,23 @@ import { useState, useEffect } from "react";
 import type { IdentityToken } from "../types/tivoli";
 
 
-// REACT-HOOK THAT READS identity_token FROM THE URL QUERY STRING
+// CAPTURED ONCE AT MODULE LOAD - STABLE ACROSS StrictMode's DEV DOUBLE-MOUNT
+// (LAZY useState INIT WOULD RE-RUN AND READ null FROM THE ALREADY-STRIPPED URL)
+const initialToken: IdentityToken | null = (() => {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("identity_token");
+})();
+
+
+// READ identity_token FROM URL, THEN STRIP IT FROM URL
 export function useIdentityToken(): IdentityToken | null {
+  const [token] = useState<IdentityToken | null>(initialToken);
 
-  // LAZY INITIAL STATE - RUNS ONCE ON FIRST RENDER, BEFORE useEffect FIRES
-  const [token] = useState<IdentityToken | null>(() => {
-    const params = new URLSearchParams(window.location.search);
-    return params.get("identity_token");
-  });
-
-
-  // RETURN NULL OR TOKEN
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-
-    // RETURNS NULL IF NO identity_token FOUND
     if (!params.has("identity_token")) return;
 
-    // STRIP identity_token FROM THE URL AFTER MOUNT
-    // KEEPS ANY OTHER QUERY-PARAMS AND THE hash INTACT
+    // KEEP OTHER QUERY-PARAMS AND HASH INTACT
     params.delete("identity_token");
     const newSearch = params.toString();
     const newUrl =
@@ -28,10 +26,9 @@ export function useIdentityToken(): IdentityToken | null {
       (newSearch ? `?${newSearch}` : "") +
       window.location.hash;
 
-    // history.replaceState UPDATES THE URL IN-PLACE WITHOUT NAVIGATING / RELOADING
-    window.history.replaceState({}, "", newUrl);
+    // PRESERVE history.state SO React Router NAV STATE IS NOT LOST
+    window.history.replaceState(window.history.state, "", newUrl);
   }, []);
-
 
   return token;
 }
