@@ -10,7 +10,8 @@ import type {
 
 
 // USE MOCK-DATA UNTIL TIVOLI-API AND EDGE-FUNCTIONS ARE DONE
-const USE_MOCK = true;
+// DEFAULTS TO true; SET VITE_TIVOLI_USE_MOCK=false IN .env.local OR HOSTING ENV TO HIT REAL API
+const USE_MOCK = import.meta.env.VITE_TIVOLI_USE_MOCK !== "false";
 
 // SMALL DELAY SO MOCKS BEHAVE LIKE REAL NETWORK CALLS - HELPS CATCH LOADING-STATE BUGS
 const MOCK_DELAY_MS = 300;
@@ -54,7 +55,9 @@ export async function getIdentity(
     };
   }
 
-  return invokeEdge<IdentityResponse>("tivoli-identity", { token });
+  return invokeEdge<IdentityResponse>("tivoli-identity", {
+    identity_token: token,
+  });
 }
 
 

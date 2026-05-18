@@ -1,9 +1,15 @@
-// SHARED API ERROR SHAPE - THROWN BY lib/edgeApi.ts AND HANDLED IN SERVICES/HOOKS
+// SHARED API ERROR — THROWN BY lib/edgeApi.ts, CAUGHT IN SERVICES/HOOKS
+// IS A REAL Error SUBCLASS SO IT HAS A STACK TRACE AND PASSES instanceof Error
 // status MIRRORS THE HTTP STATUS CODE WHEN AVAILABLE (E.G. 401 = EXPIRED TOKEN)
-export type ApiError = {
-  readonly message: string;
+export class ApiError extends Error {
   readonly status?: number;
-};
+
+  constructor(message: string, status?: number) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+  }
+}
 
 
 // RESPONSE FROM start-session EDGE FUNCTION
