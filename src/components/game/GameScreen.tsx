@@ -17,14 +17,27 @@ import { StackedItemsLayer } from "./StackedItemsLayer";
 import { Catcher } from "./Catcher";
 import { GameCanvas } from "./GameCanvas";
 
+// Data
+import { useLocation } from "react-router-dom";
+import { startSession, submitScore } from "../../services/gameService";
+import type { StartSessionResponse, SubmitScoreResponse } from "../../types/api";
 
 export default function GameScreen() {
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
-  
+  const location = useLocation();
+  const playerName = location.state?.playerName;
+
+  // API CONNECTION
+  const [sessionId, setSessionId] = useState<number | null>(null);
+  const [submitLoading, setSubmitLoading] = useState(false);
+  const [submitResult, setSubmitResult] = useState<SubmitScoreResponse | null>(null,);
+
   // ITEMS (COTTON CANDY)
   const [items, setItems] = useState<FallingItem[]>([]); // Currently falling items
   const [caughtItems, setCaughtItems] = useState<number>(0); // Caught items
   const [stackedItems, setStackedItems] = useState<FallingItem[]>([]); // Currently stacked items
+
+
 
   // CATCHER
   const [catcherX, setCatcherX] = useState(0); // HORIZONTAL POSITION, UPDATES ON MOUSE MOVEMENT
@@ -55,6 +68,48 @@ export default function GameScreen() {
     return () => observer.disconnect();
   }, []);
 
+
+
+  // SAVE SCORE TO DATABASE
+  // Start session
+  useEffect(() => {
+    if (sessionStartedRef.current) return;
+    sessionStartedRef.current = true;
+
+    const startGameSession = async () => {
+      const res = await startSession({
+      player_name: playerName,
+      difficulty: 1,
+      stake_amount: 10,
+    });
+
+    if (res.success && res.data) {
+      setSessionId(res.data.id);
+    }
+    };
+
+    startGameSession();
+  }, [playerName]);
+
+  // Submit score at Game Over
+  const handleGameOver = async () => {
+    if (sessionId === null) return;
+    setSubmitLoading(true);
+
+    const res = await submitScore(sessionId, caughtItems);
+    setSubmitResult(res);
+    setSubmitLoading(false);
+
+    console.log(`Result: ${res}`)
+  }
+
+  useEffect(() => {
+    if (isGameOver && !submitAttemptedRef.current) {
+      submitAttemptedRef.current = true;
+      handleGameOver()
+    }
+  }, [isGameOver]);
+
   // REFS
   const catcherXRef = useRef(0); // CATCHER X, USED INSIDE ANIMATION LOOP TO ALWAYS HAS THE LATEST VALUE
   const canvasRef = useRef<HTMLElement>(null); // CANVAS-DIV, USED TO READ ITS SIZE AND POSITION
@@ -62,6 +117,8 @@ export default function GameScreen() {
   const canvasWidthRef = useRef(0); // CANVAS WIDTH SO THE RAF LOOP DOES NOT HAVE TO MEASURE IT EVERY FRAME
   const keysPressed = useRef({ left: false, right: false}); // REF THAT STORES LATEST KEY PRESS AND INPUT METHOD
   const isCanvasReadyRef = useRef(false); // TRACKS IF CANVAS IS INITIALIZED (prevents spawn interval from starting too early)
+  const sessionStartedRef = useRef(false); // TRACK SESSION START
+  const submitAttemptedRef = useRef(false); // PREVENT DOUBLE SUBMISSION
 
   // KEEP THE REF IN SYNC WITH THE LATEST CATCHER POSITION STATE
   useEffect(() => {
@@ -110,7 +167,7 @@ export default function GameScreen() {
       </GameCanvas>
 
       <InfoPlate direction="row" height={22}>
-        <GameStats stat={"10"} size={2} font={"body"} color="white"></GameStats>
+        <GameStats stat={playerName} size={2} font={"body"} color="white"></GameStats>
         <GameStats stat={caughtItems} size={6} font={"main"} color="green"></GameStats>
         <GameStats stat={"HS"} size={2} font={"body"} color="white"></GameStats>
       </InfoPlate>

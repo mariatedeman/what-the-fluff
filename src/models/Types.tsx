@@ -9,8 +9,11 @@ export interface ModalProps {
 }
 
 export interface TextInputProps {
+    id: string,
     children?: ReactNode,
     placeholder?: string,
+    value: string,
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 // SCORES
