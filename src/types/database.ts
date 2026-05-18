@@ -19,6 +19,7 @@ export type Database = {
           created_at: string
           difficulty: number
           id: number
+          is_student: boolean
           player_name: string
           score: number | null
           stake_amount: number
@@ -27,6 +28,7 @@ export type Database = {
           created_at?: string
           difficulty: number
           id?: number
+          is_student?: boolean
           player_name: string
           score?: number | null
           stake_amount: number
@@ -35,59 +37,10 @@ export type Database = {
           created_at?: string
           difficulty?: number
           id?: number
+          is_student?: boolean
           player_name?: string
           score?: number | null
           stake_amount?: number
-        }
-        Relationships: []
-      }
-      scores: {
-        Row: {
-          created_at: string
-          id: number
-          score: number
-          user_id: number
-        }
-        Insert: {
-          created_at?: string
-          id?: number
-          score: number
-          user_id: number
-        }
-        Update: {
-          created_at?: string
-          id?: number
-          score?: number
-          user_id?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "scores_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      users: {
-        Row: {
-          created_at: string
-          from_api: boolean
-          id: number
-          name: string
-        }
-        Insert: {
-          created_at?: string
-          from_api: boolean
-          id?: number
-          name: string
-        }
-        Update: {
-          created_at?: string
-          from_api?: boolean
-          id?: number
-          name?: string
         }
         Relationships: []
       }

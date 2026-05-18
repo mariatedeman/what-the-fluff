@@ -50,9 +50,9 @@ Deno.serve(async (req) => {
     // BE INSERTED BEFORE GAME_SESSION START
     // PARSE JSON BODY. IF NOT VALID JASON req.json() THROWS AND
     // CATCH HANDLES IT
-    const { player_name, difficulty, stake_amount } = await req.json();
+    const { player_name, difficulty, stake_amount, is_student } = await req.json();
 
- 
+
     // VALIDATE INPUT TYPES BEFORE SENDING TO DB
     // IF NOT VALID RETURN 400 ERROR
     // INSTEAD OF LETTING POSTGRES REJECT WITH AN OPAQUE MESSAGE
@@ -61,7 +61,8 @@ Deno.serve(async (req) => {
       typeof player_name !== "string" ||
       player_name.trim().length === 0 ||
       !Number.isFinite(difficulty) || difficulty <= 0 ||
-      !Number.isFinite(stake_amount) || stake_amount < 0
+      !Number.isFinite(stake_amount) || stake_amount < 0 ||
+      (is_student !== undefined && typeof is_student !== "boolean")
     ) {
       return new Response(
         JSON.stringify({ success: false, error: "Invalid input" }),
@@ -88,7 +89,7 @@ Deno.serve(async (req) => {
     // .single() TO GET AN OBJECT INSTED OF AN ARRAY
     const { data, error } = await supabase
       .from("game_sessions")
-      .insert({ player_name, difficulty, stake_amount })
+      .insert({ player_name, difficulty, stake_amount, is_student })
       .select("id")
       .single();
 
