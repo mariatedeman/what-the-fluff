@@ -1,6 +1,6 @@
 interface GameCanvasProps {
   children: React.ReactNode,
-  ref?: React.RefObject<HTMLDivElement | HTMLElement | null>
+  ref?: React.Ref<HTMLElement>
 }
 
 export function GameCanvas({ 

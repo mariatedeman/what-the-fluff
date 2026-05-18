@@ -12,8 +12,8 @@ import { Layout } from "../layout/Layout";
 import { Modal } from "../Modal";
 import { GameStats } from "../GameStats";
 import { InfoPlate } from "../InfoPlate";
-import { FallingItemsLayer } from "./FallingItemsDisplay";
-import { StackedItemsLayer } from "./StackedItemsDisplay";
+import { FallingItemsLayer } from "./FallingItemsLayer";
+import { StackedItemsLayer } from "./StackedItemsLayer";
 import { Catcher } from "./Catcher";
 import { GameCanvas } from "./GameCanvas";
 

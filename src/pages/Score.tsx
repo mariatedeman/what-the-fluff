@@ -59,14 +59,6 @@ export default function Score() {
       {error && <p>{error}</p>}
       {!loading && !error && scores.length === 0 && <p>No scores yet.</p>}
 
-      {/* DISPLAY SCORE-LIST */}
-      {/* <ol>
-        {scores.map((s) => (
-          <li key={s.id}>
-            <strong>{s.player_name}</strong> — {s.score} (lvl {s.difficulty})
-          </li>
-        ))}
-      </ol> */}
     </div>
 
     {/* DISPLAY STYLED SCORE-LIST */}
