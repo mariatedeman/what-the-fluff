@@ -6,13 +6,8 @@ const variants: Record<Variant, string> = {
     secondary: "bg-button-secondary",
 }
 
-export function Button({ 
-    children,
-    variant,
-    type,
-    href,
-    onClick,
-    } : ButtonProps ) {
+export function Button(props : ButtonProps ) {
+        const { children, variant, type, href, onClick } = props;
 
         const buttonStyles: string = `
             flex items-center justify-center self-center
