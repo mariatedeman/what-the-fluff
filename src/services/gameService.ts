@@ -3,9 +3,11 @@ import type {
   GameSession,
   GetScoresParams,
   PlayerOptions,
+} from "../types/gameSession";
+import type {
   StartSessionResponse,
   SubmitScoreResponse,
-} from "../types";
+} from "../types/api";
 
 
 // FETCH THE HIGHEST SCORE FROM DB

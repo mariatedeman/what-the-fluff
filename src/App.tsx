@@ -5,7 +5,7 @@ import Score from "./pages/Score";
 import Nav from "./components/Nav";
 
 //IMPORTS FOR TEST PAGES
-import TestIndex from "./pages/test";
+import TestIndex from "./pages/test/index";
 import TestScore from "./pages/test/Score";
 import TestTivoli from "./pages/test/Tivoli";
 

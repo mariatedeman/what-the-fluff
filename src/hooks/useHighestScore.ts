@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { getHighestScore } from "../services/gameService";
-import type { GameSession } from "../types";
+import type { GameSession } from "../types/gameSession";
 
 
 // REACT-HOOK THAT FETCHES THE SINGLE HIGHEST SCORE FROM game_sessions
