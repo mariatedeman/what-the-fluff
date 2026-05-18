@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { getScores } from "../services/gameService";
-import type { GameSession, GetScoresParams } from "../types";
+import type { GameSession, GetScoresParams } from "../types/gameSession";
 
 
 // REACT-HOOK THAT FETCHES SCORES FROM game_sessions

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { startSession, submitScore } from "../../services/gameService";
-import type { StartSessionResponse, SubmitScoreResponse } from "../../types";
+import type { StartSessionResponse, SubmitScoreResponse } from "../../types/api";
 
 export default function TestScore() {
   const [playerName, setPlayerName] = useState("test-player");
@@ -94,6 +94,7 @@ export default function TestScore() {
         <button
           onClick={handleStart}
           disabled={startLoading || sessionId !== null}
+          className="bg-white rounded-xl p-2 cursor-pointer"
         >
           {startLoading ? "Starting..." : "Start session"}
         </button>
@@ -124,6 +125,7 @@ export default function TestScore() {
         <button
           onClick={handleSubmit}
           disabled={submitLoading || sessionId === null}
+          className="bg-white rounded-xl p-2 cursor-pointer"
         >
           {submitLoading ? "Submitting..." : "Submit score"}
         </button>
@@ -135,7 +137,12 @@ export default function TestScore() {
         )}
       </section>
 
-      <button onClick={handleReset}>Reset</button>
+      <button 
+        onClick={handleReset}
+        className="bg-red-600/70 rounded-xl p-2 cursor-pointer"
+      >
+        Reset
+      </button>
     </div>
   );
 }
