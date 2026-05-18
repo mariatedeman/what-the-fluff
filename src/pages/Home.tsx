@@ -1,5 +1,5 @@
 import { Button } from "../components/Buttons";
-import { useHighestScore } from "../hooks/useHighestScore";
+import { useHighestScore } from "../hooks/useHighestScore"; 
 
 import TextInput from "../components/TextInput";
 import { Layout } from "../components/layout/Layout";

@@ -1,9 +1,9 @@
-import GameCanvas from "../components/GameCanvas";
+import GameScreen from "../components/game/GameScreen"
 
 export default function Game() {
     return (
         <div>
-            <GameCanvas/>
+            <GameScreen/>
         </div>
     )
 }

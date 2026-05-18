@@ -1,9 +1,13 @@
 // Returns correct svg for cotton candy or raindrop
 
-export function FallingItems({ 
-    type, color, size
+export function FallingItemsSVG({ 
+    type, 
+    color, 
+    size
 }:  {
-    type: "item" | "raindrop"; color?: string; size: number;
+    type: "item" | "raindrop"; 
+    color?: string; 
+    size: number;
 }) {
     // Raindrops
     if (type === "raindrop") {

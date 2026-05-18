@@ -13,10 +13,9 @@ export default function Score() {
 
   return (
     <Layout>
+
     <div>
       <h1>Score</h1>
-
-
       {/* BUTTONS TO SHOW TOP 10 BEST OR WORST */}
       <div className="flex justify-center gap-8 p-6">
         <button
@@ -60,26 +59,17 @@ export default function Score() {
       {error && <p>{error}</p>}
       {!loading && !error && scores.length === 0 && <p>No scores yet.</p>}
 
-      {/* DISPLAY SCORE-LIST */}
-      <ol>
-        {scores.map((s) => (
-          <li key={s.id}>
-            <strong>{s.player_name}</strong> — {s.score} (lvl {s.difficulty})
-          </li>
-        ))}
-      </ol>
     </div>
 
-            <ScoreBoardRow placement={1} name="Maria" score={22}>
-            </ScoreBoardRow>
-            <ScoreBoardRow placement={2} name="Maria" score={20}>
-            </ScoreBoardRow>
-            <ScoreBoardRow placement={3} name="Maria" score={19}>
-            </ScoreBoardRow>
-            <ScoreBoardRow placement={4} name="Maria" score={15}>
-            </ScoreBoardRow>
-            <ScoreBoardRow placement={5} name="Maria" score={12}>
-            </ScoreBoardRow>
-        </Layout>
+    {/* DISPLAY STYLED SCORE-LIST */}
+    {scores.map((s, index) => {
+        const placement = index + 1;
+
+        return (
+            <ScoreBoardRow key={s.id} placement={placement} name={s.player_name} score={s.score} />
+        )
+    })};
+    
+    </Layout>
     )
 }
