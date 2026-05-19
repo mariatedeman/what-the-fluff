@@ -24,6 +24,7 @@ export function useGameSession(isGameOver: boolean, caughtItems: number) {
     // SAVE SCORE TO DATABASE
       // Start session
       useEffect(() => {
+        if (!playerName) return;
         if (sessionStartedRef.current) return;
         sessionStartedRef.current = true;
     

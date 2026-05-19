@@ -113,13 +113,14 @@ return (
           <Button 
             type="submit" 
             variant="primary" 
+            disabled={name.trim() === ""}
           >
             Enter game
           </Button>
         </form>}
         <Button 
           variant="secondary" 
-          type="submit" 
+          type="submit"
           onClick={() => setModalIsOpen(true)}
         >
           Instructions

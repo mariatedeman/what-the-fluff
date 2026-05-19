@@ -22,7 +22,7 @@ const fontMap = {
 
 export function Typography({
     type = "p",
-    text, 
+    text ="", 
     color = "default", 
     size,
     font = "body",

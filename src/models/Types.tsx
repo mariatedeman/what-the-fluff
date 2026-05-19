@@ -32,6 +32,7 @@ export type Variant = "primary" | "secondary";
 interface BaseButtonProps {
     children: string;
     variant: Variant;
+    disabled?: boolean;
 }
 
 interface ButtonElementProps extends BaseButtonProps {

@@ -7,7 +7,7 @@ const variants: Record<Variant, string> = {
 }
 
 export function Button(props : ButtonProps ) {
-        const { children, variant, type, href, onClick } = props;
+        const { children, variant, type, href, onClick, disabled } = props;
 
         const buttonStyles: string = `
             flex items-center justify-center self-center
@@ -21,7 +21,8 @@ export function Button(props : ButtonProps ) {
             return (
                 <Link
                     to={href} 
-                    className={buttonStyles}>
+                    className={buttonStyles}
+                    >
                     { children }
                 </Link>
             )
@@ -29,9 +30,10 @@ export function Button(props : ButtonProps ) {
 
         return (
             <button 
-                className={buttonStyles} 
+                className={`${buttonStyles} ${disabled ? "text-white/50 cursor-not-allowed" : ""}`} 
                 type={type} 
                 onClick={onClick}
+                disabled={disabled}
             >
                 { children }
             </button>

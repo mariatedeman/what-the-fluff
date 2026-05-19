@@ -77,27 +77,6 @@ export default function GameScreen() {
   if (!storedName) {
     return <Navigate to="/" replace />
   }
-  
-  // DISPLAY MODAL IF ALREADY PLAYED
-  if (storedHasPlayed === "true" && !isGameOver) {
-    return (
-      <Modal 
-        inset={"4"}
-        justify="evenly">
-        <Typography 
-          text={"You have already played"}
-          color="pink"
-          size={4}
-          font="main"
-          />
-          
-        <div className="w-full">
-          <Button variant="primary" href="/"  children="Back to home"/>
-          <Button variant="secondary" href="https://frontend-main-1ac7.up.railway.app/" children="Back to tivoli" />
-        </div>
-      </Modal>
-    )
-  }
 
   return (
     <Layout>
@@ -105,16 +84,18 @@ export default function GameScreen() {
       {/* position: relative SO THE CATCHER CAN USE position: absolute INSIDE IT */}
       <GameCanvas ref={canvasRef}>
           
-        {isGameOver && 
+        {(isGameOver || storedHasPlayed === "true") && 
           <Modal 
             inset={"0"} 
             height="full"
             justify="center">
             <Typography
+              type="span"
               font="main"
-              size={3}
+              size={5}
               color="pink"
-              text={"Game Over"}  
+              text={"Game Over"}
+              extraStyles="pb-8"
             />
             <Button 
               variant="secondary"

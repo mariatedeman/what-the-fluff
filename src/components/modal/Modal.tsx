@@ -8,7 +8,7 @@ export function Modal({ children, inset = "0", height = "1/2", justify = "center
                 className={`
                     absolute inset-${inset} p-8 z-50
                     flex flex-col items-center justify-${justify} self-center
-                    rounded-3xl h-${height}
+                    rounded-2xl h-${height}
                 `}>
                     {children}
             </div>
