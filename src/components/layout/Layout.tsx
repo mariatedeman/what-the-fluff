@@ -5,7 +5,7 @@ export function Layout({ children }: LayoutProps) {
        <main className="
             flex flex-col justify-center
             mx-auto my-8
-            min-h-[70vh]
+            min-h-[80vh]
             max-w-[90vw] sm:max-w-screen-sm
         ">
             { children }

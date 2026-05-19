@@ -23,7 +23,7 @@ export interface TextInputProps {
 export type ScoreBoardRow = {
     placement: number,
     name: string | undefined,
-    score: number | null,
+    score: number | null | undefined,
 }
 
 // BUTTONS

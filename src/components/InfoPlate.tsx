@@ -14,12 +14,13 @@ export function InfoPlate({
     children, 
     direction, 
     height,
-    className,
+    extraStyles,
 }: { 
     children: React.ReactNode, 
     direction: keyof typeof directionMap, 
     height: keyof typeof heightMap,
-    className?: string
+    // className?: string,
+    extraStyles?: string,
 }) {
 
     return (
@@ -27,7 +28,7 @@ export function InfoPlate({
             <div className={`relative w-full ${heightMap[height]}
                 flex ${directionMap[direction]} justify-center self-center
                 border-2 border-border border-dashed rounded-2xl
-                ${className || ""}`}>
+                ${extraStyles}`}>
                 
                 {/* Background with blend mode */}
                 <div className="

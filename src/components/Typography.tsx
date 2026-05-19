@@ -1,7 +1,8 @@
 const colorMap = {
     pink: "text-pink-dark",
     green: "text-green-dark",
-    white: "text-white"
+    white: "text-white",
+    default: "text-text",
 }
 
 const fontSizeMap = {
@@ -19,29 +20,33 @@ const fontMap = {
     body: "font-body"
 }
 
-
 export function Typography({
+    type = "p",
     text, 
-    color, 
+    color = "default", 
     size,
-    font
+    font = "body",
+    extraStyles,
 }: {
+    type?: "p" | "span" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6",
     text: string | number, 
-    color: keyof typeof colorMap, 
+    color?: keyof typeof colorMap, 
     size: keyof typeof fontSizeMap,
-    font: keyof typeof fontMap
+    font?: keyof typeof fontMap,
+    extraStyles?: string
 }) {
 
     const baseStyling = "flex self-center justify-center";
+    const Tag = type;
 
     return (
-        <span className={`
-            ${baseStyling} 
+        <Tag className={`
+            ${baseStyling} ${extraStyles}
             ${fontSizeMap[size]}
-            ${fontMap[font]}
+            ${["h1","h2","h3","h4","h5","h6"].includes(Tag) ? "font-h" : fontMap[font]}
             ${colorMap[color]}`}
         >
             {text}
-        </span>
+        </Tag>
     )
 }

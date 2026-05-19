@@ -17,6 +17,8 @@ import type { IdentityResponse } from "../types/tivoli";
 import { InfoPlate } from "../components/InfoPlate";
 import { Modal } from "../components/modal/Modal";
 import { useNavigate } from "react-router-dom";
+import { Typography } from "../components/Typography";
+import { ScoreBoardRow } from "../components/ScoreBoardRow";
 
 
 export default function Home() {  
@@ -70,11 +72,27 @@ return (
         <svg viewBox="0 0 160 70" className="mx-auto my- h-auto w-40">
           <use href={"/logo.svg"} />
         </svg>
-        <p className="italic pb-4">The interactive cotton candy stand</p>
+        <Typography 
+          font="body" 
+          text={"The interactive cotton candy stand"} 
+          size={1}
+          extraStyles="pt-4 pb-8 italic" />
 
         {identity ? (
           <>
-            <p className="py-4">{`Welcome, ${identity.user.name}`}</p>
+          <Typography
+            text={"Welcome"}
+            font="body"
+            size={0}
+            extraStyles="font-bold"
+          />
+
+          <Typography
+            text={identity.user.name}
+            font="body"
+            size={0}
+            extraStyles="font-bold pb-4"
+          />
             <div className="flex flex-col">
               <Button 
                 children="Play game for $2"
@@ -112,20 +130,22 @@ return (
     {modalIsOpen && 
       <Modal>Modal test</Modal>}
 
-    <div className="flex flex-col items-center gap-8 my-8">
-      <InfoPlate height={24} direction="column">
-            
-        <div className="p-4 w-fit">
-            
-          <h2>CURRENT HIGHSCORE</h2>
-          <p>
-            {loading && "Laddar..."}
-            {error && "Kunde inte hämta highscore."}
-            {highestScore &&
-              `${highestScore.score} poäng av ${highestScore.player_name}`}
-          </p>
-        </div>
-      </InfoPlate>
+    <div className="flex flex-col items-center my-10 w-2xs">
+
+    {highestScore &&
+    <>
+      <Typography
+        text={"CURRENT HIGHSCORE"}
+        type="h3"
+        size={2}
+        extraStyles="mb-0"
+        />
+      <ScoreBoardRow 
+        placement={1} 
+        name={highestScore?.player_name} 
+        score={highestScore?.score} />
+      </>
+    }
     </div>
   </Layout>
 )
