@@ -2,7 +2,7 @@ import type { TextInputProps } from "../models/Types";
 
 export default function TextInput({id, placeholder, value, onChange}: TextInputProps) {
     return (
-            <div className="relative h-13 w-3xs m-1 group justify-self-center">
+            <div className="relative h-15 w-3xs m-1 group justify-self-center">
                 {/* Transparent bg */}
                 <div className="
                     absolute inset-0 

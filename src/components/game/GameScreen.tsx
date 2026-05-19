@@ -79,9 +79,11 @@ export default function GameScreen() {
   }
   
   // DISPLAY MODAL IF ALREADY PLAYED
-  if (storedHasPlayed === "true") {
+  if (storedHasPlayed === "true" && !isGameOver) {
     return (
-      <Modal inset={"4"}>
+      <Modal 
+        inset={"4"}
+        justify="evenly">
         <Typography 
           text={"You have already played"}
           color="pink"
@@ -97,7 +99,6 @@ export default function GameScreen() {
     )
   }
 
-  
   return (
     <Layout>
       
@@ -105,7 +106,10 @@ export default function GameScreen() {
       <GameCanvas ref={canvasRef}>
           
         {isGameOver && 
-          <Modal inset={"0"} height="full">
+          <Modal 
+            inset={"0"} 
+            height="full"
+            justify="center">
             <Typography
               font="main"
               size={3}
