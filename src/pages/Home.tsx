@@ -37,6 +37,7 @@ const handleGreet = async () => {
   try {
     const res = await getIdentity(token);
     setIdentity(res);
+    sessionStorage.setItem("playerName", res.user.name);
   } catch (err) {
     setError((err as ApiError).message ?? "Greet failed");
   } finally {
