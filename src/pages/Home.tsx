@@ -14,7 +14,6 @@ import {
 
 import type { ApiError } from "./../types/api";
 import type { IdentityResponse } from "../types/tivoli";
-import { InfoPlate } from "../components/InfoPlate";
 import { Modal } from "../components/modal/Modal";
 import { useNavigate } from "react-router-dom";
 import { Typography } from "../components/Typography";
@@ -76,7 +75,7 @@ return (
           font="body" 
           text={"The interactive cotton candy stand"} 
           size={1}
-          extraStyles="pt-4 pb-8 italic" />
+          className="pt-4 pb-8 italic" />
 
         {identity ? (
           <>
@@ -84,14 +83,14 @@ return (
             text={"Welcome"}
             font="body"
             size={0}
-            extraStyles="font-bold"
+            className="font-bold"
           />
 
           <Typography
             text={identity.user.name}
             font="body"
             size={0}
-            extraStyles="font-bold pb-4"
+            className="font-bold pb-4"
           />
             <div className="flex flex-col">
               <Button 
@@ -129,12 +128,13 @@ return (
     </section>
 
     {modalIsOpen && 
-      <Modal inset="0" height="1/2" margin="4">
+      <Modal className="inset-0 h-1/2 m-4">
         <Typography 
           text={"Instructions"} 
           font="main" 
           size={3} 
-          color="green"/>
+          color="green"
+          className="mb-4"/>
         <Typography 
           text={"1. Collect cotton candy to gain points"}
           font="body"
@@ -153,7 +153,16 @@ return (
           size={0}
           color="white"
         />
-      </Modal>}
+
+        <Button 
+          variant="secondary"
+          onClick={() => setModalIsOpen(false)}
+          className="m-8"
+        >
+          Close
+        </Button>
+      </Modal>
+      }
 
     <div className="flex flex-col items-center my-10 w-2xs">
 
@@ -163,7 +172,7 @@ return (
           text={"CURRENT HIGHSCORE"}
           type="h3"
           size={2}
-          extraStyles="mb-0"
+          className="mb-0"
         />
         <ScoreBoardRow 
           placement={1} 

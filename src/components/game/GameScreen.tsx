@@ -85,12 +85,7 @@ export default function GameScreen() {
       <GameCanvas ref={canvasRef}>
           
         {(isGameOver || storedHasPlayed === "true") && 
-          <Modal 
-            inset={"0"} 
-            height="full"
-            justify="center"
-            
-          >
+          <Modal className="inset-0 h-full">
 
             <Typography
               type="span"
@@ -98,7 +93,7 @@ export default function GameScreen() {
               size={5}
               color="pink"
               text={"Game Over"}
-              extraStyles="pb-8"
+              className="pb-8"
             />
             <Button 
               variant="secondary"
@@ -118,7 +113,7 @@ export default function GameScreen() {
 
       </GameCanvas>
 
-      <InfoPlate direction="row" height={22}>
+      <InfoPlate className="flex-row h-22">
         <Typography text={playerName} size={2} font={"body"} color="white"></Typography>
         <Typography text={caughtItems} size={6} font={"main"} color="green"></Typography>
         <Typography text={"HS"} size={2} font={"body"} color="white"></Typography>

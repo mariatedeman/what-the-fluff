@@ -6,10 +6,8 @@ export interface LayoutProps {
 
 export interface ModalProps {
     children: ReactNode;
-    inset?: "0" | "4" | "6" | "8";
-    margin?: "0" | "4" | "6" | "8";
-    height: "full" | "1/2" | "1/4";
-    justify?: "center" | "evenly" | "between"
+    className?: string;
+    innerClassName?: string;
 }
 
 export interface TextInputProps {
@@ -34,6 +32,7 @@ interface BaseButtonProps {
     children: string;
     variant: Variant;
     disabled?: boolean;
+    className?: string;
 }
 
 interface ButtonElementProps extends BaseButtonProps {

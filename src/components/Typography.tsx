@@ -26,14 +26,14 @@ export function Typography({
     color = "default", 
     size,
     font = "body",
-    extraStyles,
+    className,
 }: {
     type?: "p" | "span" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6",
     text: string | number, 
     color?: keyof typeof colorMap, 
     size: keyof typeof fontSizeMap,
     font?: keyof typeof fontMap,
-    extraStyles?: string
+    className?: string
 }) {
 
     const Tag = type;
@@ -43,7 +43,7 @@ export function Typography({
     return (
         <Tag className={`
             ${baseStyling} 
-            ${extraStyles || ""}
+            ${className || ""}
             ${fontSizeMap[size]}
             ${isHeading || font === "main" ? "font-h" : "font-body"}
             ${colorMap[color]}
