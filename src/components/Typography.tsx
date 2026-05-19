@@ -20,13 +20,13 @@ const fontMap = {
 }
 
 
-export function GameStats({
-    stat, 
+export function Typography({
+    text, 
     color, 
     size,
     font
 }: {
-    stat: string | number, 
+    text: string | number, 
     color: keyof typeof colorMap, 
     size: keyof typeof fontSizeMap,
     font: keyof typeof fontMap
@@ -41,7 +41,7 @@ export function GameStats({
             ${fontMap[font]}
             ${colorMap[color]}`}
         >
-            {stat}
+            {text}
         </span>
     )
 }

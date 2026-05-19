@@ -11,7 +11,7 @@ export function Button(props : ButtonProps ) {
 
         const buttonStyles: string = `
             flex items-center justify-center self-center
-            m-1 px-4 h-12 w-full
+            mb-1 px-4 h-12 w-full
             text-white font-bold text-xl font-h
             rounded-xl cursor-pointer 
             ${variants[variant]}
@@ -20,7 +20,8 @@ export function Button(props : ButtonProps ) {
         if (href) {
             return (
                 <Link
-                    to={href} className={buttonStyles}>
+                    to={href} 
+                    className={buttonStyles}>
                     { children }
                 </Link>
             )

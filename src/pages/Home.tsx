@@ -15,13 +15,13 @@ import {
 import type { ApiError } from "./../types/api";
 import type { IdentityResponse } from "../types/tivoli";
 import { InfoPlate } from "../components/InfoPlate";
-import { Modal } from "../components/Modal";
+import { Modal } from "../components/modal/Modal";
 import { useNavigate } from "react-router-dom";
 
 
 export default function Home() {  
 const token = useIdentityToken();
-const { highestScore, loading: hsLoading, error: hsError } = useHighestScore();  
+const { highestScore, loading: hsLoading, error: hsError } = useHighestScore();
 const [loading, setLoading] = useState<"identity" | "tx" | "payout" | null>(null);
 const [identity, setIdentity] = useState<IdentityResponse | null>(null);
 const [error, setError] = useState<string | null>(null);
@@ -48,12 +48,11 @@ const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
   e.preventDefault();
   console.log("Namn sparat: ", name)
 
+  sessionStorage.setItem("playerName", name);
+
   // Redirect to game
   navigate("/game", {state: { playerName: name }})
 }
-
-console.log(`Token: ${token}`);
-console.log(`Identity: ${identity?.user.name}`);
 
 // CALL handleGreet WHEN token IS AVAILABLE
 useEffect(() => {
@@ -77,7 +76,7 @@ return (
             <p className="py-4">{`Welcome, ${identity.user.name}`}</p>
             <div className="flex flex-col">
               <Button 
-                children="Play game"
+                children="Play game for $2"
                 variant="primary" 
                 href="/game"
               />

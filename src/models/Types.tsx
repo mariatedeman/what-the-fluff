@@ -6,6 +6,8 @@ export interface LayoutProps {
 
 export interface ModalProps {
     children: ReactNode;
+    inset: "0" | "4" | "6" | "8";
+    height?: "full" | "h-1/2"
 }
 
 export interface TextInputProps {

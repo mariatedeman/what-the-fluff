@@ -1,22 +1,26 @@
+import { useEffect, useRef, useState } from "react";
+
 // Hooks
 import { useGameSession } from "../../hooks/useGameSession"
 import { useGameAnimation } from "../../hooks/useGameAnimation";
+import { useCanvasDimensions } from "../../hooks/useCanvasDimensions";
 import { useKeyboardInput } from "../../hooks/useKeyboardInput";
 import { useTouchInput } from "../../hooks/useTouchInput";
 import { useMouseInput } from "../../hooks/useMouseInput";
 
 // Components
 import { Layout } from "../layout/Layout";
-import { Modal } from "../Modal";
-import { GameStats } from "../GameStats";
+import { Modal } from "../modal/Modal";
+import { Typography } from "../Typography";
 import { InfoPlate } from "../InfoPlate";
 import { FallingItemsLayer } from "./FallingItemsLayer";
 import { StackedItemsLayer } from "./StackedItemsLayer";
 import { Catcher } from "./Catcher";
 import { GameCanvas } from "./GameCanvas";
-import { useEffect, useRef, useState } from "react";
 import type { FallingItem } from "../../models/GameTypes";
-import { useCanvasDimensions } from "../../hooks/useCanvasDimensions";
+import { Button } from "../Buttons";
+import { Navigate } from "react-router-dom";
+
 
 
 export default function GameScreen() {
@@ -28,7 +32,7 @@ export default function GameScreen() {
   const [stackedItems, setStackedItems] = useState<FallingItem[]>([]); // Currently stacked items
 
   // USE GAME SESSION
-  const { playerName } = useGameSession(isGameOver, caughtItems)
+  const { playerName, hasPlayed } = useGameSession(isGameOver, caughtItems)
 
   // CATCHER
   const [catcherX, setCatcherX] = useState(0); // HORIZONTAL POSITION, UPDATES ON MOUSE MOVEMENT
@@ -65,6 +69,34 @@ export default function GameScreen() {
     catcherXRef
   );
 
+  // CHECK FOR USER
+  const storedName = sessionStorage.getItem("playerName");
+  const storedHasPlayed = sessionStorage.getItem("hasPlayed");
+
+  // SEND BACK TO HOME IF NO USER IS FOUND
+  if (!storedName) {
+    return <Navigate to="/" replace />
+  }
+  
+  // DISPLAY MODAL IF ALREADY PLAYED
+  if (storedHasPlayed === "true") {
+    return (
+      <Modal inset={"4"}>
+        <Typography 
+          text={"You have already played"}
+          color="pink"
+          size={4}
+          font="main"
+          />
+          
+        <div className="w-full">
+          <Button variant="primary" href="/"  children="Back to home"/>
+          <Button variant="secondary" href="https://frontend-main-1ac7.up.railway.app/" children="Back to tivoli" />
+        </div>
+      </Modal>
+    )
+  }
+
   
   return (
     <Layout>
@@ -73,8 +105,18 @@ export default function GameScreen() {
       <GameCanvas ref={canvasRef}>
           
         {isGameOver && 
-          <Modal>
-            <h3 className="text-7xl">Game over</h3>
+          <Modal inset={"0"} height="full">
+            <Typography
+              font="main"
+              size={3}
+              color="pink"
+              text={"Game Over"}  
+            />
+            <Button 
+              variant="secondary"
+              href="/score">
+                To scoreboard
+            </Button>
           </Modal>}
 
         {/* FALLING ITEMS: THESE ARE STILL MOVING DOWNWARD */}
@@ -89,9 +131,9 @@ export default function GameScreen() {
       </GameCanvas>
 
       <InfoPlate direction="row" height={22}>
-        <GameStats stat={playerName} size={2} font={"body"} color="white"></GameStats>
-        <GameStats stat={caughtItems} size={6} font={"main"} color="green"></GameStats>
-        <GameStats stat={"HS"} size={2} font={"body"} color="white"></GameStats>
+        <Typography text={playerName} size={2} font={"body"} color="white"></Typography>
+        <Typography text={caughtItems} size={6} font={"main"} color="green"></Typography>
+        <Typography text={"HS"} size={2} font={"body"} color="white"></Typography>
       </InfoPlate>
 
     </Layout>

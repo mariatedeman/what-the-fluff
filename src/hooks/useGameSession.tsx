@@ -9,10 +9,11 @@ export function useGameSession(isGameOver: boolean, caughtItems: number) {
     // Fetch player info
     const location = useLocation();
     const playerName = location.state?.playerName;
+    const [hasPlayed, setHasPlayed] = useState<boolean>(false);
 
     // API States
     const [sessionId, setSessionId] = useState<number | null>(null);
-    const [submitLoading, setSubmitLoading] = useState(false);
+    const [submitLoading, setSubmitLoading] = useState<boolean>(false);
     const [submitResult, setSubmitResult] = useState<SubmitScoreResponse | null>(null,);
 
     // REFS
@@ -49,8 +50,9 @@ export function useGameSession(isGameOver: boolean, caughtItems: number) {
         const res = await submitScore(sessionId, caughtItems);
         setSubmitResult(res);
         setSubmitLoading(false);
-    
-        console.log(`Result: ${res}`)
+        setHasPlayed(true);
+
+        sessionStorage.setItem("hasPlayed", "true");
       }
     
       useEffect(() => {
@@ -64,7 +66,8 @@ export function useGameSession(isGameOver: boolean, caughtItems: number) {
       return {
         playerName,
         submitLoading,
-        submitResult
+        submitResult,
+        hasPlayed
       };
 
 }
