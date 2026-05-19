@@ -129,22 +129,47 @@ return (
     </section>
 
     {modalIsOpen && 
-      <Modal>Modal test</Modal>}
+      <Modal inset="0" height="1/2" margin="4">
+        <Typography 
+          text={"Instructions"} 
+          font="main" 
+          size={3} 
+          color="green"/>
+        <Typography 
+          text={"1. Collect cotton candy to gain points"}
+          font="body"
+          size={0}
+          color="white"
+        />
+        <Typography 
+          text={"2. Collect three in a row of the same color to make them disappear"}
+          font="body"
+          size={0}
+          color="white"
+        />
+        <Typography 
+          text={"3. Beware of the raindrops, no one likes rain on the tivoli!"}
+          font="body"
+          size={0}
+          color="white"
+        />
+      </Modal>}
 
     <div className="flex flex-col items-center my-10 w-2xs">
 
     {highestScore &&
-    <>
-      <Typography
-        text={"CURRENT HIGHSCORE"}
-        type="h3"
-        size={2}
-        extraStyles="mb-0"
+      <>
+        <Typography
+          text={"CURRENT HIGHSCORE"}
+          type="h3"
+          size={2}
+          extraStyles="mb-0"
         />
-      <ScoreBoardRow 
-        placement={1} 
-        name={highestScore?.player_name} 
-        score={highestScore?.score} />
+        <ScoreBoardRow 
+          placement={1} 
+          name={highestScore?.player_name} 
+          score={highestScore?.score} 
+        />
       </>
     }
     </div>

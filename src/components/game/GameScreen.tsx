@@ -88,7 +88,10 @@ export default function GameScreen() {
           <Modal 
             inset={"0"} 
             height="full"
-            justify="center">
+            justify="center"
+            
+          >
+
             <Typography
               type="span"
               font="main"

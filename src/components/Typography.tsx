@@ -22,7 +22,7 @@ const fontMap = {
 
 export function Typography({
     type = "p",
-    text ="", 
+    text = "", 
     color = "default", 
     size,
     font = "body",
@@ -36,15 +36,18 @@ export function Typography({
     extraStyles?: string
 }) {
 
-    const baseStyling = "flex self-center justify-center";
     const Tag = type;
+    const isHeading = ["h1","h2","h3","h4","h5","h6"].includes(Tag);
+    const baseStyling = "flex self-center justify-center";
 
     return (
         <Tag className={`
-            ${baseStyling} ${extraStyles}
+            ${baseStyling} 
+            ${extraStyles || ""}
             ${fontSizeMap[size]}
-            ${["h1","h2","h3","h4","h5","h6"].includes(Tag) ? "font-h" : fontMap[font]}
-            ${colorMap[color]}`}
+            ${isHeading || font === "main" ? "font-h" : "font-body"}
+            ${colorMap[color]}
+        `.trim().replace(/\s+/g, ' ')}
         >
             {text}
         </Tag>

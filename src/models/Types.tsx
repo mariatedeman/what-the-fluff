@@ -7,7 +7,8 @@ export interface LayoutProps {
 export interface ModalProps {
     children: ReactNode;
     inset?: "0" | "4" | "6" | "8";
-    height?: "full" | "1/2";
+    margin?: "0" | "4" | "6" | "8";
+    height: "full" | "1/2" | "1/4";
     justify?: "center" | "evenly" | "between"
 }
 
@@ -23,7 +24,7 @@ export interface TextInputProps {
 export type ScoreBoardRow = {
     placement: number,
     name: string | undefined,
-    score: number | null | undefined,
+    score: number | null | undefined,
 }
 
 // BUTTONS
