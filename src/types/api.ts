@@ -1,13 +1,13 @@
-// SHARED API ERROR — THROWN BY lib/edgeApi.ts, CAUGHT IN SERVICES/HOOKS
-// IS A REAL Error SUBCLASS SO IT HAS A STACK TRACE AND PASSES instanceof Error
-// status MIRRORS THE HTTP STATUS CODE WHEN AVAILABLE (E.G. 401 = EXPIRED TOKEN)
+// REAL ERROR SUBCLASS SO IT HAS A STACK TRACE AND WORKS WITH INSTANCEOF ERROR
 export class ApiError extends Error {
   readonly status?: number;
+  readonly body?: unknown;
 
-  constructor(message: string, status?: number) {
+  constructor(message: string, status?: number, body?: unknown) {
     super(message);
     this.name = "ApiError";
     this.status = status;
+    this.body = body;
   }
 }
 

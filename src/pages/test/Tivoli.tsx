@@ -17,8 +17,8 @@ import type { ApiError } from "../../types/api";
 export default function TestTivoli() {
   const token = useIdentityToken();
 
-  const [stake, setStake] = useState(10);
-  const [winAmount, setWinAmount] = useState(50);
+  const [stake, setStake] = useState(1);
+  const [winAmount, setWinAmount] = useState(5);
 
   const [identity, setIdentity] = useState<IdentityResponse | null>(null);
   const [transaction, setTransaction] = useState<TransactionResponse | null>(
