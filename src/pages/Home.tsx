@@ -22,7 +22,8 @@ import { ScoreBoardRow } from "../components/ScoreBoardRow";
 
 export default function Home() {  
 const token = useIdentityToken();
-const { highestScore, loading: hsLoading, error: hsError } = useHighestScore();
+// const { highestScore, loading: hsLoading, error: hsError } = useHighestScore();
+const { highestScore } = useHighestScore();
 const [loading, setLoading] = useState<"identity" | "tx" | "payout" | null>(null);
 const [identity, setIdentity] = useState<IdentityResponse | null>(null);
 const [error, setError] = useState<string | null>(null);
@@ -34,7 +35,9 @@ const navigate = useNavigate();
 const handleGreet = async () => {
   if (!token) return;
   setLoading("identity");
+  console.log(loading);
   setError(null);
+  console.log(error)
   try {
     const res = await getIdentity(token);
     setIdentity(res);

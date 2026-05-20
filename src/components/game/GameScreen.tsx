@@ -32,7 +32,8 @@ export default function GameScreen() {
   const [stackedItems, setStackedItems] = useState<FallingItem[]>([]); // Currently stacked items
 
   // USE GAME SESSION
-  const { playerName, hasPlayed } = useGameSession(isGameOver, caughtItems)
+  const { playerName, hasPlayed } = useGameSession(isGameOver, caughtItems);
+  console.log(hasPlayed);
 
   // CATCHER
   const [catcherX, setCatcherX] = useState(0); // HORIZONTAL POSITION, UPDATES ON MOUSE MOVEMENT

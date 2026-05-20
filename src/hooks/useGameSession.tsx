@@ -8,7 +8,7 @@ import { useLocation } from "react-router-dom";
 export function useGameSession(isGameOver: boolean, caughtItems: number) {
     // Fetch player info
     const location = useLocation();
-    const playerName = location.state?.playerName;
+    const playerName = location.state?.playerName ?? sessionStorage.getItem("playerName") ?? undefined;
     const [hasPlayed, setHasPlayed] = useState<boolean>(false);
 
     // API States

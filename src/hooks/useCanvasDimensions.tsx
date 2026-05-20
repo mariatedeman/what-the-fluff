@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from "react";
-import { CATCHER_WIDTH, type FallingItem } from "./../models/GameTypes";
+import { useEffect, useRef } from "react";
+import { CATCHER_WIDTH } from "./../models/GameTypes";
 
 export function useCanvasDimensions(
     setCatcherX: React.Dispatch<React.SetStateAction<number>>
