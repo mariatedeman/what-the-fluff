@@ -4,11 +4,10 @@ import type { GameSession, GetScoresParams } from "../types/gameSession";
 
 
 // REACT-HOOK THAT FETCHES SCORES FROM game_sessions
-// RE-FETCHES WHENEVER sort / difficulty CHANGES
-// DEFAULTS: sort="best" difficulty=undefined (NO FILTER)
+// RE-FETCHES WHENEVER sort CHANGES
+// DEFAULTS: sort="best"
 export function useScores({
   sort = "best",
-  difficulty,
 }: GetScoresParams = {}) {
 
   // STATE FOR THE LIST OF SCORES - EMPTY ARRAY UNTIL DATA HAS BEEN FETCHED
@@ -22,7 +21,7 @@ export function useScores({
 
 
   // useEffect RUNS AFTER MOUNT AND AFTER ANY OF THE DEPENDENCIES CHANGE
-  // DEPENDENCY ARRAY [sort, difficulty] = RE-RUNS WHEN ANY OF THESE CHANGE
+  // DEPENDENCY ARRAY [sort] = RE-RUNS WHEN sort CHANGES
   useEffect(() => {
 
     // FLAG TO TRACK IF COMPONENT IS STILL MOUNTED
@@ -41,7 +40,7 @@ export function useScores({
       try {
 
         // AWAIT THE SERVICE FUNCTION THAT TALKS TO SUPABASE
-        const data = await getScores({ sort, difficulty });
+        const data = await getScores({ sort });
 
         // ONLY UPDATE STATE IF COMPONENT IS STILL MOUNTED
         if (isMounted) {
@@ -72,7 +71,7 @@ export function useScores({
     return () => {
       isMounted = false;
     };
-  }, [sort, difficulty]);
+  }, [sort]);
 
 
   // RETURN STATE TO THE COMPONENT THAT USES THE HOOK

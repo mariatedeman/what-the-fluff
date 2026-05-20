@@ -1,10 +1,9 @@
 import { invokeEdge } from "../lib/edgeApi";
+import { throwApiErrorFromResponse } from "../lib/apiError";
 import type {
   IdentityResponse,
   IdentityToken,
-  Stamp,
-  StampAnimal,
-  StampMetal,
+  PayoutResponse,
   TransactionResponse,
 } from "../types/tivoli";
 
@@ -13,67 +12,49 @@ import type {
 // DEFAULTS TO true; SET VITE_TIVOLI_USE_MOCK=false IN .env.local OR HOSTING ENV TO HIT REAL API
 const USE_MOCK = import.meta.env.VITE_TIVOLI_USE_MOCK !== "false";
 
-// SMALL DELAY SO MOCKS BEHAVE LIKE REAL NETWORK CALLS - HELPS CATCH LOADING-STATE BUGS
-const MOCK_DELAY_MS = 300;
-const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+// TIVOLI API BASE URL - REQUIRED ONLY WHEN HITTING THE REAL API (USE_MOCK=false)
+const TIVOLI_API_BASE_URL = import.meta.env.VITE_TIVOLI_API_BASE_URL;
 
-
-// --- MOCK HELPERS ---------------------------------------------------------
-
-const ANIMALS: StampAnimal[] = [
-  "lion",
-  "dolphin",
-  "tucan",
-  "beetlebug",
-  "snake",
-];
-const METALS: StampMetal[] = ["silver", "gold", "platinum"];
-
-function randomStamp(): Stamp {
-  const animal = ANIMALS[Math.floor(Math.random() * ANIMALS.length)];
-  // 50% CHANCE OF A METAL PER SPEC
-  if (Math.random() < 0.5) {
-    const metal = METALS[Math.floor(Math.random() * METALS.length)];
-    return { animal, metal };
+function getTivoliApiBaseUrl(): string {
+  if (!TIVOLI_API_BASE_URL) {
+    throw new Error("Missing VITE_TIVOLI_API_BASE_URL in environment");
   }
-  return { animal };
+  return TIVOLI_API_BASE_URL;
 }
 
 
 // --- API FUNCTIONS --------------------------------------------------------
 
 // GET /identity-tokens/{token}
-// DOES NOT CONSUME THE TOKEN
 export async function getIdentity(
   token: IdentityToken
 ): Promise<IdentityResponse> {
   if (USE_MOCK) {
-    await sleep(MOCK_DELAY_MS);
-    return {
-      user: { id: "u-mock-1", name: "Test Spelare" },
-      expires_at: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
-    };
+    const { getIdentityMock } = await import("./tivoliService.mock");
+    return getIdentityMock(token);
   }
 
-  return invokeEdge<IdentityResponse>("tivoli-identity", {
-    identity_token: token,
-  });
+  const res = await fetch(
+    `${getTivoliApiBaseUrl()}/identity-tokens/${encodeURIComponent(token)}`,
+    { headers: { "Accept": "application/json" } }
+  );
+
+  if (!res.ok) {
+    await throwApiErrorFromResponse(res, "Identity lookup failed");
+  }
+
+  return (await res.json()) as IdentityResponse;
 }
 
 
 // POST /transactions
-// CONSUMES THE TOKEN - CAN ONLY BE CALLED ONCE PER TOKEN
-// THE EDGE FUNCTION INJECTS api_key BEFORE FORWARDING TO TIVOLI
 export async function createTransaction(
   token: IdentityToken,
   amount: number
 ): Promise<TransactionResponse> {
   if (USE_MOCK) {
-    await sleep(MOCK_DELAY_MS);
-    return {
-      id: "tx-mock-" + Math.random().toString(36).slice(2, 10),
-      stamp: randomStamp(),
-    };
+    const { createTransactionMock } = await import("./tivoliService.mock");
+    return createTransactionMock(token, amount);
   }
 
   return invokeEdge<TransactionResponse>("tivoli-transaction", {
@@ -84,18 +65,16 @@ export async function createTransaction(
 
 
 // POST /transactions/{id}/payout
-// SENT WHEN THE PLAYER WINS
-// THE EDGE FUNCTION INJECTS api_key BEFORE FORWARDING TO TIVOLI
 export async function payout(
-  transactionId: string,
+  transactionId: number,
   amount: number
-): Promise<void> {
+): Promise<PayoutResponse> {
   if (USE_MOCK) {
-    await sleep(MOCK_DELAY_MS);
-    return;
+    const { payoutMock } = await import("./tivoliService.mock");
+    return payoutMock(transactionId, amount);
   }
 
-  await invokeEdge<void>("tivoli-payout", {
+  return invokeEdge<PayoutResponse>("tivoli-payout", {
     transaction_id: transactionId,
     amount,
   });

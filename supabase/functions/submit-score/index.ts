@@ -1,45 +1,33 @@
 import "@supabase/functions-js/edge-runtime.d.ts";
-import { createClient } from "jsr:@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
+import { createClient } from "@supabase/supabase-js";
+import { json, preflight } from "../_shared/responses.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return preflight();
   }
 
   if (req.method !== "POST") {
-    return new Response(
-      JSON.stringify({ success: false, error: "Method not allowed" }),
-      {
-        status: 405,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
-    );
+    return json({ success: false, error: "Method not allowed" }, 405);
+  }
+
+  // PARSE BODY - MALFORMED JSON IS A CLIENT ERROR (400), NOT A SERVER ERROR
+  let body;
+  try {
+    body = await req.json();
+  } catch {
+    return json({ success: false, error: "Invalid JSON body" }, 400);
   }
 
   try {
-    const { session_id, score } = await req.json();
+    const { session_id, score } = body;
 
     // VALIDATE INPUT TYPES BEFORE SENDING TO DB
-    // Number.isInteger() ENSURES session_id IS A POSITIVE INTEGER (REJECTS NaN, Infinity, DECIMALS)
-    // Number.isFinite() ENSURES score IS A REAL NUMBER (REJECTS NaN, Infinity)
     if (
       !Number.isInteger(session_id) || session_id <= 0 ||
       !Number.isFinite(score) || score < 0
     ) {
-      return new Response(
-        JSON.stringify({ success: false, error: "Invalid input" }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return json({ success: false, error: "Invalid input" }, 400);
     }
 
     const supabase = createClient(
@@ -55,30 +43,15 @@ Deno.serve(async (req) => {
       .update({ score })
       .eq("id", session_id)
       .is("score", null)
-      .select("id, score, difficulty")
+      .select("id, score")
       .single();
 
     if (error) {
-      return new Response(
-        JSON.stringify({ success: false, error: error.message }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return json({ success: false, error: error.message }, 400);
     }
 
-    return new Response(JSON.stringify({ success: true, data }), {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return json({ success: true, data }, 200);
   } catch (err) {
-    return new Response(
-      JSON.stringify({ success: false, error: (err as Error).message }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
-    );
+    return json({ success: false, error: (err as Error).message }, 500);
   }
 });

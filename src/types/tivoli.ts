@@ -5,33 +5,49 @@ export type IdentityToken = string;
 
 // USER DATA RETURNED FROM GET /identity-tokens/{token}
 export type TivoliUser = {
-  readonly id: string;
+  readonly id: number;
   readonly name: string;
 };
 
 
 // RESPONSE FROM GET /identity-tokens/{token}
-// THIS ENDPOINT DOES *NOT* CONSUME THE TOKEN - SAFE TO CALL FOR GREETING
 export type IdentityResponse = {
   readonly user: TivoliUser;
   readonly expires_at: string;
 };
 
 
-// STAMPS: COLLECTIBLES THE USER GETS WHEN PLAYING AN AMUSEMENT
-// EACH STAMP IS ONE OF FIVE ANIMALS, WITH A 50% CHANCE OF BEING ON A METAL
+// STAMP - IN SUCCESS RESPONSE FROM POST /transactions
+//
 export type StampAnimal =
   | "lion"
   | "dolphin"
-  | "tucan"
+  | "toucan"
   | "beetlebug"
   | "snake";
 
 export type StampMetal = "silver" | "gold" | "platinum";
 
-export type Stamp = {
+
+// THE animal+metal PAIR - REUSABLE ACROSS STAMPS WITH SAME TYPE
+export type StampType = {
+  readonly id: number;
   readonly animal: StampAnimal;
-  readonly metal?: StampMetal;
+  readonly metal: StampMetal | null;
+  readonly image_url: string | null;
+};
+
+
+// FULL STAMP
+// CONTAINS TYPES: StampAnimal, StampMetal, StampType
+export type Stamp = {
+  readonly id: number;
+  readonly user_id: number;
+  readonly stamptype_id: number;
+  readonly stamptype: StampType;
+  readonly image_url: string;
+  readonly created_at: string;
+  readonly updated_at: string;
 };
 
 
@@ -43,9 +59,9 @@ export type TransactionRequest = {
 };
 
 
-// RESPONSE FROM POST /transactions
+// SUCCESS RESPONSE FROM POST /transactions
 export type TransactionResponse = {
-  readonly id: string;
+  readonly id: number;
   readonly stamp: Stamp;
 };
 
@@ -54,4 +70,11 @@ export type TransactionResponse = {
 export type PayoutRequest = {
   amount: number;
   api_key: string;
+};
+
+
+// RESPONSE FROM POST /transactions/{id}/payout
+export type PayoutResponse = {
+  readonly id: number;
+  readonly original_transaction_id: number;
 };

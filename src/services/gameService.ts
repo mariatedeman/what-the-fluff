@@ -35,20 +35,13 @@ export async function getHighestScore(): Promise<GameSession | null> {
 // WILL NOT GET SCORES IF COLUMN IS NULL
 export const getScores = async ({
   sort = "best",
-  difficulty,
 }: GetScoresParams = {}): Promise<GameSession[]> => {
-  let query = supabase
+  const { data, error } = await supabase
     .from("game_sessions")
     .select("*")
     .not("score", "is", null)
     .order("score", { ascending: sort === "worst" })
     .limit(10);
-
-  if (difficulty !== undefined) {
-    query = query.eq("difficulty", difficulty);
-  }
-
-  const { data, error } = await query;
 
   if (error) {
     console.error("getScores error:", error);

@@ -19,5 +19,4 @@ export type ScoresSort = "best" | "worst";
 // PARAMS FOR getScores / useScores
 export type GetScoresParams = {
   sort?: ScoresSort;
-  difficulty?: number;
 };

@@ -428,3 +428,25 @@ entrypoint = "./functions/start-session/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/start-session/*.html" ]
+
+[functions.tivoli-transaction]
+enabled = true
+verify_jwt = false
+import_map = "./functions/tivoli-transaction/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/tivoli-transaction/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/tivoli-transaction/*.html" ]
+
+[functions.tivoli-payout]
+enabled = true
+verify_jwt = false
+import_map = "./functions/tivoli-payout/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/tivoli-payout/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/tivoli-payout/*.html" ]
