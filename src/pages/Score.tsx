@@ -7,9 +7,8 @@ import type { ScoresSort } from "../types/gameSession";
 
 export default function Score() {
   const [sort, setSort] = useState<ScoresSort>("best");
-  const [difficulty, setDifficulty] = useState<number | undefined>(undefined);
 
-  const { scores, loading, error } = useScores({ sort, difficulty });
+  const { scores, loading, error } = useScores({ sort });
 
   return (
     <Layout>
@@ -32,26 +31,6 @@ export default function Score() {
         >
           Top 10 worst
         </button>
-      </div>
-
-      {/* SORT LIST BY LEVEL */}
-      <div className="mb-4">
-        <label className="p-2 rounded-md bg-white">
-          Difficulty:{" "}
-          <select
-            value={difficulty ?? ""}
-            onChange={(e) =>
-              setDifficulty(
-                e.target.value === "" ? undefined : Number(e.target.value)
-              )
-            }
-          >
-            <option value="">All</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-          </select>
-        </label>
       </div>
 
       {/* SHOW LOADING OR ERROR OR IF LIST IS EMPTY */}

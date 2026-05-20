@@ -35,7 +35,7 @@ Deno.serve(async (req) => {
       .update({ score })
       .eq("id", session_id)
       .is("score", null)
-      .select("id, score, difficulty")
+      .select("id, score")
       .single();
 
     if (error) {

@@ -26,7 +26,6 @@ export type SubmitScoreResponse = {
   data?: {
     id: number;
     score: number;
-    difficulty: number;
   };
   error?: string;
 };
