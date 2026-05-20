@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 // Hooks
 import { useGameSession } from "../../hooks/useGameSession"
@@ -20,11 +20,16 @@ import { GameCanvas } from "./GameCanvas";
 import type { FallingItem } from "../../models/GameTypes";
 import { Button } from "../Buttons";
 import { Navigate } from "react-router-dom";
-
+import { CountDown } from "../CountDown";
 
 
 export default function GameScreen() {
+  const [isCountingDown, setIsCountingDown] = useState<boolean>(true);
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
+
+  const handleCountDownDone = useCallback(() => {
+    setIsCountingDown(false);
+  }, []);
 
   // ITEMS (COTTON CANDY)
   const [items, setItems] = useState<FallingItem[]>([]); // Currently falling items
@@ -67,9 +72,10 @@ export default function GameScreen() {
     setCatcherX,
     setCaughtItems,
     isGameOver, setIsGameOver,
-    catcherXRef
+    catcherXRef,
+    isCountingDown
   );
-
+    
   // CHECK FOR USER
   const storedName = sessionStorage.getItem("playerName");
   const storedHasPlayed = sessionStorage.getItem("hasPlayed");
@@ -81,26 +87,34 @@ export default function GameScreen() {
 
   return (
     <Layout>
-      
+
       {/* position: relative SO THE CATCHER CAN USE position: absolute INSIDE IT */}
       <GameCanvas ref={canvasRef}>
-          
-        {(isGameOver || storedHasPlayed === "true") && 
-          <Modal className="inset-0 h-full">
 
-            <Typography
-              type="span"
-              font="main"
-              size={5}
-              color="pink"
-              text={"Game Over"}
-              className="pb-8"
-            />
-            <Button 
-              variant="secondary"
-              href="/score">
-                To scoreboard
-            </Button>
+      {isCountingDown && 
+        <CountDown 
+        initialTime={3} 
+        onComplete={handleCountDownDone}
+        />
+      }
+          
+      {!isCountingDown && 
+        (isGameOver || storedHasPlayed === "true") && 
+          <Modal className="inset-0 h-full">
+          
+          <Typography
+          type="span"
+          font="main"
+          size={5}
+          color="pink"
+          text={"Game Over"}
+          className="pb-8"
+          />
+          <Button 
+          variant="secondary"
+          href="/score">
+          To scoreboard
+          </Button>
           </Modal>}
 
         {/* FALLING ITEMS: THESE ARE STILL MOVING DOWNWARD */}

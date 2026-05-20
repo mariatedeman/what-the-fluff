@@ -27,179 +27,189 @@ export function useGameAnimation(
   setCaughtItems: React.Dispatch<React.SetStateAction<number>>,
   isGameOver: boolean,
   setIsGameOver: React.Dispatch<React.SetStateAction<boolean>>,
-  catcherXRef: { current: number }
+  catcherXRef: { current: number },
+  isCountingDown: boolean,
 ) {
  
   // REF COPY OF FALLING ITEMS, USED SO THE ANIMATION LOOP CAN READ THE LATEST ARRAY
   const itemsRef = useRef<FallingItem[]>([]);
   // REF COPY OF STACKED ITEMS, USED SO COLLISION TARGET HEIGHT STAYS UP TO DATE
   const stackedItemsRef = useRef<FallingItem[]>([]);
-  
+
   // REF GAME OVER
   const isGameOverRef = useRef(false);
+  const isCountingDownRef = useRef(isCountingDown);
+
+  useEffect(() => {
+    isCountingDownRef.current = isCountingDown;
+  }, [isCountingDown]);
 
   // KEEP THE ITEMS REF UPDATED WHEN THE STATE CHANGES
-  useEffect(() => {
-    itemsRef.current = items;
-  }, [items]);
+    useEffect(() => {
+      itemsRef.current = items;
+    }, [items]);
 
-  // KEEP THE STACK REF UPDATED WHEN THE STACK CHANGES
-  useEffect(() => {
-    stackedItemsRef.current = stackedItems;
-  }, [stackedItems]);
+    // KEEP THE STACK REF UPDATED WHEN THE STACK CHANGES
+    useEffect(() => {
+      stackedItemsRef.current = stackedItems;
+    }, [stackedItems]);
 
-  useEffect(() => {
-    isGameOverRef.current = isGameOver;
-  }, [isGameOver]);
+    useEffect(() => {
+      isGameOverRef.current = isGameOver;
+    }, [isGameOver]);
 
-  // EFFECT: Update falling items position every frame using delta time
-  useEffect(() => {
-    let frameId: number;
-    let lastTime: number = performance.now();
-    
-    // MOVE EVERY ITEM, CHECK CATCHER COLLISION, AND RETURN THE UPDATED LISTS
-    function moveAndCatchItems(
-      prevItems: FallingItem[],
-      delta: number,
-      canvasHeight: number,
-      catcherX: number,
-    ) {
-      const stillFalling: FallingItem[] = [];
-      const newlyCaught: FallingItem[] = [];
-
-      for (const item of prevItems) {
-        const moved = {
-          ...item,
-          y: item.y + item.speed * delta,
-        };
-
-        // X-AXIS OVERLAP BETWEEN THE ITEM AND THE CATCHER
-        const overlapsX =
-          moved.x < catcherX + CATCHER_WIDTH &&
-          moved.x + moved.size > catcherX;
-
-        const stackTopY: number =
-          CATCHER_Y - (moved.size -STACK_OVERLAP_PX) * stackedItemsRef.current.length;
-
-        // Y-AXIS OVERLAP BETWEEN THE ITEM AND THE CATCHER
-        const hitsStackY =
-          moved.y + moved.size >= stackTopY &&
-          moved.y <= stackTopY + moved.size;
-
-        const caught: boolean = overlapsX && hitsStackY;
-
-        // WHEN AN ITEM HITS THE CATCHER, MOVE IT TO THE CAUGHT LIST
-        if (caught) {
-          newlyCaught.push(moved);
-          continue;
-        }
-
-        // KEEP ITEMS THAT ARE STILL VISIBLE IN THE CANVAS
-        if (moved.y < canvasHeight + moved.size) {
-          stillFalling.push(moved);
-        }
-      }
-
-      return { stillFalling, newlyCaught };
-    }
-
-     // MAIN ANIMATION LOOP: UPDATE FALLING ITEMS EVERY FRAME
-    const tick = (time: number) => {
-      // STOP THE ANIMATION LOOP IF THE GAME IS OVER
-      if (isGameOverRef.current) return;
+    // EFFECT: Update falling items position every frame using delta time
+    useEffect(() => {
+      let frameId: number;
+      let lastTime: number = performance.now();
       
-      const delta = (time - lastTime) / 1000;
-      lastTime = time;
+      // MOVE EVERY ITEM, CHECK CATCHER COLLISION, AND RETURN THE UPDATED LISTS
+      function moveAndCatchItems(
+        prevItems: FallingItem[],
+        delta: number,
+        canvasHeight: number,
+        catcherX: number,
+      ) {
+        const stillFalling: FallingItem[] = [];
+        const newlyCaught: FallingItem[] = [];
 
-      // KEYBOARD CONTROL: UPDATE POSITION IF KEYS ARE PRESSED
-      // Only process keyboard input if arrow keys are being held down
-      if (keysPressed.current.left || keysPressed.current.right) {
-        // Speed in pixels per second - tuned for responsive gameplay
-        let newX = catcherXRef.current;
+        for (const item of prevItems) {
+          const moved = {
+            ...item,
+            y: item.y + item.speed * delta,
+          };
 
-        if (keysPressed.current.left) newX -= CATCHER_SPEED * delta;
-        if (keysPressed.current.right) newX += CATCHER_SPEED * delta;
+          // X-AXIS OVERLAP BETWEEN THE ITEM AND THE CATCHER
+          const overlapsX =
+            moved.x < catcherX + CATCHER_WIDTH &&
+            moved.x + moved.size > catcherX;
 
-        // Use cached width from ResizeObserver to avoid expensive layout recalculation every frame
-        const canvasWidth = canvasWidthRef.current;
-        newX = Math.max(0, Math.min(newX, canvasWidth - CATCHER_WIDTH));
+          const stackTopY: number =
+            CATCHER_Y - (moved.size -STACK_OVERLAP_PX) * stackedItemsRef.current.length;
 
-        catcherXRef.current = newX;
-        setCatcherX(newX);
+          // Y-AXIS OVERLAP BETWEEN THE ITEM AND THE CATCHER
+          const hitsStackY =
+            moved.y + moved.size >= stackTopY &&
+            moved.y <= stackTopY + moved.size;
+
+          const caught: boolean = overlapsX && hitsStackY;
+
+          // WHEN AN ITEM HITS THE CATCHER, MOVE IT TO THE CAUGHT LIST
+          if (caught) {
+            newlyCaught.push(moved);
+            continue;
+          }
+
+          // KEEP ITEMS THAT ARE STILL VISIBLE IN THE CANVAS
+          if (moved.y < canvasHeight + moved.size) {
+            stillFalling.push(moved);
+          }
+        }
+
+        return { stillFalling, newlyCaught };
       }
 
-      // READ THE CURRENT CANVAS HEIGHT ON EACH FRAME SO RESIZING STAYS CORRECT
-      const canvasHeight = canvasHeightRef.current;
-      const result = moveAndCatchItems(
-        itemsRef.current,
-        delta,
-        canvasHeight,
-        catcherXRef.current
-      );
+      // MAIN ANIMATION LOOP: UPDATE FALLING ITEMS EVERY FRAME
+      const tick = (time: number) => {
+        // STOP THE ANIMATION LOOP IF THE GAME IS OVER OR COUNTING DOWN
+        if (isGameOverRef.current || isCountingDownRef.current) {
+          lastTime = time; // Måste hålla tidsstämpeln fräsch annars beräknas delta knasigt efter nedräkning
+          frameId = requestAnimationFrame(tick);
+          return;
+        }
+        
+        const delta = (time - lastTime) / 1000;
+        lastTime = time;
 
-      // KEEP THE REF AND STATE IN SYNC AFTER MOVEMENT/COLLISION CALCULATION
-      itemsRef.current = result.stillFalling;
-      setItems(result.stillFalling);
+        // KEYBOARD CONTROL: UPDATE POSITION IF KEYS ARE PRESSED
+        // Only process keyboard input if arrow keys are being held down
+        if (keysPressed.current.left || keysPressed.current.right) {
+          // Speed in pixels per second - tuned for responsive gameplay
+          let newX = catcherXRef.current;
 
-      // ADD CAUGHT ITEMS TO THE STACK, THEN LET THE STACK LOGIC RESOLVE 3-IN-A-ROW
-      if (result.newlyCaught.length > 0) {
-        // COMPUTE THE NEXT STACK OUTSIDE THE UPDATER (no side effects in updater)
-        const nextStack = result.newlyCaught.reduce(
-          (stack, caughtItem) => removeThreeInRow(stack, caughtItem),
-          stackedItemsRef.current  // Use ref instead of prevStack for pure computation
+          if (keysPressed.current.left) newX -= CATCHER_SPEED * delta;
+          if (keysPressed.current.right) newX += CATCHER_SPEED * delta;
+
+          // Use cached width from ResizeObserver to avoid expensive layout recalculation every frame
+          const canvasWidth = canvasWidthRef.current;
+          newX = Math.max(0, Math.min(newX, canvasWidth - CATCHER_WIDTH));
+
+          catcherXRef.current = newX;
+          setCatcherX(newX);
+        }
+
+        // READ THE CURRENT CANVAS HEIGHT ON EACH FRAME SO RESIZING STAYS CORRECT
+        const canvasHeight = canvasHeightRef.current;
+        const result = moveAndCatchItems(
+          itemsRef.current,
+          delta,
+          canvasHeight,
+          catcherXRef.current
         );
 
-        // CHECK IF ANY CAUGHT ITEMS ARE RAINDROPS (GAME OVER CONDITION)
-        const caughtRaindrops = result.newlyCaught.filter(item => item.type === "raindrop").length;
-        if (caughtRaindrops > 0) {
-          setIsGameOver(true);
-          isGameOverRef.current = true;  // STOP IMMEDIATELY INSTEAD OF WAITING FOR STATE UPDATE
+        // KEEP THE REF AND STATE IN SYNC AFTER MOVEMENT/COLLISION CALCULATION
+        itemsRef.current = result.stillFalling;
+        setItems(result.stillFalling);
+
+        // ADD CAUGHT ITEMS TO THE STACK, THEN LET THE STACK LOGIC RESOLVE 3-IN-A-ROW
+        if (result.newlyCaught.length > 0) {
+          // COMPUTE THE NEXT STACK OUTSIDE THE UPDATER (no side effects in updater)
+          const nextStack = result.newlyCaught.reduce(
+            (stack, caughtItem) => removeThreeInRow(stack, caughtItem),
+            stackedItemsRef.current  // Use ref instead of prevStack for pure computation
+          );
+
+          // CHECK IF ANY CAUGHT ITEMS ARE RAINDROPS (GAME OVER CONDITION)
+          const caughtRaindrops = result.newlyCaught.filter(item => item.type === "raindrop").length;
+          if (caughtRaindrops > 0) {
+            setIsGameOver(true);
+            isGameOverRef.current = true;  // STOP IMMEDIATELY INSTEAD OF WAITING FOR STATE UPDATE
+          }
+
+          // CHECK IF STACK REACHES THE TOP OF THE CANVAS (GAME OVER CONDITION)
+          const stackTopY = CATCHER_Y - (ITEM_SIZE - STACK_OVERLAP_PX) * nextStack.length;
+          if (stackTopY <= 0) {
+            setIsGameOver(true);
+            isGameOverRef.current = true;  // STOP IMMEDIATELY INSTEAD OF WAITING FOR STATE UPDATE
+          }
+
+          // UPDATE STATE WITH PURE COMPUTED VALUE (no side effects in updater)
+          setStackedItems(nextStack);
+
+          // ONLY COUNT REGULAR ITEMS
+          const caughtRegularItems = result.newlyCaught.filter(item => item.type === "item").length;
+          if (caughtRegularItems > 0) {
+            setCaughtItems(prev => prev + caughtRegularItems)
+          }
         }
 
-        // CHECK IF STACK REACHES THE TOP OF THE CANVAS (GAME OVER CONDITION)
-        const stackTopY = CATCHER_Y - (ITEM_SIZE - STACK_OVERLAP_PX) * nextStack.length;
-        if (stackTopY <= 0) {
-          setIsGameOver(true);
-          isGameOverRef.current = true;  // STOP IMMEDIATELY INSTEAD OF WAITING FOR STATE UPDATE
-        }
-
-        // UPDATE STATE WITH PURE COMPUTED VALUE (no side effects in updater)
-        setStackedItems(nextStack);
-
-        // ONLY COUNT REGULAR ITEMS
-        const caughtRegularItems = result.newlyCaught.filter(item => item.type === "item").length;
-        if (caughtRegularItems > 0) {
-          setCaughtItems(prev => prev + caughtRegularItems)
-        }
-      }
+        frameId = requestAnimationFrame(tick);
+      };
 
       frameId = requestAnimationFrame(tick);
-    };
-
-    frameId = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frameId);
-  }, []);
+      return () => cancelAnimationFrame(frameId);
+    }, []);
 
 
-  // EFFECT: Spawn new falling items at regular intervals
-  useEffect(() => {
-    const spawnInterval = setInterval(() => {
-      // STOP SPAWNING NEW ITEMS IF THE GAME IS OVER
-      if (isGameOverRef.current) return;
-      
-      // USE CACHED CANVAS WIDTH FROM RESIZEOBSERVER TO AVOID LAYOUT RECALCULATION
-      const canvasWidth: number = canvasWidthRef.current;
-      if (!canvasWidth) return;
+    // EFFECT: Spawn new falling items at regular intervals
+    useEffect(() => {
+      const spawnInterval = setInterval(() => {
+        // STOP SPAWNING NEW ITEMS IF THE GAME IS OVER OR COUNTING DOWN
+        if (isGameOverRef.current || isCountingDownRef.current) return;
+        
+        // USE CACHED CANVAS WIDTH FROM RESIZEOBSERVER TO AVOID LAYOUT RECALCULATION
+        const canvasWidth: number = canvasWidthRef.current;
+        if (!canvasWidth) return;
 
-      const newItem = createNewItem(canvasWidth);
-      // Update state and keep itemsRef in sync immediately to avoid races
-      setItems((prev) => {
-        const next = [...prev, newItem];
-        itemsRef.current = next;
-        return next;
-      });
-    }, SPAWN_INTERVAL); // Spawn interval in milliseconds
+        const newItem = createNewItem(canvasWidth);
+        // Update state and keep itemsRef in sync immediately to avoid races
+        setItems((prev) => {
+          const next = [...prev, newItem];
+          itemsRef.current = next;
+          return next;
+        });
+      }, SPAWN_INTERVAL); // Spawn interval in milliseconds
 
-      return () => clearInterval(spawnInterval);
-  }, [])
+        return () => clearInterval(spawnInterval);
+      }, [])
 }
