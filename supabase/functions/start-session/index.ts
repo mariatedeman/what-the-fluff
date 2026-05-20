@@ -16,8 +16,16 @@ Deno.serve(async (req) => {
     return json({ success: false, error: "Method not allowed" }, 405);
   }
 
+  // PARSE BODY - MALFORMED JSON IS A CLIENT ERROR (400), NOT A SERVER ERROR
+  let body;
   try {
-    const { player_name, stake_amount, is_student } = await req.json();
+    body = await req.json();
+  } catch {
+    return json({ success: false, error: "Invalid JSON body" }, 400);
+  }
+
+  try {
+    const { player_name, stake_amount, is_student } = body;
 
     if (
       typeof player_name !== "string" || player_name.trim().length === 0 ||

@@ -11,8 +11,16 @@ Deno.serve(async (req) => {
     return json({ success: false, error: "Method not allowed" }, 405);
   }
 
+  // PARSE BODY - MALFORMED JSON IS A CLIENT ERROR (400), NOT A SERVER ERROR
+  let body;
   try {
-    const { session_id, score } = await req.json();
+    body = await req.json();
+  } catch {
+    return json({ success: false, error: "Invalid JSON body" }, 400);
+  }
+
+  try {
+    const { session_id, score } = body;
 
     // VALIDATE INPUT TYPES BEFORE SENDING TO DB
     if (

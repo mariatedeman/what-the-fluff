@@ -30,7 +30,7 @@ export type StampMetal = "silver" | "gold" | "platinum";
 
 
 // THE animal+metal PAIR - REUSABLE ACROSS STAMPS WITH SAME TYPE
-export type Stamptype = {
+export type StampType = {
   readonly id: number;
   readonly animal: StampAnimal;
   readonly metal: StampMetal | null;
@@ -39,12 +39,12 @@ export type Stamptype = {
 
 
 // FULL STAMP
-// CONTAINS TYPES: StampAnimal, StampMetal, Stamptype
+// CONTAINS TYPES: StampAnimal, StampMetal, StampType
 export type Stamp = {
   readonly id: number;
   readonly user_id: number;
   readonly stamptype_id: number;
-  readonly stamptype: Stamptype;
+  readonly stamptype: StampType;
   readonly image_url: string;
   readonly created_at: string;
   readonly updated_at: string;

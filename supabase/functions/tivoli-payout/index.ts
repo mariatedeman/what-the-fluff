@@ -14,9 +14,16 @@ Deno.serve(async (req) => {
     return json({ error: "Method not allowed" }, 405);
   }
 
+  // PARSE BODY - MALFORMED JSON IS A CLIENT ERROR (400), NOT A SERVER ERROR
+  let body;
   try {
-    // READ AND VALIDATE BODY FROM CLIENT
-    const { transaction_id, amount } = await req.json();
+    body = await req.json();
+  } catch {
+    return json({ error: "Invalid JSON body" }, 400);
+  }
+
+  try {
+    const { transaction_id, amount } = body;
 
     // VALIDATE INPUT TYPES BEFORE FORWARDING TO TIVOLI
     if (
@@ -63,7 +70,7 @@ Deno.serve(async (req) => {
     return json(data, 200);
 
   } catch (err) {
-    // INVALID JSON BODY OR NETWORK ERROR REACHING TIVOLI
+    // NETWORK ERROR REACHING TIVOLI OR UNEXPECTED RUNTIME FAILURE
     return json({ error: (err as Error).message }, 500);
   }
 });
