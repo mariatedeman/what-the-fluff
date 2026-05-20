@@ -8,12 +8,16 @@ export function Modal({
 ) {
     return (
         <div className={`
-            absolute z-50 flex flex-col items-center self-center
+            absolute z-50 sm:max-w-screen-sm
+            flex flex-col items-center self-center justify-center
             ${className}
         `}>
             
         {/* EXCLUSION BLEND BACKGROUND */}
-        <div className="absolute inset-0 bg-bg mix-blend-exclusion rounded-2xl pointer-events-none"></div>
+        <div className="
+            absolute inset-0 
+            bg-bg mix-blend-exclusion 
+            rounded-2xl pointer-events-none"></div>
 
         {/* ACTUAL CONTENT AND DARK OVERLAY */}
         <div 

@@ -92,42 +92,23 @@ export default function GameScreen() {
       <GameCanvas ref={canvasRef}>
 
       {isCountingDown && 
-        <CountDown 
-        initialTime={3} 
-        onComplete={handleCountDownDone}
-        />
+        <CountDown initialTime={3} onComplete={handleCountDownDone}/>
       }
           
       {!isCountingDown && 
         (isGameOver || storedHasPlayed === "true") && 
-          <Modal className="inset-0 h-full">
           
-          <Typography
-            text={"Game Over"}
-            type="span"
-            font="main"
-            size={5}
-            color="pink"
-          />
+          <Modal className="inset-0 h-full">
+            
+            <Typography text={"Game Over"} type="span" font="main" size={5} color="pink"/>
+            <Typography text={`Your winnings: `} type="span" font="body" size={0} color="white" className="pb-8 font-bold"/>
 
-          <Typography
-            text={`Your winnings: `}
-            type="span" 
-            font="body"
-            size={0}
-            color="white"
-            className="pb-8 font-bold"
-          />
+            <img src="/fluff-blue.svg" />
 
-          <img src="/fluff-blue.svg" />
+            <Button variant="secondary" href="/score"className="mt-8">
+            To scoreboard
+            </Button>
 
-          <Button 
-            variant="secondary"
-            href="/score"
-            className="mt-8"
-          >
-          To scoreboard
-          </Button>
           </Modal>}
 
         {/* FALLING ITEMS: THESE ARE STILL MOVING DOWNWARD */}

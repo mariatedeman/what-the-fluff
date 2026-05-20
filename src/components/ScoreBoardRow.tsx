@@ -1,11 +1,11 @@
 import type { ScoreBoardRow } from "../models/Types";
 
 
-export function ScoreBoardRow({placement, name, score}: ScoreBoardRow) {
+export function ScoreBoardRow({placement, name, score, className}: ScoreBoardRow) {
 
     return (
 
-            <div className="relative h-22 md:w-xl w-full m-1 group justify-self-center">
+            <div className={`relative h-22 w-full m-1 group justify-self-center ${className || ''}`}>
                 {/* Transparent bg */}
                 <div className="
                     absolute inset-0 
@@ -14,12 +14,12 @@ export function ScoreBoardRow({placement, name, score}: ScoreBoardRow) {
                     >
                 </div>
 
-                <div className="
+                <div className={`
                     relative z-10 w-full h-full p-4 
                     bg-transparent outline-none
                     text-center text-white 
                     rounded-2xl border-2 border-border border-dashed
-                    flex justify-between items-center"
+                    flex justify-between items-center`}
                 >
 
                 <div className="flex gap-6 items-center">
