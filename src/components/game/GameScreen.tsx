@@ -103,16 +103,29 @@ export default function GameScreen() {
           <Modal className="inset-0 h-full">
           
           <Typography
-          type="span"
-          font="main"
-          size={5}
-          color="pink"
-          text={"Game Over"}
-          className="pb-8"
+            text={"Game Over"}
+            type="span"
+            font="main"
+            size={5}
+            color="pink"
           />
+
+          <Typography
+            text={`Your winnings: `}
+            type="span" 
+            font="body"
+            size={0}
+            color="white"
+            className="pb-8 font-bold"
+          />
+
+          <img src="/fluff-blue.svg" />
+
           <Button 
-          variant="secondary"
-          href="/score">
+            variant="secondary"
+            href="/score"
+            className="mt-8"
+          >
           To scoreboard
           </Button>
           </Modal>}
@@ -129,9 +142,9 @@ export default function GameScreen() {
       </GameCanvas>
 
       <InfoPlate className="flex-row h-22">
-        <Typography text={playerName} size={2} font={"body"} color="white"></Typography>
-        <Typography text={caughtItems} size={6} font={"main"} color="green"></Typography>
-        <Typography text={"HS"} size={2} font={"body"} color="white"></Typography>
+        <Typography text={playerName} size={1} font={"body"} color="white"/>
+        <Typography text={caughtItems} size={6} font={"main"} color="green"/>
+        <Typography text={"HS"} size={1} font={"body"} color="white"/>
       </InfoPlate>
 
     </Layout>

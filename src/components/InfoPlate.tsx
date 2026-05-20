@@ -21,8 +21,8 @@ export function InfoPlate({
 
                 {/* Content */}
                 <div className="
-                    relative z-10 w-full h-full 
-                    flex items-center justify-center
+                    relative z-10 w-full h-full  p-4
+                    flex items-center justify-between
                     font-h text-white
                 ">
                     {children}
