@@ -6,18 +6,23 @@ export interface LayoutProps {
 
 export interface ModalProps {
     children: ReactNode;
+    className?: string;
+    innerClassName?: string;
 }
 
 export interface TextInputProps {
+    id: string,
     children?: ReactNode,
     placeholder?: string,
+    value: string,
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 // SCORES
 export type ScoreBoardRow = {
     placement: number,
     name: string | undefined,
-    score: number | null,
+    score: number | null | undefined,
 }
 
 // BUTTONS
@@ -26,6 +31,8 @@ export type Variant = "primary" | "secondary";
 interface BaseButtonProps {
     children: string;
     variant: Variant;
+    disabled?: boolean;
+    className?: string;
 }
 
 interface ButtonElementProps extends BaseButtonProps {

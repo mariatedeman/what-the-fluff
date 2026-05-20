@@ -19,8 +19,8 @@
   --color-blue-light: #C4F1FF;
   --color-yellow: #fcbd00;
 
-  --font-body: var(--font-body);
-  --font-h: var(--font-h);
+  --font-body: Poppins, system-ui, 'Segoe UI', Roboto, sans-serif;
+  --font-h: Modak, system-ui, 'Segoe UI', Roboto, sans-serif;
 }
 
 :root {
@@ -44,8 +44,8 @@
   --button-primary: var(--pink-dark);
   --button-secondary: var(--green-dark);
 
-  --font-body: Poppins, system-ui, 'Segoe UI', Roboto, sans-serif;
-  --font-h: Modak, system-ui, 'Segoe UI', Roboto, sans-serif;
+  --font-body-family: Poppins, system-ui, 'Segoe UI', Roboto, sans-serif;
+  --font-h-family: Modak, system-ui, 'Segoe UI', Roboto, sans-serif;
 
   font: 18px/145% var(--text);
   letter-spacing: 0.18px;
@@ -83,7 +83,7 @@ body {
 h1,
 h2, 
 h3 {
-  font-family: var(--font-h);
+  font-family: var(--font-h-family);
   font-weight: 500;
   color: var(--text-h);
 }
@@ -105,9 +105,4 @@ h2 {
   @media (max-width: 1024px) {
     font-size: 20px;
   }
-}
-p {
-  margin: 0;
-  font-family: var(--font-body);
-  color: var(--text);
 }

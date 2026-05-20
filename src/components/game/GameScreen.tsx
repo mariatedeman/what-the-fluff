@@ -1,68 +1,52 @@
-import { useState, useEffect, useRef } from "react";
-import { CATCHER_WIDTH, type FallingItem } from "../../models/GameTypes";
+import { useEffect, useRef, useState } from "react";
 
 // Hooks
+import { useGameSession } from "../../hooks/useGameSession"
 import { useGameAnimation } from "../../hooks/useGameAnimation";
+import { useCanvasDimensions } from "../../hooks/useCanvasDimensions";
 import { useKeyboardInput } from "../../hooks/useKeyboardInput";
 import { useTouchInput } from "../../hooks/useTouchInput";
 import { useMouseInput } from "../../hooks/useMouseInput";
 
 // Components
 import { Layout } from "../layout/Layout";
-import { Modal } from "../Modal";
-import { GameStats } from "../GameStats";
+import { Modal } from "../modal/Modal";
+import { Typography } from "../Typography";
 import { InfoPlate } from "../InfoPlate";
 import { FallingItemsLayer } from "./FallingItemsLayer";
 import { StackedItemsLayer } from "./StackedItemsLayer";
 import { Catcher } from "./Catcher";
 import { GameCanvas } from "./GameCanvas";
+import type { FallingItem } from "../../models/GameTypes";
+import { Button } from "../Buttons";
+import { Navigate } from "react-router-dom";
+
 
 
 export default function GameScreen() {
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
-  
+
   // ITEMS (COTTON CANDY)
   const [items, setItems] = useState<FallingItem[]>([]); // Currently falling items
   const [caughtItems, setCaughtItems] = useState<number>(0); // Caught items
   const [stackedItems, setStackedItems] = useState<FallingItem[]>([]); // Currently stacked items
 
+  // USE GAME SESSION
+  const { playerName, hasPlayed } = useGameSession(isGameOver, caughtItems);
+  console.log(hasPlayed);
+
   // CATCHER
   const [catcherX, setCatcherX] = useState(0); // HORIZONTAL POSITION, UPDATES ON MOUSE MOVEMENT
-
-  // CENTER THE CATCHER ON FIRST RENDER
-  useEffect(() => {
-    if (!canvasRef.current) return;
-    const rect = canvasRef.current.getBoundingClientRect();
-    setCatcherX(rect.width / 2 - CATCHER_WIDTH / 2);
-  }, []);
-
-  // CENTER THE CATCHER IF SCREENSIZE CHANGE THE SIZE OF THE CANVAS
-  useEffect(() => {
-    if (!canvasRef.current) return;
-    const observer = new ResizeObserver(() => {
-      const rect = canvasRef.current!.getBoundingClientRect();
-      canvasHeightRef.current = rect.height;
-      canvasWidthRef.current = rect.width;
-      setCatcherX((prev) => Math.min(prev, rect.width - CATCHER_WIDTH));
-    });
-    // Capture the initial canvas dimensions immediately so the RAF loop has cached values from the start.
-    const rect = canvasRef.current.getBoundingClientRect();
-    canvasHeightRef.current = rect.height;
-    canvasWidthRef.current = rect.width;
-    // Mark canvas as ready so spawn interval can begin
-    isCanvasReadyRef.current = true;
-    observer.observe(canvasRef.current);
-    return () => observer.disconnect();
-  }, []);
+  const {
+    canvasRef,
+    canvasHeightRef,
+    canvasWidthRef,
+  } = useCanvasDimensions(setCatcherX);
 
   // REFS
   const catcherXRef = useRef(0); // CATCHER X, USED INSIDE ANIMATION LOOP TO ALWAYS HAS THE LATEST VALUE
-  const canvasRef = useRef<HTMLElement>(null); // CANVAS-DIV, USED TO READ ITS SIZE AND POSITION
-  const canvasHeightRef = useRef(0); // CANVAS HEIGHT SO RAF LOOP DOES NOT HAVE TO MEASURE IT EVERY FRAME
-  const canvasWidthRef = useRef(0); // CANVAS WIDTH SO THE RAF LOOP DOES NOT HAVE TO MEASURE IT EVERY FRAME
   const keysPressed = useRef({ left: false, right: false}); // REF THAT STORES LATEST KEY PRESS AND INPUT METHOD
-  const isCanvasReadyRef = useRef(false); // TRACKS IF CANVAS IS INITIALIZED (prevents spawn interval from starting too early)
-
+ 
   // KEEP THE REF IN SYNC WITH THE LATEST CATCHER POSITION STATE
   useEffect(() => {
     catcherXRef.current = catcherX;
@@ -86,16 +70,37 @@ export default function GameScreen() {
     catcherXRef
   );
 
-  
+  // CHECK FOR USER
+  const storedName = sessionStorage.getItem("playerName");
+  const storedHasPlayed = sessionStorage.getItem("hasPlayed");
+
+  // SEND BACK TO HOME IF NO USER IS FOUND
+  if (!storedName) {
+    return <Navigate to="/" replace />
+  }
+
   return (
     <Layout>
       
       {/* position: relative SO THE CATCHER CAN USE position: absolute INSIDE IT */}
       <GameCanvas ref={canvasRef}>
           
-        {isGameOver && 
-          <Modal>
-            <h3 className="text-7xl">Game over</h3>
+        {(isGameOver || storedHasPlayed === "true") && 
+          <Modal className="inset-0 h-full">
+
+            <Typography
+              type="span"
+              font="main"
+              size={5}
+              color="pink"
+              text={"Game Over"}
+              className="pb-8"
+            />
+            <Button 
+              variant="secondary"
+              href="/score">
+                To scoreboard
+            </Button>
           </Modal>}
 
         {/* FALLING ITEMS: THESE ARE STILL MOVING DOWNWARD */}
@@ -109,10 +114,10 @@ export default function GameScreen() {
 
       </GameCanvas>
 
-      <InfoPlate direction="row" height={22}>
-        <GameStats stat={"10"} size={2} font={"body"} color="white"></GameStats>
-        <GameStats stat={caughtItems} size={6} font={"main"} color="green"></GameStats>
-        <GameStats stat={"HS"} size={2} font={"body"} color="white"></GameStats>
+      <InfoPlate className="flex-row h-22">
+        <Typography text={playerName} size={2} font={"body"} color="white"></Typography>
+        <Typography text={caughtItems} size={6} font={"main"} color="green"></Typography>
+        <Typography text={"HS"} size={2} font={"body"} color="white"></Typography>
       </InfoPlate>
 
     </Layout>
