@@ -131,59 +131,27 @@ return (
     </section>
 
     {modalIsOpen && 
-      <Modal className="inset-0 h-1/2 m-4">
-        <Typography 
-          text={"Instructions"} 
-          font="main" 
-          size={3} 
-          color="green"
-          className="mb-4"/>
-        <Typography 
-          text={"1. Collect cotton candy to gain points"}
-          font="body"
-          size={0}
-          color="white"
-        />
-        <Typography 
-          text={"2. Collect three in a row of the same color to make them disappear"}
-          font="body"
-          size={0}
-          color="white"
-        />
-        <Typography 
-          text={"3. Beware of the raindrops, no one likes rain on the tivoli!"}
-          font="body"
-          size={0}
-          color="white"
-        />
+      <Modal className="h-1/2 w-11/12">
+        <Typography text={"Instructions"}  font="main" size={3} color="green" className="mb-4"/>
+        <Typography text={"1. Collect cotton candy to gain points"} font="body" size={0} color="white"/>
+        <Typography text={"2. Collect three in a row of the same color to make them disappear"} font="body" size={0} color="white"/>
+        <Typography text={"3. Beware of the raindrops, no one likes rain on the tivoli!"} font="body" size={0} color="white"/>
 
-        <Button 
-          variant="secondary"
-          onClick={() => setModalIsOpen(false)}
-          className="m-8"
-        >
+        <Button variant="secondary" onClick={() => setModalIsOpen(false)} className="m-8">
           Close
         </Button>
       </Modal>
       }
 
-    <div className="flex flex-col items-center my-10 w-2xs">
-
-    {highestScore &&
-      <>
-        <Typography
-          text={"CURRENT HIGHSCORE"}
-          type="h3"
-          size={2}
-          className="mb-0"
-        />
-        <ScoreBoardRow 
-          placement={1} 
-          name={highestScore?.player_name} 
-          score={highestScore?.score} 
-        />
-      </>
-    }
+    <div className="flex flex-col items-center my-10 w-full max-w-full">
+      <div className="w-3xs sm:w-xs items-center flex flex-col">
+        {highestScore &&
+          <>
+            <Typography text={"CURRENT HIGHSCORE"} type="h3" size={2} className="mb-0" />
+            <ScoreBoardRow placement={1} name={highestScore?.player_name} score={highestScore?.score} className="w-full text-center"/>
+          </>
+        }
+      </div>
     </div>
   </Layout>
 )
