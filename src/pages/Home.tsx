@@ -29,7 +29,6 @@ const [name, setName] = useState<string>("");
 const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
 const navigate = useNavigate();
 
-
 const handleGreet = async () => {
   if (!token) return;
   setLoading("identity");
@@ -60,7 +59,6 @@ const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
 // CALL handleGreet WHEN token IS AVAILABLE
 useEffect(() => {
   if (token) {
-    sessionStorage.setItem("token", token);
     handleGreet();
   }
 }, [token]);
