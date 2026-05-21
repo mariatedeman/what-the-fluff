@@ -31,7 +31,6 @@ export function useGameSession(isGameOver: boolean, caughtItems: number) {
         const startGameSession = async () => {
           const res = await startSession({
           player_name: playerName,
-          difficulty: 1,
           stake_amount: 10,
         });
     

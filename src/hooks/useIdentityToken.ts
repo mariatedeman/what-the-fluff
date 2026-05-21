@@ -30,5 +30,6 @@ export function useIdentityToken(): IdentityToken | null {
     window.history.replaceState(window.history.state, "", newUrl);
   }, []);
 
+  if (token) console.log("[debug] token:", token);
   return token;
 }
