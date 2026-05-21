@@ -1,3 +1,5 @@
+import {getTivoliErrorMessage} from "../services/tivoliErrors"
+
 // Components
 import { useState, useEffect } from "react";
 import { Button } from "../components/Buttons";
@@ -16,55 +18,153 @@ import { Modal } from "../components/modal/Modal";
 import { useNavigate } from "react-router-dom";
 import { Typography } from "../components/Typography";
 import { ScoreBoardRow } from "../components/ScoreBoardRow";
+import { startSession } from "../services/gameService";
 
 
 export default function Home() {  
-const token = useIdentityToken();
-// const { highestScore, loading: hsLoading, error: hsError } = useHighestScore();
-const { highestScore } = useHighestScore();
-const [loading, setLoading] = useState<"identity" | "tx" | "payout" | null>(null);
-const [identity, setIdentity] = useState<IdentityResponse | null>(null);
-const [error, setError] = useState<string | null>(null);
-const [name, setName] = useState<string>("");
-const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
-const navigate = useNavigate();
+  // const { highestScore, loading: hsLoading, error: hsError } = useHighestScore();
+  const { highestScore } = useHighestScore();
+  const [loading, setLoading] = useState<"identity" | "tx" | "payout" | null>(null);
+  const [identity, setIdentity] = useState<IdentityResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
+  const navigate = useNavigate();
 
-const handleGreet = async () => {
-  if (!token) return;
-  setLoading("identity");
-  console.log(loading);
-  setError(null);
-  console.log(error)
-  try {
-    const res = await getIdentity(token);
-    setIdentity(res);
-    sessionStorage.setItem("playerName", res.user.name);
-  } catch (err) {
-    setError((err as ApiError).message ?? "Greet failed");
-  } finally {
-    setLoading(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  // API States
+  const [sessionId, setSessionId] = useState<number | null>(null);
+  const [submitLoading, setSubmitLoading] = useState<boolean>(false);
+  // const [submitResult, setSubmitResult] = useState<SubmitScoreResponse | null>(null);
+  
+  const token = useIdentityToken();
+  const [playerName, setPlayerName] = useState<string>("");
+  const [stakeAmount, setStakeAmount] = useState<number | null>(2);
+
+
+  // GREET USER IF THEY HAVE TOKEN
+  // const handleGreet = async () => {
+  //   if (!token) return;
+    
+  //   setLoading("identity");
+  //   setError(null);
+  //   console.log(error)
+
+  //   try {
+  //     const res = await getIdentity(token);
+  //     setPlayerName(res.user.name);
+  //     setIdentity(res);
+
+  //   } catch (err) {
+  //     const friendlyError = getTivoliErrorMessage(err, "identity");
+  //     setError(`TIVOLI FEL GREET: ${friendlyError}`)
+  //     // setError((err as ApiError).message ?? "Greet failed");
+
+  //   } finally {
+  //     setLoading(null);
+  //   }
+  // };
+
+  // CALL handleGreet WHEN token IS AVAILABLE
+  // useEffect(() => {
+  //   if (token) {
+  //     handleGreet();
+  //   }
+  // }, [token]);
+
+  useEffect(() => {
+    if (!token) return;
+
+    let isMounted = true;
+    setLoading("identity");
+    setError(null);
+
+    getIdentity(token)
+      .then((res) => {
+        if (isMounted) {
+          setPlayerName(res.user.name);
+          setIdentity(res);
+        }
+      })
+      .catch((err) => {
+        if (isMounted) {
+          const friendlyError = getTivoliErrorMessage(err, "identity");
+          setError(`TIVOLE FEL GREET: ${friendlyError}`);
+          console.error("Greet failed: ", err);
+        }
+      })
+      .finally(() => {
+        if (isMounted) {
+          setLoading(null);
+        }
+      })
+
+      return () => {
+        isMounted = false;
+      }
+  }, [token]);
+
+  
+  
+  // START SESSION
+  const handleStartSession = async () => {
+    setIsLoading(true);
+    setError(null);
+    
+    console.log("TEST " + playerName, stakeAmount, token);
+
+    const sessionPayload = token
+      ? {
+        player_name: playerName,
+        stake_amount: stakeAmount,
+        identity_token: token,
+      } : {
+        player_name: playerName,
+      }
+
+    try {
+      const res = await startSession(sessionPayload);
+      
+      if (res.success && res.data) {
+        setSessionId(res.data.id);
+        navigate("/game", {state: { playerName: playerName }})
+      } else {
+        console.error("Could not start session: ", res)
+        setError(`RESPONSE FEL: ${res.error || "Misslyckades att starta session"}`);
+      }
+      
+    } catch (err) {
+      const friendlyError = getTivoliErrorMessage(err, "transaction");
+      setError(`TIVOLI FEL START: ${friendlyError}`);
+      
+      console.error("Could not start session: ", err)
+      
+    } finally {
+      setIsLoading(false)
+    }
   }
-};
 
-const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+// START SESSION IF USER DOES NOT HAVE TOKEN
+const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
   e.preventDefault();
-  console.log("Namn sparat: ", name)
+  console.log("Name saved: ", playerName)
 
-  sessionStorage.setItem("playerName", name);
-
-  // Redirect to game
-  navigate("/game", {state: { playerName: name }})
+  await handleStartSession();
 }
 
-// CALL handleGreet WHEN token IS AVAILABLE
-useEffect(() => {
-  if (token) {
-    handleGreet();
-  }
-}, [token]);
 
 return (
   <Layout>
+    {isLoading && "Loading..."}
+    {error && (
+      <Modal>
+        <Typography type="span" text={error} color="white" font="body" size={1} className="py-4" />
+        <Button variant="secondary" onClick={() => setError(null)}>
+          Close
+        </Button>
+      </Modal>
+    )}
+
     <section className="flex flex-col self-center gap-4 w-3xs">
       <div className="flex flex-col">
 
@@ -77,7 +177,7 @@ return (
           size={1}
           className="pt-4 pb-8 italic" />
 
-        {identity ? (
+        {token ? (
           <>
           <Typography
             text={"Welcome"}
@@ -87,7 +187,7 @@ return (
           />
 
           <Typography
-            text={identity.user.name}
+            text={playerName}
             font="body"
             size={0}
             className="font-bold pb-4"
@@ -96,7 +196,7 @@ return (
               <Button 
                 children="Play game for $2"
                 variant="primary" 
-                href="/game"
+                onClick={() => handleStartSession()}
               />
             </div>
           </>
@@ -105,21 +205,22 @@ return (
           <TextInput 
             id="name" 
             placeholder="Name" 
-            value={name}
-            onChange={(e) => setName(e.currentTarget.value)}
+            value={playerName}
+            onChange={(e) => setPlayerName(e.currentTarget.value)}
           />
 
           <Button 
             type="submit" 
             variant="primary" 
-            disabled={name.trim() === ""}
+            disabled={playerName.trim() === ""}
+            // onClick={handleStartSession}
           >
             Enter game
           </Button>
         </form>}
         <Button 
           variant="secondary" 
-          type="submit"
+          type="button"
           onClick={() => setModalIsOpen(true)}
         >
           Instructions
