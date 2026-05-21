@@ -15,7 +15,10 @@ export class ApiError extends Error {
 // RESPONSE FROM start-session EDGE FUNCTION
 export type StartSessionResponse = {
   success: boolean;
-  data?: { id: number };
+  data?: {
+    id: number;
+    tivoli_transaction_id: number | null;
+  };
   error?: string;
 };
 

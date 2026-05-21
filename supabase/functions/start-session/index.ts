@@ -1,6 +1,6 @@
 import "@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "@supabase/supabase-js";
-import { json, preflight } from "../_shared/responses.ts";
+import { json, preflight, tivoliErrorMessage } from "../_shared/responses.ts";
 import type { TablesInsert } from "../_shared/database.ts";
 
 
@@ -25,14 +25,57 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { player_name, stake_amount?, identity_token? } = body;
+    const { player_name, stake_amount, identity_token } = body;
 
     if (
       typeof player_name !== "string" || player_name.trim().length === 0 ||
-      !Number.isFinite(stake_amount) || stake_amount < 0 ||
-      typeof is_student !== "boolean"
+      (stake_amount !== undefined && (!Number.isFinite(stake_amount) || stake_amount < 0)) ||
+      (identity_token !== undefined && (typeof identity_token !== "string" || identity_token.length === 0))
     ) {
       return json({ success: false, error: "Invalid input" }, 400);
+    }
+
+    const isStudent = identity_token !== undefined;
+
+    if (isStudent && stake_amount === undefined) {
+      return json({ success: false, error: "stake_amount required for student sessions" }, 400);
+    }
+
+    let tivoliTransactionId: number | null = null;
+
+    if (isStudent) {
+      const apiKey = Deno.env.get("TIVOLI_API_KEY");
+      const baseUrl = Deno.env.get("TIVOLI_API_BASE_URL");
+      if (!apiKey || !baseUrl) {
+        return json(
+          { success: false, error: "Server misconfigured: missing TIVOLI_API_KEY or TIVOLI_API_BASE_URL" },
+          500
+        );
+      }
+
+      const tivoliRes = await fetch(`${baseUrl}/transactions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify({
+          identity_token,
+          amount: stake_amount,
+          api_key: apiKey,
+        }),
+      });
+
+      if (!tivoliRes.ok) {
+        const message = await tivoliErrorMessage(tivoliRes);
+        return json(
+          { success: false, error: message || "Tivoli rejected the transaction" },
+          tivoliRes.status
+        );
+      }
+
+      const tivoliData = await tivoliRes.json();
+      tivoliTransactionId = tivoliData.id;
     }
 
     const supabase = createClient(
@@ -40,12 +83,17 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const row: SessionInsert = { player_name, stake_amount, is_student };
+    const row: SessionInsert = {
+      player_name,
+      stake_amount: stake_amount ?? 0,
+      is_student: isStudent,
+      tivoli_transaction_id: tivoliTransactionId,
+    };
 
     const { data, error } = await supabase
       .from("game_sessions")
       .insert(row)
-      .select("id")
+      .select("id, tivoli_transaction_id")
       .single();
 
     if (error) {

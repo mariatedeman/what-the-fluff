@@ -4,7 +4,6 @@ import type {
   IdentityResponse,
   IdentityToken,
   PayoutResponse,
-  TransactionResponse,
 } from "../types/tivoli";
 
 
@@ -45,24 +44,6 @@ export async function getIdentity(
 
   return (await res.json()) as IdentityResponse;
 }
-
-
-// POST /transactions
-export async function createTransaction(
-  token: IdentityToken,
-  amount: number
-): Promise<TransactionResponse> {
-  if (USE_MOCK) {
-    const { createTransactionMock } = await import("./tivoliService.mock");
-    return createTransactionMock(token, amount);
-  }
-
-  return invokeEdge<TransactionResponse>("tivoli-transaction", {
-    identity_token: token,
-    amount,
-  });
-}
-
 
 // POST /transactions/{id}/payout
 export async function payout(
