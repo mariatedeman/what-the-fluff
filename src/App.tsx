@@ -8,6 +8,7 @@ import Nav from "./components/Nav";
 import TestIndex from "./pages/test/index";
 import TestScore from "./pages/test/Score";
 import TestTivoli from "./pages/test/Tivoli";
+import AppFlow from "./pages/test/AppFlow";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
             <Route index element={<TestIndex />} />
             <Route path="score" element={<TestScore />} />
             <Route path="tivoli" element={<TestTivoli />} />
+            <Route path="appflow" element={<AppFlow />} />
           </Route>
         )}
       </Routes>

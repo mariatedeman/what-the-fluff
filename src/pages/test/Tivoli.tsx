@@ -1,15 +1,9 @@
 import { useState } from "react";
 import { useIdentityToken } from "../../hooks/useIdentityToken";
-import {
-  createTransaction,
-  getIdentity,
-  payout,
-} from "../../services/tivoliService";
-import type {
-  IdentityResponse,
-  TransactionResponse,
-} from "../../types/tivoli";
-import type { ApiError } from "../../types/api";
+import { getIdentity, payout } from "../../services/tivoliService";
+import { startSession } from "../../services/gameService";
+import type { IdentityResponse } from "../../types/tivoli";
+import type { ApiError, StartSessionResponse } from "../../types/api";
 
 // EXAMPLE TEST URL:
 // http://localhost:5173/test/tivoli?identity_token=fake-test-123
@@ -17,19 +11,20 @@ import type { ApiError } from "../../types/api";
 export default function TestTivoli() {
   const token = useIdentityToken();
 
+  const [playerName, setPlayerName] = useState("test-player");
   const [stake, setStake] = useState(1);
   const [winAmount, setWinAmount] = useState(5);
 
   const [identity, setIdentity] = useState<IdentityResponse | null>(null);
-  const [transaction, setTransaction] = useState<TransactionResponse | null>(
-    null
-  );
+  const [session, setSession] = useState<StartSessionResponse | null>(null);
   const [payoutOk, setPayoutOk] = useState(false);
 
-  const [loading, setLoading] = useState<"identity" | "tx" | "payout" | null>(
+  const [loading, setLoading] = useState<"identity" | "session" | "payout" | null>(
     null
   );
   const [error, setError] = useState<string | null>(null);
+
+  const tivoliTransactionId = session?.data?.tivoli_transaction_id ?? null;
 
   const handleGreet = async () => {
     if (!token) return;
@@ -45,27 +40,34 @@ export default function TestTivoli() {
     }
   };
 
-  const handleBuyIn = async () => {
+  const handleStartSession = async () => {
     if (!token) return;
-    setLoading("tx");
+    setLoading("session");
     setError(null);
     try {
-      const res = await createTransaction(token, stake);
-      setTransaction(res);
+      const res = await startSession({
+        player_name: playerName,
+        stake_amount: stake,
+        identity_token: token,
+      });
+      setSession(res);
+      if (!res.success) {
+        setError(res.error ?? "Start session failed");
+      }
     } catch (err) {
-      setError((err as ApiError).message ?? "Transaction failed");
+      setError((err as ApiError).message ?? "Start session failed");
     } finally {
       setLoading(null);
     }
   };
 
   const handlePayout = async () => {
-    if (!transaction) return;
+    if (tivoliTransactionId === null) return;
     setLoading("payout");
     setError(null);
     setPayoutOk(false);
     try {
-      await payout(transaction.id, winAmount);
+      await payout(tivoliTransactionId, winAmount);
       setPayoutOk(true);
     } catch (err) {
       setError((err as ApiError).message ?? "Payout failed");
@@ -76,7 +78,7 @@ export default function TestTivoli() {
 
   const handleReset = () => {
     setIdentity(null);
-    setTransaction(null);
+    setSession(null);
     setPayoutOk(false);
     setError(null);
   };
@@ -95,10 +97,10 @@ export default function TestTivoli() {
 
       <section style={{ marginBottom: 24, opacity: token ? 1 : 0.5 }}>
         <h2>1. Greet the player (GET /identity-tokens/{"{token}"})</h2>
-        <button 
-            onClick={handleGreet} 
-            disabled={!token || loading !== null}
-            className="bg-white rounded-xl p-2 cursor-pointer"
+        <button
+          onClick={handleGreet}
+          disabled={!token || loading !== null}
+          className="bg-white rounded-xl p-2 cursor-pointer"
         >
           {loading === "identity" ? "Loading..." : "Greet me"}
         </button>
@@ -110,31 +112,45 @@ export default function TestTivoli() {
       </section>
 
       <section style={{ marginBottom: 24, opacity: token ? 1 : 0.5 }}>
-        <h2>2. Buy in (POST /transactions)</h2>
+        <h2>2. Start session (combined: DB insert + Tivoli transaction)</h2>
+
+        <label style={{ display: "block", marginBottom: 8 }}>
+          Player name:{" "}
+          <input
+            value={playerName}
+            onChange={(e) => setPlayerName(e.target.value)}
+            disabled={!token || session !== null}
+          />
+        </label>
+
         <label style={{ display: "block", marginBottom: 8 }}>
           Stake:{" "}
           <input
             type="number"
             value={stake}
             onChange={(e) => setStake(Number(e.target.value))}
-            disabled={!token || transaction !== null}
+            disabled={!token || session !== null}
           />
         </label>
+
         <button
-          onClick={handleBuyIn}
-          disabled={!token || transaction !== null || loading !== null}
+          onClick={handleStartSession}
+          disabled={!token || session !== null || loading !== null}
           className="bg-white rounded-xl p-2 cursor-pointer"
         >
-          {loading === "tx" ? "Loading..." : "Buy in"}
+          {loading === "session" ? "Loading..." : "Start session"}
         </button>
-        {transaction && (
+
+        {session && (
           <pre style={{ marginTop: 12, background: "#eee", padding: 12 }}>
-            {JSON.stringify(transaction, null, 2)}
+            {JSON.stringify(session, null, 2)}
           </pre>
         )}
       </section>
 
-      <section style={{ marginBottom: 24, opacity: transaction ? 1 : 0.5 }}>
+      <section
+        style={{ marginBottom: 24, opacity: tivoliTransactionId ? 1 : 0.5 }}
+      >
         <h2>3. Payout (POST /transactions/{"{id}"}/payout)</h2>
         <label style={{ display: "block", marginBottom: 8 }}>
           Win amount:{" "}
@@ -142,12 +158,12 @@ export default function TestTivoli() {
             type="number"
             value={winAmount}
             onChange={(e) => setWinAmount(Number(e.target.value))}
-            disabled={!transaction}
+            disabled={tivoliTransactionId === null}
           />
         </label>
         <button
           onClick={handlePayout}
-          disabled={!transaction || loading !== null}
+          disabled={tivoliTransactionId === null || loading !== null}
           className="bg-white rounded-xl p-2 cursor-pointer"
         >
           {loading === "payout" ? "Loading..." : "Payout"}
