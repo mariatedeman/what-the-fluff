@@ -24,7 +24,6 @@ import { CountDown } from "../CountDown";
 
 
 export default function GameScreen() {
-  const navigate = useNavigate();
   const [isCountingDown, setIsCountingDown] = useState<boolean>(true);
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
 
@@ -39,7 +38,6 @@ export default function GameScreen() {
 
   // USE GAME SESSION
   const { playerName, hasPlayed } = useGameSession(isGameOver, caughtItems);
-  console.log(hasPlayed);
 
   // CATCHER
   const [catcherX, setCatcherX] = useState(0); // HORIZONTAL POSITION, UPDATES ON MOUSE MOVEMENT

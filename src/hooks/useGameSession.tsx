@@ -11,9 +11,10 @@ export function useGameSession(isGameOver: boolean, caughtItems: number) {
     const [hasPlayed, setHasPlayed] = useState<boolean>(false);
     const playerName = location.state?.playerName ?? sessionStorage.getItem("playerName") ?? undefined;
     
-    // D
+    // Data
     const [stakeAmount, setStakeAmount] = useState(10);
-    const [isStudent, setIsStudent] = useState(false);
+
+    const token = sessionStorage.getItem("token");
 
     // API States
     const [sessionId, setSessionId] = useState<number | null>(null);
@@ -30,6 +31,7 @@ export function useGameSession(isGameOver: boolean, caughtItems: number) {
       useEffect(() => {
         if (!playerName) return;
         if (sessionStartedRef.current) return;
+        
         sessionStartedRef.current = true;
     
         const startGameSession = async () => {
@@ -45,7 +47,7 @@ export function useGameSession(isGameOver: boolean, caughtItems: number) {
         };
     
         startGameSession();
-      }, [playerName]);
+      }, [playerName, stakeAmount, isStudent]);
     
       // Submit score at Game Over
       const handleGameOver = async () => {
