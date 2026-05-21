@@ -25,7 +25,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { player_name, stake_amount, is_student } = body;
+    const { player_name, stake_amount?, identity_token? } = body;
 
     if (
       typeof player_name !== "string" || player_name.trim().length === 0 ||

@@ -5,7 +5,6 @@ import type { StartSessionResponse, SubmitScoreResponse } from "../../types/api"
 export default function TestScore() {
   const [playerName, setPlayerName] = useState("test-player");
   const [stakeAmount, setStakeAmount] = useState(10);
-  const [isStudent, setIsStudent] = useState(false);
   const [score, setScore] = useState(100);
 
   const [sessionId, setSessionId] = useState<number | null>(null);
@@ -29,7 +28,6 @@ export default function TestScore() {
     const res = await startSession({
       player_name: playerName,
       stake_amount: stakeAmount,
-      is_student: isStudent,
     });
 
     setStartResult(res);
@@ -77,16 +75,6 @@ export default function TestScore() {
             type="number"
             value={stakeAmount}
             onChange={(e) => setStakeAmount(Number(e.target.value))}
-            disabled={sessionId !== null}
-          />
-        </label>
-
-        <label style={{ display: "block", marginBottom: 8 }}>
-          Is student:{" "}
-          <input
-            type="checkbox"
-            checked={isStudent}
-            onChange={(e) => setIsStudent(e.target.checked)}
             disabled={sessionId !== null}
           />
         </label>
