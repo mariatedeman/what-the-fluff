@@ -168,13 +168,15 @@ export function useGameAnimation(
           const caughtRaindrops = result.newlyCaught.filter(item => item.type === "raindrop").length;
           if (caughtRaindrops > 0) {
             setIsGameOver(true);
+            sessionStorage.setItem("isGameOver", "true");
             isGameOverRef.current = true;  // STOP IMMEDIATELY INSTEAD OF WAITING FOR STATE UPDATE
           }
-
+          
           // CHECK IF STACK REACHES THE TOP OF THE CANVAS (GAME OVER CONDITION)
           const stackTopY = CATCHER_Y - (ITEM_SIZE - STACK_OVERLAP_PX) * nextStack.length;
           if (stackTopY <= 0) {
             setIsGameOver(true);
+            sessionStorage.setItem("isGameOver", "true");
             isGameOverRef.current = true;  // STOP IMMEDIATELY INSTEAD OF WAITING FOR STATE UPDATE
           }
 
