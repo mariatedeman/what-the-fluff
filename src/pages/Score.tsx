@@ -42,12 +42,12 @@ export default function Score() {
 
     {/* DISPLAY STYLED SCORE-LIST */}
     {scores.map((s, index) => {
-        const placement = index + 1;
+      const placement = index + 1;
 
-        return (
-            <ScoreBoardRow key={s.id} placement={placement} name={s.player_name} score={s.score} />
-        )
-    })};
+      return (
+          <ScoreBoardRow key={s.id} placement={placement} name={s.player_name} score={s.score} />
+      )
+    })}
     
     </Layout>
     )

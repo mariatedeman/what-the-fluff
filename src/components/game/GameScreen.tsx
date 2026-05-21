@@ -19,11 +19,12 @@ import { Catcher } from "./Catcher";
 import { GameCanvas } from "./GameCanvas";
 import type { FallingItem } from "../../models/GameTypes";
 import { Button } from "../Buttons";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { CountDown } from "../CountDown";
 
 
 export default function GameScreen() {
+  const navigate = useNavigate();
   const [isCountingDown, setIsCountingDown] = useState<boolean>(true);
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
 
@@ -79,10 +80,15 @@ export default function GameScreen() {
   // CHECK FOR USER
   const storedName = sessionStorage.getItem("playerName");
   const storedHasPlayed = sessionStorage.getItem("hasPlayed");
-
+  
   // SEND BACK TO HOME IF NO USER IS FOUND
   if (!storedName) {
     return <Navigate to="/" replace />
+  }
+
+  // SEND TO SCORE IF ALREADY PLAYED
+  if (storedHasPlayed && !isGameOver) {
+    return <Navigate to={"/"} />
   }
 
   return (
@@ -91,12 +97,12 @@ export default function GameScreen() {
       {/* position: relative SO THE CATCHER CAN USE position: absolute INSIDE IT */}
       <GameCanvas ref={canvasRef}>
 
-      {isCountingDown && 
+      {isCountingDown && !storedHasPlayed &&
         <CountDown initialTime={3} onComplete={handleCountDownDone}/>
       }
           
       {!isCountingDown && 
-        (isGameOver || storedHasPlayed === "true") && 
+        isGameOver && 
           
           <Modal className="inset-0 h-full">
             

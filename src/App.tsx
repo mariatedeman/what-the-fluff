@@ -12,7 +12,7 @@ import TestTivoli from "./pages/test/Tivoli";
 function App() {
   return (
     <>
-      <Nav />
+      {/* <Nav /> */}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/game" element={<Game />} />

@@ -8,8 +8,12 @@ import { useLocation } from "react-router-dom";
 export function useGameSession(isGameOver: boolean, caughtItems: number) {
     // Fetch player info
     const location = useLocation();
-    const playerName = location.state?.playerName ?? sessionStorage.getItem("playerName") ?? undefined;
     const [hasPlayed, setHasPlayed] = useState<boolean>(false);
+    const playerName = location.state?.playerName ?? sessionStorage.getItem("playerName") ?? undefined;
+    
+    // D
+    const [stakeAmount, setStakeAmount] = useState(10);
+    const [isStudent, setIsStudent] = useState(false);
 
     // API States
     const [sessionId, setSessionId] = useState<number | null>(null);
@@ -31,8 +35,8 @@ export function useGameSession(isGameOver: boolean, caughtItems: number) {
         const startGameSession = async () => {
           const res = await startSession({
           player_name: playerName,
-          difficulty: 1,
-          stake_amount: 10,
+          stake_amount: stakeAmount,
+          is_student: isStudent,
         });
     
         if (res.success && res.data) {

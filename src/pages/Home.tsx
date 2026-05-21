@@ -8,9 +8,7 @@ import { Layout } from "../components/layout/Layout";
 import { useHighestScore } from "../hooks/useHighestScore"; 
 import { useIdentityToken } from "../hooks/useIdentityToken";
 
-import {
-  getIdentity,
-} from "./../services/tivoliService";
+import {getIdentity} from "./../services/tivoliService";
 
 import type { ApiError } from "./../types/api";
 import type { IdentityResponse } from "../types/tivoli";
@@ -30,7 +28,6 @@ const [error, setError] = useState<string | null>(null);
 const [name, setName] = useState<string>("");
 const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
 const navigate = useNavigate();
-
 
 const handleGreet = async () => {
   if (!token) return;
