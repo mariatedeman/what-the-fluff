@@ -111,9 +111,14 @@ export function useGameAnimation(
 
       // MAIN ANIMATION LOOP: UPDATE FALLING ITEMS EVERY FRAME
       const tick = (time: number) => {
-        // STOP THE ANIMATION LOOP IF THE GAME IS OVER OR COUNTING DOWN
-        if (isGameOverRef.current || isCountingDownRef.current) {
-          lastTime = time; // Måste hålla tidsstämpeln fräsch annars beräknas delta knasigt efter nedräkning
+        // STOP THE ANIMATION LOOP COMPLETELY IF THE GAME IS OVER
+        if (isGameOverRef.current) {
+          return;
+        }
+
+        // KEEP THE LOOP ALIVE DURING COUNTDOWN SO DELTA STAYS STABLE ON RESUME
+        if (isCountingDownRef.current) {
+          lastTime = time; // Keep timestamp fresh or delta might not work after calculation
           frameId = requestAnimationFrame(tick);
           return;
         }
