@@ -15,6 +15,7 @@ export function useGameSession(isGameOver: boolean, caughtItems: number) {
     const [stakeAmount, setStakeAmount] = useState(10);
 
     const token = sessionStorage.getItem("token");
+    const isStudent = true;
 
     // API States
     const [sessionId, setSessionId] = useState<number | null>(null);
