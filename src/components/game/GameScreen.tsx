@@ -105,7 +105,7 @@ export default function GameScreen() {
 
             <img src="/fluff-blue.svg" />
 
-            <Button variant="secondary" href="/score"className="mt-8">
+            <Button variant="secondary" href="/score" className="mt-8">
             To scoreboard
             </Button>
 

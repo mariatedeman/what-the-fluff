@@ -131,7 +131,7 @@ return (
     </section>
 
     {modalIsOpen && 
-      <Modal className="h-1/2 w-11/12">
+      <Modal className="inset-0 m-auto h-1/2 w-11/12">
         <Typography text={"Instructions"}  font="main" size={3} color="green" className="mb-4"/>
         <Typography text={"1. Collect cotton candy to gain points"} font="body" size={0} color="white"/>
         <Typography text={"2. Collect three in a row of the same color to make them disappear"} font="body" size={0} color="white"/>

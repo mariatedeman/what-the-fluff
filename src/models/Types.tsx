@@ -23,7 +23,7 @@ export type ScoreBoardRow = {
     placement: number,
     name: string | undefined,
     score: number | null | undefined,
-    className?: string;
+    className?: string,
 }
 
 // BUTTONS
