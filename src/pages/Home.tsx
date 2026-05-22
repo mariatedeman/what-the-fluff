@@ -246,7 +246,7 @@ return (
       <div className="w-3xs sm:w-xs items-center flex flex-col">
         {highestScore &&
           <>
-            <Typography text={"CURRENT HIGHSCORE"} type="h3" size={2} className="mb-0" />
+            <Typography text={"CURRENT HIGHSCORE"} type="h3" size={2} className="mb-0" color={"pink"} />
             <ScoreBoardRow placement={1} name={highestScore?.player_name} score={highestScore?.score} className="w-full text-center"/>
           </>
         }

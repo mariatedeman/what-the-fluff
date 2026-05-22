@@ -13,6 +13,7 @@ import { useDebouncedValue } from "../hooks/useDebouncedValue";
 
 // Types
 import type { ScoresSort } from "../types/gameSession";
+import { Typography } from "../components/Typography";
 
 
 export default function Score() {
@@ -35,7 +36,7 @@ export default function Score() {
     <Layout>
 
     <div className="sm:min-w-xl min-w-xs">
-      <h1>Highscore</h1>
+      <Typography text={"Highscore"} color="pink" type="h2" size={4}></Typography>
 
       {/* SORT AND FILTER */}  
       <InfoPlate className="h-22">
