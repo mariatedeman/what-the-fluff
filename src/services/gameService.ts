@@ -33,23 +33,46 @@ export async function getHighestScore(): Promise<GameSession | null> {
 // FETCH SCORES FROM game_sessions
 // TOP 10 BEST SCORES AS DEFAULT
 // WILL NOT GET SCORES IF COLUMN IS NULL
-export const getScores = async ({
-  sort = "best",
-}: GetScoresParams = {}): Promise<GameSession[]> => {
-  const { data, error } = await supabase
+export async function getScores({ sort, search }: GetScoresParams) {
+  let query = supabase
     .from("game_sessions")
     .select("*")
     .not("score", "is", null)
     .order("score", { ascending: sort === "worst" })
     .limit(10);
 
-  if (error) {
-    console.error("getScores error:", error);
-    return [];
-  }
+    if (search) {
+      query = query.ilike("player_name", `%${search}%`);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error("getScores error:", error);
+      return [];
+    }
 
   return data;
-};
+
+}
+
+// export const getScores = async ({
+//   sort = "best",
+// }: GetScoresParams = {}): Promise<GameSession[]> => {
+//   const { data, error } = await supabase
+//     .from("game_sessions")
+//     .select("*")
+//     .not("score", "is", null)
+//     .order("score", { ascending: sort === "worst" })
+//     .limit(10);
+
+//   if (error) {
+//     console.error("getScores error:", error);
+//     return [];
+//   }
+
+//   return data;
+// };
 
 
 // START SESSION VIA EDGE FUNCTION
