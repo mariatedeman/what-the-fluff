@@ -1,80 +1,81 @@
 import { useState, useEffect, useRef } from "react";
-
-// Data
-import { startSession, submitScore } from "./../services/gameService";
-import type { SubmitScoreResponse } from "./../types/api";
 import { useLocation } from "react-router-dom";
 
+import { startSession, submitScore } from "./../services/gameService";
+import { useIdentityToken } from "./useIdentityToken";
+import type { SubmitScoreResponse } from "./../types/api";
+import type { PlayerOptions } from "./../types/gameSession";
+
+
+// STAKE FOR STUDENT FLOW — TODO: SOURCE FROM CONFIG OR AMUSEMENT pricing
+const STUDENT_STAKE_AMOUNT = 10;
+
+
 export function useGameSession(isGameOver: boolean, caughtItems: number) {
-    // Fetch player info
-    const location = useLocation();
-    const [hasPlayed, setHasPlayed] = useState<boolean>(false);
-    const playerName = location.state?.playerName ?? sessionStorage.getItem("playerName") ?? undefined;
-    
-    // Data
-    const [stakeAmount, setStakeAmount] = useState(10);
-    const isStudent = true;
+  const location = useLocation();
+  const token = useIdentityToken();
 
-    // API States
-    const [sessionId, setSessionId] = useState<number | null>(null);
-    const [submitLoading, setSubmitLoading] = useState<boolean>(false);
-    const [submitResult, setSubmitResult] = useState<SubmitScoreResponse | null>(null,);
+  const [hasPlayed, setHasPlayed] = useState<boolean>(false);
+  const playerName =
+    location.state?.playerName ?? sessionStorage.getItem("playerName") ?? undefined;
 
-    // REFS
-    const sessionStartedRef = useRef(false); // TRACK SESSION START
-    const submitAttemptedRef = useRef(false); // PREVENT DOUBLE SUBMISSION
+  const [sessionId, setSessionId] = useState<number | null>(null);
+  const [submitLoading, setSubmitLoading] = useState<boolean>(false);
+  const [submitResult, setSubmitResult] = useState<SubmitScoreResponse | null>(null);
+
+  const sessionStartedRef = useRef(false);
+  const submitAttemptedRef = useRef(false);
 
 
-    // SAVE SCORE TO DATABASE
-      // Start session
-      useEffect(() => {
-        if (!playerName) return;
-        if (sessionStartedRef.current) return;
-        
-        sessionStartedRef.current = true;
-    
-        const startGameSession = async () => {
-          const res = await startSession({
-          player_name: playerName,
-          stake_amount: stakeAmount,
-          is_student: isStudent,
-        });
-    
-        if (res.success && res.data) {
-          setSessionId(res.data.id);
-        }
-        };
-    
-        startGameSession();
-      }, [playerName, stakeAmount, isStudent]);
-    
-      // Submit score at Game Over
-      const handleGameOver = async () => {
-        if (sessionId === null) return;
-        setSubmitLoading(true);
-    
-        const res = await submitScore(sessionId, caughtItems);
-        setSubmitResult(res);
-        setSubmitLoading(false);
-        setHasPlayed(true);
+  // START SESSION ONCE WE KNOW THE PLAYER NAME
+  useEffect(() => {
+    if (!playerName) return;
+    if (sessionStartedRef.current) return;
 
-        sessionStorage.setItem("hasPlayed", "true");
+    sessionStartedRef.current = true;
+
+    const startGameSession = async () => {
+      // is_student IS DERIVED SERVER-SIDE FROM identity_token PRESENCE
+      const payload: PlayerOptions = token
+        ? { player_name: playerName, identity_token: token, stake_amount: STUDENT_STAKE_AMOUNT }
+        : { player_name: playerName };
+
+      const res = await startSession(payload);
+
+      if (res.success && res.data) {
+        setSessionId(res.data.id);
       }
-    
-      useEffect(() => {
-        if (isGameOver && !submitAttemptedRef.current) {
-          submitAttemptedRef.current = true;
-          handleGameOver()
-        }
-      }, [isGameOver]);
+    };
+
+    startGameSession();
+  }, [playerName, token]);
 
 
-      return {
-        playerName,
-        submitLoading,
-        submitResult,
-        hasPlayed
-      };
+  // SUBMIT SCORE AT GAME OVER
+  const handleGameOver = async () => {
+    if (sessionId === null) return;
+    setSubmitLoading(true);
 
+    const res = await submitScore(sessionId, caughtItems);
+    setSubmitResult(res);
+    setSubmitLoading(false);
+    setHasPlayed(true);
+
+    sessionStorage.setItem("hasPlayed", "true");
+  };
+
+  useEffect(() => {
+    if (isGameOver && !submitAttemptedRef.current) {
+      submitAttemptedRef.current = true;
+      handleGameOver();
+    }
+  }, [isGameOver]);
+
+
+  return {
+    playerName,
+    submitLoading,
+    submitResult,
+    hasPlayed,
+  };
 }
-

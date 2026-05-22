@@ -46,14 +46,10 @@ const handleGreet = async () => {
   }
 };
 
-const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
-  e.preventDefault();
+const handleNameSubmit = () => {
   console.log("Namn sparat: ", name)
-
   sessionStorage.setItem("playerName", name);
-
-  // Redirect to game
-  navigate("/game", {state: { playerName: name }})
+  navigate("/game", { state: { playerName: name } })
 }
 
 // CALL handleGreet WHEN token IS AVAILABLE
@@ -101,7 +97,7 @@ return (
             </div>
           </>
         ) : 
-        <form action="post" onSubmit={handleSubmit}>
+        <form onSubmit={(e) => { e.preventDefault(); handleNameSubmit(); }}>
           <TextInput 
             id="name" 
             placeholder="Name" 
