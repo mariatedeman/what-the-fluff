@@ -1,3 +1,6 @@
+import type { Stamp } from "./tivoli";
+
+
 // REAL ERROR SUBCLASS SO IT HAS A STACK TRACE AND WORKS WITH INSTANCEOF ERROR
 export class ApiError extends Error {
   readonly status?: number;
@@ -13,11 +16,14 @@ export class ApiError extends Error {
 
 
 // RESPONSE FROM start-session EDGE FUNCTION
+// stamp IS POPULATED FOR STUDENT FLOWS (FORWARDED FROM TIVOLI'S POST /transactions),
+// AND null FOR GUEST FLOWS OR IF TIVOLI'S RATE LIMIT/ANTI-FARMING GUARD KICKED IN
 export type StartSessionResponse = {
   success: boolean;
   data?: {
     id: number;
     tivoli_transaction_id: number | null;
+    stamp: Stamp | null;
   };
   error?: string;
 };

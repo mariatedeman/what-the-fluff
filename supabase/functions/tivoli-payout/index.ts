@@ -1,5 +1,6 @@
 import "@supabase/functions-js/edge-runtime.d.ts";
 import { json, preflight, tivoliErrorMessage } from "../_shared/responses.ts";
+import type { PayoutRequest, PayoutResponse } from "../_shared/tivoli.ts";
 
 
 Deno.serve(async (req) => {
@@ -43,6 +44,8 @@ Deno.serve(async (req) => {
       );
     }
 
+    const tivoliBody: PayoutRequest = { amount, api_key: apiKey };
+
     // POST /transactions/{id}/payout
     const tivoliRes = await fetch(
       `${baseUrl}/transactions/${transaction_id}/payout`,
@@ -52,7 +55,7 @@ Deno.serve(async (req) => {
           "Content-Type": "application/json",
           "Accept": "application/json",
         },
-        body: JSON.stringify({ amount, api_key: apiKey }),
+        body: JSON.stringify(tivoliBody),
       }
     );
 
@@ -66,7 +69,7 @@ Deno.serve(async (req) => {
     }
 
     // SUCCESS - RETURNS TIVOLI-RESPONSE
-    const data = await tivoliRes.json();
+    const data = (await tivoliRes.json()) as PayoutResponse;
     return json(data, 200);
 
   } catch (err) {

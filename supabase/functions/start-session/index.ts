@@ -2,6 +2,7 @@ import "@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "@supabase/supabase-js";
 import { json, preflight, tivoliErrorMessage } from "../_shared/responses.ts";
 import type { TablesInsert } from "../_shared/database.ts";
+import type { Stamp, TransactionRequest, TransactionResponse } from "../_shared/tivoli.ts";
 
 
 type SessionInsert = TablesInsert<"game_sessions">;
@@ -42,6 +43,7 @@ Deno.serve(async (req) => {
     }
 
     let tivoliTransactionId: number | null = null;
+    let tivoliStamp: Stamp | null = null;
 
     if (isStudent) {
       const apiKey = Deno.env.get("TIVOLI_API_KEY");
@@ -53,17 +55,19 @@ Deno.serve(async (req) => {
         );
       }
 
+      const tivoliBody: TransactionRequest = {
+        identity_token,
+        amount: stake_amount,
+        api_key: apiKey,
+      };
+
       const tivoliRes = await fetch(`${baseUrl}/transactions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",
         },
-        body: JSON.stringify({
-          identity_token,
-          amount: stake_amount,
-          api_key: apiKey,
-        }),
+        body: JSON.stringify(tivoliBody),
       });
 
       if (!tivoliRes.ok) {
@@ -74,9 +78,9 @@ Deno.serve(async (req) => {
         );
       }
 
-      // POST /transactions RETURNS { transaction_id, amount, stamp }
-      const tivoliData = await tivoliRes.json() as { transaction_id: number };
+      const tivoliData = (await tivoliRes.json()) as TransactionResponse;
       tivoliTransactionId = tivoliData.transaction_id;
+      tivoliStamp = tivoliData.stamp;
     }
 
     const supabase = createClient(
@@ -101,7 +105,7 @@ Deno.serve(async (req) => {
       return json({ success: false, error: error.message }, 400);
     }
 
-    return json({ success: true, data }, 200);
+    return json({ success: true, data: { ...data, stamp: tivoliStamp } }, 200);
 
   } catch (err) {
     return json({ success: false, error: (err as Error).message }, 500);
