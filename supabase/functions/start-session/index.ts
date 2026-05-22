@@ -74,8 +74,9 @@ Deno.serve(async (req) => {
         );
       }
 
-      const tivoliData = await tivoliRes.json();
-      tivoliTransactionId = tivoliData.id;
+      // POST /transactions RETURNS { transaction_id, amount, stamp }
+      const tivoliData = await tivoliRes.json() as { transaction_id: number };
+      tivoliTransactionId = tivoliData.transaction_id;
     }
 
     const supabase = createClient(
@@ -85,7 +86,7 @@ Deno.serve(async (req) => {
 
     const row: SessionInsert = {
       player_name,
-      stake_amount: stake_amount ?? 0,
+      stake_amount: stake_amount ?? null,
       is_student: isStudent,
       tivoli_transaction_id: tivoliTransactionId,
     };

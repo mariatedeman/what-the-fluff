@@ -1,4 +1,3 @@
-
 // identity_token URL-QUERY_STRING FROM TIVOLI
 export type IdentityToken = string;
 
@@ -17,8 +16,7 @@ export type IdentityResponse = {
 };
 
 
-// STAMP - IN SUCCESS RESPONSE FROM POST /transactions
-//
+// STAMP ENUMS
 export type StampAnimal =
   | "lion"
   | "dolphin"
@@ -29,52 +27,45 @@ export type StampAnimal =
 export type StampMetal = "silver" | "gold" | "platinum";
 
 
-// THE animal+metal PAIR - REUSABLE ACROSS STAMPS WITH SAME TYPE
-export type StampType = {
-  readonly id: number;
+// STAMP - MINIMAL FORM AS EMBEDDED IN TransactionResponse
+// THE FULL STAMP SHAPE (id, transaction_id, created_at, ...) IS ONLY RETURNED BY GET /stamps,
+// WHICH THIS APP DOES NOT CALL — ADD A SEPARATE TYPE IF THAT ENDPOINT IS ADDED LATER
+export type Stamp = {
   readonly animal: StampAnimal;
   readonly metal: StampMetal | null;
-  readonly image_url: string | null;
-};
-
-
-// FULL STAMP
-// CONTAINS TYPES: StampAnimal, StampMetal, StampType
-export type Stamp = {
-  readonly id: number;
-  readonly user_id: number;
-  readonly stamptype_id: number;
-  readonly stamptype: StampType;
   readonly image_url: string;
-  readonly created_at: string;
-  readonly updated_at: string;
 };
 
 
 // REQUEST BODY FOR POST /transactions
+// amount IS OPTIONAL — IF OMITTED, AMUSEMENT'S STORED price IS USED
 export type TransactionRequest = {
   identity_token: IdentityToken;
-  amount: number;
   api_key: string;
+  amount?: number;
 };
 
 
 // SUCCESS RESPONSE FROM POST /transactions
+// stamp IS null IF THE TOKEN ALREADY MINTED ITS ONE STAMP,
+// OR IF THE 3-MIN ANTI-FARMING RATE LIMIT FOR (user, amusement) IS ACTIVE
 export type TransactionResponse = {
-  readonly id: number;
-  readonly stamp: Stamp;
+  readonly transaction_id: number;
+  readonly amount: number;
+  readonly stamp: Stamp | null;
 };
 
 
 // REQUEST BODY FOR POST /transactions/{id}/payout
+// amount IS OPTIONAL — IF OMITTED, AMUSEMENT'S STORED player_payout IS USED
 export type PayoutRequest = {
-  amount: number;
   api_key: string;
+  amount?: number;
 };
 
 
-// RESPONSE FROM POST /transactions/{id}/payout
+// SUCCESS RESPONSE FROM POST /transactions/{id}/payout
 export type PayoutResponse = {
-  readonly id: number;
-  readonly original_transaction_id: number;
+  readonly transaction_id: number;
+  readonly amount: number;
 };

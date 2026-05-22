@@ -46,7 +46,7 @@ export type Database = {
           is_student: boolean
           player_name: string
           score: number | null
-          stake_amount: number
+          stake_amount: number | null
           tivoli_payout_id: number | null
           tivoli_transaction_id: number | null
         }
@@ -56,7 +56,7 @@ export type Database = {
           is_student: boolean
           player_name: string
           score?: number | null
-          stake_amount: number
+          stake_amount?: number | null
           tivoli_payout_id?: number | null
           tivoli_transaction_id?: number | null
         }
@@ -66,7 +66,7 @@ export type Database = {
           is_student?: boolean
           player_name?: string
           score?: number | null
-          stake_amount?: number
+          stake_amount?: number | null
           tivoli_payout_id?: number | null
           tivoli_transaction_id?: number | null
         }
