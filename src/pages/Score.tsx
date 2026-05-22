@@ -9,10 +9,10 @@ import { Button } from "../components/Buttons";
 
 // Hooks
 import { useScores } from "../hooks/useScores";
+import type { ScoresSort } from "../services/gameService";
 import { useDebouncedValue } from "../hooks/useDebouncedValue";
 
 // Types
-import type { ScoresSort } from "../types/gameSession";
 import { Typography } from "../components/Typography";
 
 
