@@ -19,7 +19,7 @@ import { Catcher } from "./Catcher";
 import { GameCanvas } from "./GameCanvas";
 import type { FallingItem } from "../../models/GameTypes";
 import { Button } from "../Buttons";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { CountDown } from "../CountDown";
 
 
@@ -37,8 +37,8 @@ export default function GameScreen() {
   const [stackedItems, setStackedItems] = useState<FallingItem[]>([]); // Currently stacked items
 
 
-  // USE GAME SESSION
-  // const { playerName, hasPlayed } = useGameSession(isGameOver, caughtItems);
+  // USE GAME SESSION — TRIGGERS submit-score AT GAME OVER
+  const { playerName } = useGameSession(isGameOver, caughtItems);
 
   // CATCHER
   const [catcherX, setCatcherX] = useState(0); // HORIZONTAL POSITION, UPDATES ON MOUSE MOVEMENT
@@ -128,7 +128,7 @@ export default function GameScreen() {
       </GameCanvas>
 
       <InfoPlate className="flex-row h-22">
-        <Typography text="namn" size={1} font={"body"} color="white"/>
+        <Typography text={playerName ?? ""} size={1} font={"body"} color="white"/>
         <Typography text={caughtItems} size={6} font={"main"} color="green"/>
         <Typography text={"HS"} size={1} font={"body"} color="white"/>
       </InfoPlate>
