@@ -7,6 +7,7 @@ import { Layout } from "../components/layout/Layout";
 import { Modal } from "../components/modal/Modal";
 import { Typography } from "../components/Typography";
 import { ScoreBoardRow } from "../components/ScoreBoardRow";
+import { startSession } from "../services/gameService";
 
 import { useHighestScore } from "../hooks/useHighestScore";
 import { useIdentityToken } from "../hooks/useIdentityToken";

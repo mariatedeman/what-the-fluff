@@ -8,6 +8,7 @@ import type { GameSession, GetScoresParams } from "../services/gameService";
 // DEFAULTS: sort="best"
 export function useScores({
   sort = "best",
+  search = "",
 }: GetScoresParams = {}) {
 
   // STATE FOR THE LIST OF SCORES - EMPTY ARRAY UNTIL DATA HAS BEEN FETCHED
@@ -40,7 +41,7 @@ export function useScores({
       try {
 
         // AWAIT THE SERVICE FUNCTION THAT TALKS TO SUPABASE
-        const data = await getScores({ sort });
+        const data = await getScores({ sort, search });
 
         // ONLY UPDATE STATE IF COMPONENT IS STILL MOUNTED
         if (isMounted) {
@@ -71,7 +72,7 @@ export function useScores({
     return () => {
       isMounted = false;
     };
-  }, [sort]);
+  }, [sort, search]);
 
 
   // RETURN STATE TO THE COMPONENT THAT USES THE HOOK

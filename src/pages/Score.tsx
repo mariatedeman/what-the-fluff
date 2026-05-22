@@ -1,54 +1,69 @@
+import { use, useState } from "react";
+
+// Components
 import { Layout } from "../components/layout/Layout";
 import { ScoreBoardRow } from "../components/ScoreBoardRow";
+import { InfoPlate } from "../components/InfoPlate";
+import TextInput from "../components/TextInput";
+import { Button } from "../components/Buttons";
 
-import { useState } from "react";
+// Hooks
 import { useScores } from "../hooks/useScores";
 import type { ScoresSort } from "../services/gameService";
+import { useDebouncedValue } from "../hooks/useDebouncedValue";
+
+// Types
+import { Typography } from "../components/Typography";
+
 
 export default function Score() {
   const [sort, setSort] = useState<ScoresSort>("best");
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebouncedValue(search, 600)
+  
+  const handleSort = () => {
+    if (sort === "best") {
+      setSort("worst");
+    } else {
+      setSort("best");
+    }
+  }
 
-  const { scores, loading, error } = useScores({ sort });
+  const { scores, loading, error } = useScores({ sort, search: debouncedSearch });
 
+  
   return (
     <Layout>
 
-    <div>
-      <h1>Score</h1>
-      {/* BUTTONS TO SHOW TOP 10 BEST OR WORST */}
-      <div className="flex justify-center gap-8 p-6">
-        <button
-          onClick={() => setSort("best")}
-          disabled={sort === "best"}
-          className="p-2 rounded-md bg-white"
-        >
-          Top 10 best
-        </button>
-        <button
-          onClick={() => setSort("worst")}
-          disabled={sort === "worst"}
-          className="p-2 rounded-md bg-white"
-        >
-          Top 10 worst
-        </button>
-      </div>
+    <div className="sm:min-w-xl min-w-xs">
+      <Typography text={"Highscore"} color="pink" type="h2" size={4}></Typography>
+
+      {/* SORT AND FILTER */}  
+      <InfoPlate className="h-22">
+          
+        <TextInput id="search" placeholder="Name search" value={search} onChange={(e) => setSearch(e.target.value)} className="placeholder-text text-left px-4 border-none text-black"></TextInput>
+
+        <Button type="button" variant="secondary" children="↑↓" onClick={() => handleSort()} className="w-fit text-green-dark" />
+      
+      </InfoPlate>
+
 
       {/* SHOW LOADING OR ERROR OR IF LIST IS EMPTY */}
       {loading && <p>Loading…</p>}
       {error && <p>{error}</p>}
       {!loading && !error && scores.length === 0 && <p>No scores yet.</p>}
 
-    </div>
 
-    {/* DISPLAY STYLED SCORE-LIST */}
-    {scores.map((s, index) => {
-      const placement = index + 1;
-
-      return (
+      {/* DISPLAY SCORES */}
+      {scores.map((s, index) => {
+        const placement = index + 1;
+        
+        return (
           <ScoreBoardRow key={s.id} placement={placement} name={s.player_name} score={s.score} />
-      )
-    })}
+        )
+      })}
     
+    </div>
     </Layout>
     )
 }
