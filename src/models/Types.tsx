@@ -15,7 +15,8 @@ export interface TextInputProps {
     children?: ReactNode,
     placeholder?: string,
     value: string,
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
+    className?: string,
 }
 
 // SCORES

@@ -8,8 +8,8 @@ export type GameSession = Tables<"game_sessions">;
 // INPUT TYPE WHEN STARTING A GAME SESSION
 export type PlayerOptions = {
   player_name: string;
-  stake_amount?: number;
-  identity_token?: string;
+  stake_amount?: number | null;
+  identity_token?: string | null;
 };
 
 
@@ -20,4 +20,5 @@ export type ScoresSort = "best" | "worst";
 // PARAMS FOR getScores / useScores
 export type GetScoresParams = {
   sort?: ScoresSort;
+  search?: string,
 };

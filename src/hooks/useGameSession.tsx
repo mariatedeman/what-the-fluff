@@ -18,7 +18,7 @@ export function useGameSession(isGameOver: boolean, caughtItems: number) {
     // API States
     const [sessionId, setSessionId] = useState<number | null>(null);
     const [submitLoading, setSubmitLoading] = useState<boolean>(false);
-    const [submitResult, setSubmitResult] = useState<SubmitScoreResponse | null>(null,);
+    const [submitResult, setSubmitResult] = useState<SubmitScoreResponse | null>(null);
 
     // REFS
     const sessionStartedRef = useRef(false); // TRACK SESSION START
@@ -73,7 +73,8 @@ export function useGameSession(isGameOver: boolean, caughtItems: number) {
         playerName,
         submitLoading,
         submitResult,
-        hasPlayed
+        hasPlayed,
+        stakeAmount,
       };
 
 }

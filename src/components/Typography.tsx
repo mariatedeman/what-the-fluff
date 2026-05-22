@@ -24,14 +24,14 @@ export function Typography({
     type = "p",
     text = "", 
     color = "default", 
-    size,
+    size = 3,
     font = "body",
     className,
 }: {
     type?: "p" | "span" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6",
     text: string | number, 
     color?: keyof typeof colorMap, 
-    size: keyof typeof fontSizeMap,
+    size?: keyof typeof fontSizeMap,
     font?: keyof typeof fontMap,
     className?: string
 }) {

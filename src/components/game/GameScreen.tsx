@@ -36,8 +36,9 @@ export default function GameScreen() {
   const [caughtItems, setCaughtItems] = useState<number>(0); // Caught items
   const [stackedItems, setStackedItems] = useState<FallingItem[]>([]); // Currently stacked items
 
+
   // USE GAME SESSION
-  const { playerName, hasPlayed } = useGameSession(isGameOver, caughtItems);
+  // const { playerName, hasPlayed } = useGameSession(isGameOver, caughtItems);
 
   // CATCHER
   const [catcherX, setCatcherX] = useState(0); // HORIZONTAL POSITION, UPDATES ON MOUSE MOVEMENT
@@ -127,7 +128,7 @@ export default function GameScreen() {
       </GameCanvas>
 
       <InfoPlate className="flex-row h-22">
-        <Typography text={playerName} size={1} font={"body"} color="white"/>
+        <Typography text="namn" size={1} font={"body"} color="white"/>
         <Typography text={caughtItems} size={6} font={"main"} color="green"/>
         <Typography text={"HS"} size={1} font={"body"} color="white"/>
       </InfoPlate>
