@@ -1,4 +1,15 @@
-import { ApiError } from "../types/api";
+// REAL ERROR SUBCLASS SO IT HAS A STACK TRACE AND WORKS WITH INSTANCEOF ERROR
+export class ApiError extends Error {
+  readonly status?: number;
+  readonly body?: unknown;
+
+  constructor(message: string, status?: number, body?: unknown) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+    this.body = body;
+  }
+}
 
 
 // READ A RESPONSE BODY AS JSON IF POSSIBLE, ELSE AS RAW TEXT

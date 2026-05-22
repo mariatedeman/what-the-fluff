@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { startSession, submitScore } from "../../services/gameService";
-import type { StartSessionResponse, SubmitScoreResponse } from "../../types/api";
+import type { StartSessionResponse, SubmitScoreResponse } from "../../services/gameService";
 
 export default function TestScore() {
   const [playerName, setPlayerName] = useState("test-player");

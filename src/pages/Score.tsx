@@ -3,7 +3,7 @@ import { ScoreBoardRow } from "../components/ScoreBoardRow";
 
 import { useState } from "react";
 import { useScores } from "../hooks/useScores";
-import type { ScoresSort } from "../types/gameSession";
+import type { ScoresSort } from "../services/gameService";
 
 export default function Score() {
   const [sort, setSort] = useState<ScoresSort>("best");

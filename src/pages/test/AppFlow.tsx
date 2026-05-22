@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { useIdentityToken } from "../../hooks/useIdentityToken";
 import { getIdentity } from "../../services/tivoliService";
 import { startSession } from "../../services/gameService";
+import type { StartSessionResponse } from "../../services/gameService";
 import type { IdentityResponse } from "../../types/tivoli";
-import type { ApiError, StartSessionResponse } from "../../types/api";
+import type { ApiError } from "../../lib/apiError";
 
 
 // Adjust when pricing is decided

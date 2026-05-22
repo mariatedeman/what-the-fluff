@@ -1,4 +1,4 @@
-import { ApiError } from "../types/api";
+import { ApiError } from "../lib/apiError";
 
 
 export type TivoliEndpoint = "transaction" | "payout" | "identity";
