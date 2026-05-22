@@ -41,6 +41,7 @@ export async function getScores({ sort, search }: GetScoresParams) {
     .order("score", { ascending: sort === "worst" })
     .limit(10);
 
+    // FROM SEARCH FIELD
     if (search) {
       query = query.ilike("player_name", `%${search}%`);
     }
@@ -55,24 +56,6 @@ export async function getScores({ sort, search }: GetScoresParams) {
   return data;
 
 }
-
-// export const getScores = async ({
-//   sort = "best",
-// }: GetScoresParams = {}): Promise<GameSession[]> => {
-//   const { data, error } = await supabase
-//     .from("game_sessions")
-//     .select("*")
-//     .not("score", "is", null)
-//     .order("score", { ascending: sort === "worst" })
-//     .limit(10);
-
-//   if (error) {
-//     console.error("getScores error:", error);
-//     return [];
-//   }
-
-//   return data;
-// };
 
 
 // START SESSION VIA EDGE FUNCTION
