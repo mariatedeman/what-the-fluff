@@ -1,14 +1,56 @@
 import { supabase } from "../lib/supabase";
-import type {
-  GameSession,
-  GetScoresParams,
-  PlayerOptions,
-} from "../types/gameSession";
-import type {
-  StartSessionResponse,
-  SubmitScoreResponse,
-} from "../types/api";
+import type { Tables } from "../types/database";
+import type { Stamp } from "../types/tivoli";
 
+
+// ── TYPES ──────────────────────────────────────────────────────
+
+// FULL game_sessions TABLE-ROW
+export type GameSession = Tables<"game_sessions">;
+
+
+// INPUT TYPE WHEN STARTING A GAME SESSION
+export type PlayerOptions = {
+  player_name: string;
+  stake_amount?: number;
+  identity_token?: string;
+};
+
+
+// SORT DIRECTION FOR THE SCORE LEADERBOARD
+export type ScoresSort = "best" | "worst";
+
+
+// PARAMS FOR getScores / useScores
+export type GetScoresParams = {
+  sort?: ScoresSort;
+};
+
+
+// RESPONSE FROM start-session EDGE FUNCTION
+export type StartSessionResponse = {
+  success: boolean;
+  data?: {
+    id: number;
+    tivoli_transaction_id: number | null;
+    stamp: Stamp | null;
+  };
+  error?: string;
+};
+
+
+// RESPONSE FROM submit-score EDGE FUNCTION
+export type SubmitScoreResponse = {
+  success: boolean;
+  data?: {
+    id: number;
+    score: number;
+  };
+  error?: string;
+};
+
+
+// ── FUNCTIONS ──────────────────────────────────────────────────
 
 // FETCH THE HIGHEST SCORE FROM DB
 // Uses .maybeSingle() which returns null when there are 0 rows
@@ -29,6 +71,7 @@ export async function getHighestScore(): Promise<GameSession | null> {
 
   return data;
 }
+
 
 // FETCH SCORES FROM game_sessions
 // TOP 10 BEST SCORES AS DEFAULT
