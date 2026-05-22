@@ -54,7 +54,6 @@ export async function getScores({ sort, search }: GetScoresParams) {
     }
 
   return data;
-
 }
 
 

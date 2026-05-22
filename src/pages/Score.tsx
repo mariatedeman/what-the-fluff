@@ -40,7 +40,7 @@ export default function Score() {
       {/* SORT AND FILTER */}  
       <InfoPlate className="h-22">
           
-        <TextInput id="search" placeholder="Name search" value={search} onChange={(e) => setSearch(e.target.value)} className="placeholder-text"></TextInput>
+        <TextInput id="search" placeholder="Name search" value={search} onChange={(e) => setSearch(e.target.value)} className="placeholder-text text-left px-4"></TextInput>
 
         <Button type="button" variant="secondary" children="↑↓" onClick={() => handleSort()} className="w-fit text-green-dark" />
       
