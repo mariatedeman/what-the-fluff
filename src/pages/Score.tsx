@@ -1,4 +1,4 @@
-import { use, useState } from "react";
+import { useState } from "react";
 
 // Components
 import { Layout } from "../components/layout/Layout";

@@ -13,7 +13,6 @@ import { useHighestScore } from "../hooks/useHighestScore";
 import { useIdentityToken } from "../hooks/useIdentityToken";
 
 import { getIdentity } from "../services/tivoliService";
-import { startSession } from "../services/gameService";
 
 import type { ApiError } from "../lib/apiError";
 import type { IdentityResponse } from "../types/tivoli";
