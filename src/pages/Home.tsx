@@ -207,6 +207,7 @@ return (
             placeholder="Name" 
             value={playerName}
             onChange={(e) => setPlayerName(e.currentTarget.value)}
+            className="text-white"
           />
 
           <Button 

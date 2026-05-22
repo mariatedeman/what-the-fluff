@@ -23,11 +23,18 @@ export function ScoreBoardRow({placement, name, score, className}: ScoreBoardRow
                 >
 
                 <div className="flex gap-6 items-center min-w-0">
-                    <span className="font-h text-6xl text-green-dark">{placement}</span>
-                    <span className="font-body font-bold max-w-4/5 text-left text-xl truncate">{name}</span>
+                    <span className="font-h text-6xl text-green-dark text-center min-w-15">
+                        {placement}
+                    </span>
+
+                    <span className="font-body font-bold max-w-4/5 text-left text-xl truncate">
+                        {name}
+                    </span>
                 </div>
 
-                <span className="text-xl font-body font-bold">{score}p</span>
+                <span className="text-xl font-body font-bold min-w-10 text-left">
+                    {score}p
+                </span>
 
                 </div>
 

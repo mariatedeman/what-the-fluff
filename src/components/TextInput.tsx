@@ -17,7 +17,7 @@ export default function TextInput({id, placeholder, value, onChange, className}:
                     className={`
                         relative z-10 w-full h-full p-2 
                         bg-transparent outline-none
-                        text-center font-body text-white
+                        text-center font-body
                         rounded-2xl border-2 border-border border-dashed
                         ${className}`}
                     placeholder={ placeholder }
