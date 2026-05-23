@@ -1,78 +1,39 @@
-// WIRE TYPES FOR THE LOOPLAND CENTRALBANK API.
-// SINGLE SOURCE OF TRUTH FOR BOTH FRONTEND (src/services/tivoliService.ts)
-// AND EDGE FUNCTIONS (supabase/functions/{start-session,tivoli-payout}).
-// SPEC: https://api.loopland.se (see openapi.yaml).
+// TYPES BUILT FROM centralbank-generated.ts
+// GENERATED FROM openapi/centralbank-api.yaml
+// REGENERATE: npm run gen:centralbank-types
+
+import type { components, operations } from "./centralbank-generated.ts";
 
 
 // identity_token URL-QUERY_STRING FROM TIVOLI
 export type IdentityToken = string;
 
 
-// INNER user OBJECT INSIDE THE GET /identity-tokens/{token} RESPONSE
-export type TivoliUser = {
-  readonly id: number;
-  readonly name: string;
-};
+// GET /identity-tokens/{token} — RESPONSE
+export type IdentityResponse = operations["resolveIdentityToken"]["responses"]["200"]["content"]["application/json"];
 
 
-// FULL RESPONSE BODY FROM GET /identity-tokens/{token}
-// SHAPE: { user: { id, name }, expires_at }
-export type IdentityResponse = {
-  readonly user: TivoliUser;
-  readonly expires_at: string;
-};
+export type Stamp = Required<NonNullable<components["schemas"]["TransactionResponse"]["stamp"]>>;
 
 
-// STAMP VALUE UNIONS — MATCHES OPENAPI enum: FIELDS FOR animal AND metal
-export type StampAnimal =
-  | "lion"
-  | "dolphin"
-  | "toucan"
-  | "beetlebug"
-  | "snake";
-
-export type StampMetal = "silver" | "gold" | "platinum";
+// POST /transactions — REQUEST BODY
+export type TransactionRequest =
+  operations["createTransaction"]["requestBody"]["content"]["application/json"];
 
 
-// STAMP - MINIMAL FORM AS EMBEDDED IN TransactionResponse
-// THE FULL STAMP SHAPE (id, transaction_id, created_at, ...) IS ONLY RETURNED BY GET /stamps,
-// WHICH THIS APP DOES NOT CALL — ADD A SEPARATE TYPE IF THAT ENDPOINT IS ADDED LATER
-export type Stamp = {
-  readonly animal: StampAnimal;
-  readonly metal: StampMetal | null;
-  readonly image_url: string;
-};
+// POST /transactions — SUCCESS RESPONSE
+export type TransactionResponse =
+  Required<Omit<components["schemas"]["TransactionResponse"], "stamp">> & {
+    stamp: Stamp | null;
+  };
 
 
-// REQUEST BODY FOR POST /transactions
-// amount IS OPTIONAL — IF OMITTED, AMUSEMENT'S STORED price IS USED
-export type TransactionRequest = {
-  identity_token: IdentityToken;
-  api_key: string;
-  amount?: number;
-};
+// POST /transactions/{id}/payout — REQUEST BODY
+export type PayoutRequest =
+  operations["payoutTransaction"]["requestBody"]["content"]["application/json"];
 
 
-// SUCCESS RESPONSE FROM POST /transactions
-// stamp IS null IF THE TOKEN ALREADY MINTED ITS ONE STAMP,
-// OR IF THE 3-MIN ANTI-FARMING RATE LIMIT FOR (user, amusement) IS ACTIVE
-export type TransactionResponse = {
-  readonly transaction_id: number;
-  readonly amount: number;
-  readonly stamp: Stamp | null;
-};
+// POST /transactions/{id}/payout — SUCCESS RESPONSE
+export type PayoutResponse =
+  operations["payoutTransaction"]["responses"]["201"]["content"]["application/json"];
 
-
-// REQUEST BODY FOR POST /transactions/{id}/payout
-// amount IS OPTIONAL — IF OMITTED, AMUSEMENT'S STORED player_payout IS USED
-export type PayoutRequest = {
-  api_key: string;
-  amount?: number;
-};
-
-
-// SUCCESS RESPONSE FROM POST /transactions/{id}/payout
-export type PayoutResponse = {
-  readonly transaction_id: number;
-  readonly amount: number;
-};

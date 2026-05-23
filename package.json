@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "gen:types": "supabase gen types typescript --linked | tee src/types/database.ts > supabase/functions/_shared/database.ts"
+    "gen:db-types": "supabase gen types typescript --linked -o supabase/functions/_shared/database.ts",
+    "gen:centralbank-types": "openapi-typescript ./openapi/centralbank-api.yaml -o ./supabase/functions/_shared/centralbank-generated.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.105.3",
@@ -28,6 +29,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.5.0",
+    "openapi-typescript": "^7.13.0",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.2",
     "vite": "^8.0.10"
