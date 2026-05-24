@@ -1,5 +1,11 @@
 import type { Stamp } from "./tivoli.ts";
 
+// POST /functions/v1/start-session — REQUEST BODY
+export type StartSessionRequest = {
+  player_name: string;
+  identity_token?: string;
+};
+
 // POST /functions/v1/start-session — RESPONSE
 export type StartSessionResponse =
   | {
@@ -12,6 +18,12 @@ export type StartSessionResponse =
       };
     }
   | { success: false; error: string };
+
+// POST /functions/v1/submit-score — REQUEST BODY
+export type SubmitScoreRequest = {
+  session_id: number;
+  score: number;
+};
 
 // POST /functions/v1/submit-score — RESPONSE
 export type SubmitScoreResponse =
