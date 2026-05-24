@@ -2,13 +2,8 @@ import "@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "@supabase/supabase-js";
 import { json, preflight } from "../_shared/responses.ts";
 import type { Database, TablesUpdate } from "../_shared/database.ts";
-import type { SubmitScoreResponse } from "../_shared/edge.ts";
+import type { SubmitScoreRequest, SubmitScoreResponse } from "../_shared/edge.ts";
 
-
-type RequestBody = {
-  session_id: number;
-  score: number;
-};
 
 type SessionUpdate = TablesUpdate<"game_sessions">;
 
@@ -23,7 +18,7 @@ Deno.serve(async (req) => {
   }
 
   // PARSE BODY - MALFORMED JSON IS A CLIENT ERROR (400), NOT A SERVER ERROR
-  let body: Partial<RequestBody>;
+  let body: Partial<SubmitScoreRequest>;
   try {
     body = await req.json();
   } catch {
