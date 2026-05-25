@@ -113,6 +113,7 @@ export default function Home() {
       navigate("/game", {
         state: {
           playerName,
+          isStudent,
           sessionId: res.data.id,
           tivoliTransactionId: res.data.tivoli_transaction_id,
         },

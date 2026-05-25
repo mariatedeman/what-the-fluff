@@ -19,11 +19,13 @@ import { Catcher } from "./Catcher";
 import { GameCanvas } from "./GameCanvas";
 import type { FallingItem } from "../../models/GameTypes";
 import { Button } from "../Buttons";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate, useLocation } from "react-router-dom";
 import { CountDown } from "../CountDown";
 
 
 export default function GameScreen() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [isCountingDown, setIsCountingDown] = useState<boolean>(true);
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
 
@@ -38,7 +40,7 @@ export default function GameScreen() {
 
 
   // USE GAME SESSION — TRIGGERS submit-score AT GAME OVER
-  const { playerName } = useGameSession(isGameOver, caughtItems);
+  const { playerName, isStudent } = useGameSession(isGameOver, caughtItems);
 
   // CATCHER
   const [catcherX, setCatcherX] = useState(0); // HORIZONTAL POSITION, UPDATES ON MOUSE MOVEMENT
@@ -111,7 +113,18 @@ export default function GameScreen() {
 
             <img src="/fluff-blue.svg" />
 
-            <Button variant="secondary" href="/score" className="mt-8">
+            <Button 
+              variant="secondary" 
+              onClick={() => navigate("/score", {
+                state: {
+                  playerName,
+                  isStudent,
+                  score: caughtItems,
+                  sessionId: location.state?.sessionId,
+                  tivoliTransactionId: location.state?.tivoliTransactionId,
+                },
+              })}
+              className="mt-8">
               To scoreboard
             </Button>
 

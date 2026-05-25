@@ -14,12 +14,21 @@ import { useDebouncedValue } from "../hooks/useDebouncedValue";
 
 // Types
 import { Typography } from "../components/Typography";
+import { useLocation } from "react-router-dom";
+import { useIdentityToken } from "../hooks/useIdentityToken";
 
 
 export default function Score() {
   const [sort, setSort] = useState<ScoresSort>("best");
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebouncedValue(search, 600)
+
+  const location = useLocation();
+  const state = location.state || {};
+  const { playerName } = state;
+  
+  const token = useIdentityToken();
+  const isStudent = token !== null;
   
   const handleSort = () => {
     if (sort === "best") {
@@ -38,11 +47,21 @@ export default function Score() {
     <div className="sm:min-w-xl min-w-xs">
 
       {/* SORT AND FILTER */}  
-      <InfoPlate className="h-22">
+      <InfoPlate className="h-22 mb-2">
           
-        <TextInput id="search" placeholder="Name search" value={search} onChange={(e) => setSearch(e.target.value)} className="placeholder-text text-left px-4 border-none text-black"></TextInput>
+        <TextInput 
+          id="search" 
+          placeholder="Name search" 
+          value={search} onChange={(e) => setSearch(e.target.value)} className="placeholder-text text-left px-4 border-none text-black" 
+        />
 
-        <Button type="button" variant="secondary" children="↑↓" onClick={() => handleSort()} className="w-fit text-green-dark" />
+        <Button 
+          type="button" 
+          variant="secondary" 
+          children="↑↓" 
+          onClick={() => handleSort()} 
+          className="w-fit text-green-dark" 
+        />
       
       </InfoPlate>
 
@@ -50,7 +69,9 @@ export default function Score() {
       {/* SHOW LOADING OR ERROR OR IF LIST IS EMPTY */}
       {loading && <p>Loading…</p>}
       {error && <p>{error}</p>}
-      {!loading && !error && scores.length === 0 && <p>No scores yet.</p>}
+      {!loading && !error && scores.length === 0 && 
+        <p>No scores yet.</p>
+      }
 
 
       {/* DISPLAY SCORES */}
@@ -58,9 +79,35 @@ export default function Score() {
         const placement = index + 1;
         
         return (
-          <ScoreBoardRow key={s.id} placement={placement} name={s.player_name} score={s.score} />
+          <ScoreBoardRow 
+            key={s.id} 
+            placement={placement} 
+            name={s.player_name} 
+            score={s.score}
+            className="mb-2"/>
         )
       })}
+
+      {/* KNAPPAR BASERAT PÅ OM ANVÄNDAREN ÄR STUDENT ELLER INTE */}
+      {isStudent ? (
+        <div className="flex flex-col gap-2 mb-8">
+          <Button 
+            variant="secondary" 
+            onClick={() =>
+              window.parent.postMessage({ type: "AMUSEMENT_CLOSE" }, "*")
+            }
+            className="w-full h-17 mt-2">
+              Close game
+          </Button>
+        </div>
+      ) : (
+        <Button 
+          variant="primary" 
+          href="/" 
+          className="w-full mb-8 h-17">
+            Play again
+        </Button>
+      )}
     
     </div>
     </Layout>
