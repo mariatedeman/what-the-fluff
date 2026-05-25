@@ -1,3 +1,5 @@
+import { useId } from "react";
+
 const colorMap = {
   pink: "#ED7EC8",
   green: "#A5CC61",
@@ -7,6 +9,10 @@ const colorMap = {
 type ColorKey = keyof typeof colorMap;
 
 export function LoadingSVG({ color = "pink" }: { color?: ColorKey }) {
+  const baseId = useId().replace(/:/g, "");
+  const id1 = `spinner_1_${baseId}`;
+  const id2 = `spinner_2_${baseId}`;
+
   return (
     <div className="flex h-10 justify-center">
       <svg
@@ -16,8 +22,8 @@ export function LoadingSVG({ color = "pink" }: { color?: ColorKey }) {
       >
         <circle cx="4" cy="12" r="3">
           <animate
-            id="spinner_qFRN"
-            begin="0;spinner_OcgL.end+0.25s"
+            id={id1}
+            begin={`0;${id2}.end+0.25s`}
             attributeName="cy"
             calcMode="spline"
             dur="0.6s"
@@ -28,7 +34,7 @@ export function LoadingSVG({ color = "pink" }: { color?: ColorKey }) {
 
         <circle cx="12" cy="12" r="3">
           <animate
-            begin="spinner_qFRN.begin+0.1s"
+            begin={`${id1}.begin+0.1s`}
             attributeName="cy"
             calcMode="spline"
             dur="0.6s"
@@ -39,8 +45,8 @@ export function LoadingSVG({ color = "pink" }: { color?: ColorKey }) {
 
         <circle cx="20" cy="12" r="3">
           <animate
-            id="spinner_OcgL"
-            begin="spinner_qFRN.begin+0.2s"
+            id={id2}
+            begin={`${id1}.begin+0.2s`}
             attributeName="cy"
             calcMode="spline"
             dur="0.6s"

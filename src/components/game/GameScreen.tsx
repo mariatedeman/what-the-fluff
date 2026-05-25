@@ -113,7 +113,7 @@ export default function GameScreen() {
 
   // SEND TO SCORE IF ALREADY PLAYED
   if (storedHasPlayed && !isGameOver) {
-    return <Navigate to={"/"} />;
+    return <Navigate to={"/score"} />;
   }
 
   return (
@@ -146,13 +146,23 @@ export default function GameScreen() {
                   className="pb-8 font-bold"
                 />
 
-                <img
-                  className="
-                    rounded-3xl border-4 border-border border-dotted 
-                    h-30 p-4 bg-white"
-                  src={stamp.image_url}
-                  alt="tivoli stamp"
-                />
+                {stamp?.image_url ? (
+                  <img
+                    className="
+                      rounded-3xl border-4 border-border border-dotted 
+                      h-30 p-4 bg-white"
+                    src={stamp.image_url}
+                    alt="tivoli stamp"
+                  />
+                ) : (
+                  <Typography
+                    text="No stamp available"
+                    type="span"
+                    font="body"
+                    size={0}
+                    color="white"
+                  />
+                )}
               </>
             )}
 
@@ -186,14 +196,12 @@ export default function GameScreen() {
 
         <Typography text={caughtItems} size={6} font={"main"} color="green" />
 
-        {/* {isStudent && ( */}
-          <Typography
-            text={`☆ ${highscore ?? caughtItems}p`}
-            size={1}
-            font={"body"}
-            color="white"
-          />
-        {/* )} */}
+        <Typography
+          text={`☆ ${highscore ?? caughtItems}p`}
+          size={1}
+          font={"body"}
+          color="white"
+        />
       </InfoPlate>
     </div>
   );
