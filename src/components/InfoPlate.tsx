@@ -17,9 +17,10 @@ export function InfoPlate({
       <div
         className={`
                 relative w-full flex justify-center self-center
-                border-2 border-border border-dotted rounded-2xl
+                border-4 border-border border-dotted rounded-2xl
                 ${className}`}
       >
+        
         {/* Content */}
         <div
           className="
@@ -29,6 +30,7 @@ export function InfoPlate({
         >
           {children}
         </div>
+        
       </div>
     </section>
   );

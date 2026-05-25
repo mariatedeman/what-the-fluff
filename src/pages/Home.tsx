@@ -116,6 +116,7 @@ export default function Home() {
         state: {
           playerName,
           isStudent,
+          stamp: res.data.stamp,
           sessionId: res.data.id,
           tivoliTransactionId: res.data.tivoli_transaction_id,
         },
@@ -125,6 +126,7 @@ export default function Home() {
       setError((err as ApiError).message ?? "Start session failed");
       setLoading(null);
     }
+    
   };
 
   const onStudentPlay = () => {

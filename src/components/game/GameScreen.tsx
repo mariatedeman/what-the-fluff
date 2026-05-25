@@ -18,13 +18,22 @@ import { Catcher } from "./Catcher";
 import { GameCanvas } from "./GameCanvas";
 import type { FallingItem } from "../../models/GameTypes";
 import { Button } from "../Buttons";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { CountDown } from "../CountDown";
+import { useIdentityToken } from "../../hooks/useIdentityToken";
 
 export default function GameScreen() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isCountingDown, setIsCountingDown] = useState<boolean>(true);
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
+
+  const token = useIdentityToken();
+  const isStudent = typeof token === "string" && token.trim().length > 0;
+
+  // EXTRACT stamp FROM ROUTER STATE (PASSED FROM Home.tsx DURING navigate)
+  const stamp = location.state?.stamp;
+  console.log("stamp: ", stamp);
 
   const handleCountDownDone = useCallback(() => {
     setIsCountingDown(false);
@@ -97,7 +106,7 @@ export default function GameScreen() {
         )}
 
         {!isCountingDown && isGameOver && (
-          <Modal className="inset-0 h-full" innerClassName="border-none">
+          <Modal className="inset-0 h-full">
             <Typography
               text={"Game Over"}
               type="span"
@@ -105,16 +114,26 @@ export default function GameScreen() {
               size={5}
               color="pink"
             />
-            <Typography
-              text={`Your winnings: `}
-              type="span"
-              font="body"
-              size={0}
-              color="white"
-              className="pb-8 font-bold"
-            />
 
-            <img src="/fluff-blue.svg" alt="tivoli stamp" />
+            {/* <img src="/fluff-blue.svg" alt="tivoli stamp" /> */}
+            {isStudent && 
+            <>
+              <Typography
+                text={`Your winnings: `}
+                type="span"
+                font="body"
+                size={0}
+                color="white"
+                className="pb-8 font-bold"
+                />
+              
+                <img
+                className="rounded-3xl border-4 border-border border-dotted h-30 p-4 bg-white"
+                src={stamp.image_url}
+                alt="tivoli stamp"
+                />
+              </>
+            }
 
             <Button
               variant="secondary"
