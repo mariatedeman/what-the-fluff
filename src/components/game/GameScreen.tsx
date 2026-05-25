@@ -10,9 +10,9 @@ import { useTouchInput } from "../../hooks/useTouchInput";
 import { useMouseInput } from "../../hooks/useMouseInput";
 
 // Components
-import { Modal } from "../modal/Modal";
+import { Modal } from "../Modal";
 import { Typography } from "../Typography";
-import { InfoPlate } from "../InfoPlate";
+import { InfoPlate } from "./InfoPlate";
 import { FallingItemsLayer } from "./FallingItemsLayer";
 import { StackedItemsLayer } from "./StackedItemsLayer";
 import { Catcher } from "./Catcher";

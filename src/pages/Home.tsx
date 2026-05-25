@@ -4,9 +4,9 @@ import { useNavigate } from "react-router-dom";
 
 import { Button } from "../components/Buttons";
 import TextInput from "../components/TextInput";
-import { Modal } from "../components/modal/Modal";
+import { Modal } from "../components/Modal";
 import { Typography } from "../components/Typography";
-import { ScoreBoardRow } from "../components/ScoreBoardRow";
+import { ScoreBoardRow } from "../components/scoreboard/ScoreBoardRow";
 import { startSession } from "../services/gameService";
 
 import { useHighestScore } from "../hooks/useHighestScore";
@@ -139,6 +139,7 @@ export default function Home(): ReactNode {
     if (!trimmed) return;
     void startAndGo(trimmed);
   };
+
 
   return (
     <div className="flex flex-col flex-1 justify-center">
@@ -277,9 +278,11 @@ export default function Home(): ReactNode {
                 name={highestScore?.player_name}
                 score={highestScore?.score}
                 className="w-full text-center"
+                background={true}
               />
             </>
           )}
+          
         </div>
       </div>
     </div>
