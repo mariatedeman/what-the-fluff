@@ -21,6 +21,7 @@ import { Button } from "../Buttons";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { CountDown } from "../CountDown";
 import { useIdentityToken } from "../../hooks/useIdentityToken";
+import { getUsersHighestScore } from "../../services/gameService";
 
 export default function GameScreen() {
   const navigate = useNavigate();
@@ -33,7 +34,6 @@ export default function GameScreen() {
 
   // EXTRACT stamp FROM ROUTER STATE (PASSED FROM Home.tsx DURING navigate)
   const stamp = location.state?.stamp;
-  console.log("stamp: ", stamp);
 
   const handleCountDownDone = useCallback(() => {
     setIsCountingDown(false);
@@ -46,6 +46,25 @@ export default function GameScreen() {
 
   // USE GAME SESSION — TRIGGERS submit-score AT GAME OVER
   const { playerName } = useGameSession(isGameOver, caughtItems);
+
+  // FETCH PLAYER'S PREVIOUS HIGHEST SCORE
+  const [highscore, setHighscore] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!playerName) return;
+
+    const fetchHighscore = async () => {
+      try {
+        const result = await getUsersHighestScore(playerName);
+        setHighscore(result?.score ?? null);
+      } catch (err) {
+        console.error("Failed to fetch user's highest score:", err);
+        setHighscore(null);
+      }
+    };
+
+    void fetchHighscore();
+  }, [playerName]);
 
   // CATCHER
   const [catcherX, setCatcherX] = useState(0); // HORIZONTAL POSITION, UPDATES ON MOUSE MOVEMENT
@@ -115,25 +134,27 @@ export default function GameScreen() {
               color="pink"
             />
 
-            {/* <img src="/fluff-blue.svg" alt="tivoli stamp" /> */}
-            {isStudent && 
-            <>
-              <Typography
-                text={`Your winnings: `}
-                type="span"
-                font="body"
-                size={0}
-                color="white"
-                className="pb-8 font-bold"
+            {/* Display stamp and winnings */}
+            {isStudent && (
+              <>
+                <Typography
+                  text={`Your winnings: `}
+                  type="span"
+                  font="body"
+                  size={0}
+                  color="white"
+                  className="pb-8 font-bold"
                 />
-              
+
                 <img
-                className="rounded-3xl border-4 border-border border-dotted h-30 p-4 bg-white"
-                src={stamp.image_url}
-                alt="tivoli stamp"
+                  className="
+                    rounded-3xl border-4 border-border border-dotted 
+                    h-30 p-4 bg-white"
+                  src={stamp.image_url}
+                  alt="tivoli stamp"
                 />
               </>
-            }
+            )}
 
             <Button
               variant="secondary"
@@ -162,8 +183,17 @@ export default function GameScreen() {
           font={"body"}
           color="white"
         />
+
         <Typography text={caughtItems} size={6} font={"main"} color="green" />
-        <Typography text={"HS"} size={1} font={"body"} color="white" />
+
+        {/* {isStudent && ( */}
+          <Typography
+            text={`☆ ${highscore ?? caughtItems}p`}
+            size={1}
+            font={"body"}
+            color="white"
+          />
+        {/* )} */}
       </InfoPlate>
     </div>
   );

@@ -87,7 +87,7 @@ export default function Score() {
         {isStudent ? (
           <div className="flex flex-col gap-2 mb-8">
             <Button
-              variant="secondary"
+              variant="primary"
               onClick={() =>
                 window.parent.postMessage({ type: "AMUSEMENT_CLOSE" }, "*")
               }
