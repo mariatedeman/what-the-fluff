@@ -32,7 +32,7 @@ export type ScoreBoardRow = {
 export type Variant = "primary" | "secondary";
 
 interface BaseButtonProps {
-    children: string;
+    children: ReactNode;
     variant: Variant;
     disabled?: boolean;
     className?: string;

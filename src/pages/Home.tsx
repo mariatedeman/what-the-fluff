@@ -15,8 +15,7 @@ import { getIdentity } from "../services/tivoliService";
 
 import type { ApiError } from "../lib/apiError";
 import type { IdentityResponse } from "../types/tivoli";
-
-
+import { LoadingSVG } from "../components/LoadingSVG";
 
 export default function Home() {
   const token = useIdentityToken();
@@ -29,16 +28,14 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
 
-
   // STEP 1 — LOG TOKEN PRESENCE
   useEffect(() => {
     console.log(
       "%c[home] step 1 — identity_token:",
       "color: #06f",
-      token ?? "(none — guest flow)"
+      token ?? "(none — guest flow)",
     );
   }, [token]);
-
 
   // STEP 2 — FETCH IDENTITY WHEN TOKEN PRESENT
   useEffect(() => {
@@ -46,7 +43,10 @@ export default function Home() {
     let cancelled = false;
 
     const fetchIdentity = async () => {
-      console.log("%c[home] step 2 — GET /identity-tokens/{token} ...", "color: #06f");
+      console.log(
+        "%c[home] step 2 — GET /identity-tokens/{token} ...",
+        "color: #06f",
+      );
       setLoading("identity");
       setError(null);
       try {
@@ -72,7 +72,6 @@ export default function Home() {
     };
   }, [token]);
 
-
   // STEP 3 — START SESSION (charges Tivoli for students), THEN NAVIGATE TO /game
   const startAndGo = async (playerName: string) => {
     const isStudent = typeof token === "string" && token.trim().length > 0;
@@ -80,13 +79,21 @@ export default function Home() {
       ? { player_name: playerName, identity_token: token! }
       : { player_name: playerName };
 
-    console.log("%c[home] step 3 — start-session payload:", "color: #06f", payload);
+    console.log(
+      "%c[home] step 3 — start-session payload:",
+      "color: #06f",
+      payload,
+    );
     setLoading("session");
     setError(null);
 
     try {
       const res = await startSession(payload);
-      console.log("%c[home] step 3 — start-session response:", "color: #0a0", res);
+      console.log(
+        "%c[home] step 3 — start-session response:",
+        "color: #0a0",
+        res,
+      );
 
       if (!res.success) {
         console.warn("[home] step 3 — start-session failed:", res.error);
@@ -109,6 +116,7 @@ export default function Home() {
         state: {
           playerName,
           isStudent,
+          stamp: res.data.stamp,
           sessionId: res.data.id,
           tivoliTransactionId: res.data.tivoli_transaction_id,
         },
@@ -118,8 +126,8 @@ export default function Home() {
       setError((err as ApiError).message ?? "Start session failed");
       setLoading(null);
     }
+    
   };
-
 
   const onStudentPlay = () => {
     if (!identity) return;
@@ -132,15 +140,15 @@ export default function Home() {
     void startAndGo(trimmed);
   };
 
-
   return (
     <div className="flex flex-col flex-1 justify-center">
       <section className="flex flex-col self-center gap-4 w-3xs">
         <div className="flex flex-col">
-
-          <img src="/logo.svg" 
-            alt="what the fluff logo" 
-            className="mx-auto h-auto w-40" />
+          <img
+            src="/logo.svg"
+            alt="what the fluff logo"
+            className="mx-auto h-auto w-40"
+          />
 
           <Typography
             font="body"
@@ -148,6 +156,10 @@ export default function Home() {
             size={1}
             className="pt-4 pb-8 italic"
           />
+
+          {error && <Typography type="error" text={error} className="mb-4" />}
+
+          {loading && <LoadingSVG />}
 
           {identity ? (
             <>
@@ -169,12 +181,17 @@ export default function Home() {
                   onClick={onStudentPlay}
                   disabled={loading !== null}
                 >
-                  {loading === "session" ? "Starting..." : "Play Game" }
+                  {loading === "session" ? "Starting..." : "Play Game"}
                 </Button>
               </div>
             </>
           ) : (
-            <form onSubmit={(e) => { e.preventDefault(); onGuestSubmit(); }}>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                onGuestSubmit();
+              }}
+            >
               <TextInput
                 id="name"
                 placeholder="Name"
@@ -193,40 +210,73 @@ export default function Home() {
             </form>
           )}
 
-          <Button
-            variant="secondary"
-            onClick={() => setModalIsOpen(true)}
-          >
+          <Button variant="secondary" onClick={() => setModalIsOpen(true)}>
             Instructions
           </Button>
-
-          {error && (
-            <p className="text-red-300 text-sm pt-2">{error}</p>
-          )}
         </div>
       </section>
 
-      {modalIsOpen &&
+      {modalIsOpen && (
         <Modal className="inset-0 m-auto h-1/2 w-11/12">
-          <Typography text={"Instructions"} font="main" size={3} color="green" className="mb-4" />
-          <Typography text={"1. Collect cotton candy to gain points"} font="body" size={0} color="white" />
-          <Typography text={"2. Collect three in a row of the same color to make them disappear"} font="body" size={0} color="white" />
-          <Typography text={"3. Beware of the raindrops, no one likes rain on the tivoli!"} font="body" size={0} color="white" />
+          <Typography
+            text={"Instructions"}
+            font="main"
+            size={3}
+            color="green"
+            className="mb-4"
+          />
+          <Typography
+            text={"1. Collect cotton candy to gain points"}
+            font="body"
+            size={0}
+            color="white"
+          />
+          <Typography
+            text={
+              "2. Collect three in a row of the same color to make them disappear"
+            }
+            font="body"
+            size={0}
+            color="white"
+          />
+          <Typography
+            text={
+              "3. Beware of the raindrops, no one likes rain on the tivoli!"
+            }
+            font="body"
+            size={0}
+            color="white"
+          />
 
-          <Button variant="secondary" onClick={() => setModalIsOpen(false)} className="m-8">
+          <Button
+            variant="secondary"
+            onClick={() => setModalIsOpen(false)}
+            className="m-8"
+          >
             Close
           </Button>
         </Modal>
-      }
+      )}
 
       <div className="flex flex-col items-center my-10 w-full max-w-full">
         <div className="w-3xs sm:w-xs items-center flex flex-col">
-          {highestScore &&
+          {highestScore && (
             <>
-              <Typography text={"CURRENT HIGHSCORE"} type="h3" size={3} color="pink" className="mb-0" />
-              <ScoreBoardRow placement={1} name={highestScore?.player_name} score={highestScore?.score} className="w-full text-center" />
+              <Typography
+                text={"CURRENT HIGHSCORE"}
+                type="h3"
+                size={3}
+                color="pink"
+                className="mb-0"
+              />
+              <ScoreBoardRow
+                placement={1}
+                name={highestScore?.player_name}
+                score={highestScore?.score}
+                className="w-full text-center"
+              />
             </>
-          }
+          )}
         </div>
       </div>
     </div>

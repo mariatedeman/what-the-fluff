@@ -47,6 +47,25 @@ export async function getHighestScore(): Promise<GameSession | null> {
   return data;
 }
 
+// Fetch the single highest score
+export async function getUsersHighestScore(playerName: string): Promise<GameSession | null> {
+  const { data, error } = await supabase
+    .from("game_sessions")
+    .select("*")
+    .eq("player_name", playerName)
+    .not("score", "is", null)
+    .order("score", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    console.error("getUsersHighestScore error:", error);
+    throw new Error("Could not fetch user's highest score");
+  }
+
+  return data;
+}
+
 
 // Fetch 10 scores from game_sessions, 
 // optionally filtered by name or low vs high

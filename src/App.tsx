@@ -9,11 +9,13 @@ function App() {
 
   return (
     <Layout>
-      {location.pathname === "/score" && 
-        <img src="/logo.svg" 
-          alt="what the fluff logo" 
-          className="mx-auto h-auto w-40 my-6" />
-      }
+      {location.pathname === "/score" && (
+        <img
+          src="/logo.svg"
+          alt="what the fluff logo"
+          className="mx-auto h-auto w-40 my-6"
+        />
+      )}
 
       <Routes>
         <Route path="/" element={<Home />} />
@@ -21,7 +23,7 @@ function App() {
         <Route path="/score" element={<Score />} />
         <Route path="*" element={<div>404 - Page not found</div>} />
       </Routes>
-      </Layout>
+    </Layout>
   );
 }
 
