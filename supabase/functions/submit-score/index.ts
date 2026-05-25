@@ -121,7 +121,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    return json<SubmitScoreResponse>({ success: true, data: { id: data.id, score } }, 200);
+    return json<SubmitScoreResponse>({ success: true, data: { id: data.id, score: data.score ?? score } }, 200);
   } catch (err) {
     console.error("Unhandled error in submit-score", err);
     return json<SubmitScoreResponse>({ success: false, error: "Internal server error" }, 500);
