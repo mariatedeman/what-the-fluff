@@ -123,7 +123,7 @@ Deno.serve(async (req) => {
     return json<StartSessionResponse>({ success: true, data: { ...data, stamp: tivoliStamp, amount: tivoliAmount } }, 200);
 
   } catch (err) {
-    console.error("Unhandled error in start-session-test", err);
+    console.error("Unhandled error in start-session", err);
     return json<StartSessionResponse>({ success: false, error: "Internal server error" }, 500);
   }
 });
