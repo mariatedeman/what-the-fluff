@@ -24,7 +24,8 @@ export function Modal({
             style={{ backgroundColor: 'rgba(0, 0, 0, 0.7)' }}
             className={`
                 relative z-10 w-full h-full p-8
-                flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border
+                flex flex-col items-center justify-center rounded-2xl 
+                border-2 border-dotted border-border
                 ${innerClassName}
             `}>
                 {children}

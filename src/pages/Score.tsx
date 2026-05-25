@@ -36,7 +36,6 @@ export default function Score() {
     <Layout>
 
     <div className="sm:min-w-xl min-w-xs">
-      <Typography text={"Highscore"} color="pink" type="h2" size={4}></Typography>
 
       {/* SORT AND FILTER */}  
       <InfoPlate className="h-22">

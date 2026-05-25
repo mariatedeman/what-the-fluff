@@ -138,13 +138,14 @@ export default function Home() {
 
 
   return (
-    <Layout>
+    <Layout className="justify-center">
       <section className="flex flex-col self-center gap-4 w-3xs">
         <div className="flex flex-col">
 
-          <svg viewBox="0 0 160 70" className="mx-auto my- h-auto w-40">
-            <use href={"/logo.svg"} />
-          </svg>
+          <img src="/logo.svg" 
+            alt="what the fluff logo" 
+            className="mx-auto h-auto w-40" />
+
           <Typography
             font="body"
             text={"The interactive cotton candy stand"}
@@ -182,6 +183,7 @@ export default function Home() {
                 id="name"
                 placeholder="Name"
                 value={name}
+                className="text-white"
                 onChange={(e) => setName(e.currentTarget.value)}
               />
 
@@ -225,7 +227,7 @@ export default function Home() {
         <div className="w-3xs sm:w-xs items-center flex flex-col">
           {highestScore &&
             <>
-              <Typography text={"CURRENT HIGHSCORE"} type="h3" size={2} className="mb-0" />
+              <Typography text={"CURRENT HIGHSCORE"} type="h3" size={3} color="pink" className="mb-0" />
               <ScoreBoardRow placement={1} name={highestScore?.player_name} score={highestScore?.score} className="w-full text-center" />
             </>
           }

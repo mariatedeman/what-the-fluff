@@ -90,9 +90,9 @@ export default function GameScreen() {
     return <Navigate to={"/"} />
   }
 
-  return (
-    <Layout>
 
+  return (
+    <Layout className="h-dvh my-0 py-4 gap-1">
       {/* position: relative SO THE CATCHER CAN USE position: absolute INSIDE IT */}
       <GameCanvas ref={canvasRef}>
 
@@ -103,7 +103,8 @@ export default function GameScreen() {
       {!isCountingDown && 
         isGameOver && 
           
-          <Modal className="inset-0 h-full">
+          <Modal className="inset-0 h-full" 
+            innerClassName="border-none">
             
             <Typography text={"Game Over"} type="span" font="main" size={5} color="pink"/>
             <Typography text={`Your winnings: `} type="span" font="body" size={0} color="white" className="pb-8 font-bold"/>
@@ -111,7 +112,7 @@ export default function GameScreen() {
             <img src="/fluff-blue.svg" />
 
             <Button variant="secondary" href="/score" className="mt-8">
-            To scoreboard
+              To scoreboard
             </Button>
 
           </Modal>}
@@ -132,7 +133,6 @@ export default function GameScreen() {
         <Typography text={caughtItems} size={6} font={"main"} color="green"/>
         <Typography text={"HS"} size={1} font={"body"} color="white"/>
       </InfoPlate>
-
     </Layout>
   );
 }

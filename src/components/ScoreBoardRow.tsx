@@ -18,7 +18,7 @@ export function ScoreBoardRow({placement, name, score, className}: ScoreBoardRow
                     relative z-10 w-full h-full p-4 
                     bg-transparent outline-none
                     text-center text-white 
-                    rounded-2xl border-2 border-border border-dashed
+                    rounded-2xl border-2 border-border border-dotted
                     flex justify-between items-center`}
                 >
 

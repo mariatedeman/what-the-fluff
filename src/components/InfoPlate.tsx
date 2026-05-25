@@ -16,7 +16,7 @@ export function InfoPlate({
 
             <div className={`
                 relative w-full flex justify-center self-center
-                border-2 border-border border-dashed rounded-2xl
+                border-2 border-border border-dotted rounded-2xl
                 ${className}`}>
             
                 {/* Content */}

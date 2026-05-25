@@ -2,6 +2,7 @@
 
 export interface LayoutProps {
     children: ReactNode;
+    className?: string;
 }
 
 export interface ModalProps {

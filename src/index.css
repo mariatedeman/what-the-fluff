@@ -72,12 +72,12 @@
   flex-direction: column;
   box-sizing: border-box;
   
-  background-image: url("/background.jpg");
-  background-size: cover;
 }
 
 body {
   margin: 0;
+  background-image: url("/background.jpg");
+  background-size: cover;
 }
 
 h1,

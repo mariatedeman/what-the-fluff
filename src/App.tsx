@@ -1,19 +1,28 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Home from "./pages/Home";
 import Game from "./pages/Game";
 import Score from "./pages/Score";
-import Nav from "./components/Nav";
+// import Nav from "./components/Nav";
 
 //IMPORTS FOR TEST PAGES
 import TestIndex from "./pages/test/index";
 import TestScore from "./pages/test/Score";
 import TestTivoli from "./pages/test/Tivoli";
 import AppFlow from "./pages/test/AppFlow";
+import { Layout } from "./components/layout/Layout";
 
 function App() {
+  const location = useLocation();
+
   return (
-    <>
-      <Nav />
+    <Layout>
+      {/* <Nav /> */}
+      {location.pathname === "/score" && 
+        <img src="/logo.svg" 
+          alt="what the fluff logo" 
+          className="mx-auto h-auto w-40 my-6" />
+      }
+
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/game" element={<Game />} />
@@ -30,7 +39,7 @@ function App() {
           </Route>
         )}
       </Routes>
-    </>
+      </Layout>
   );
 }
 
