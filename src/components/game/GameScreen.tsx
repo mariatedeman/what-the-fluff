@@ -9,7 +9,6 @@ import { useTouchInput } from "../../hooks/useTouchInput";
 import { useMouseInput } from "../../hooks/useMouseInput";
 
 // Components
-import { Layout } from "../layout/Layout";
 import { Modal } from "../modal/Modal";
 import { Typography } from "../Typography";
 import { InfoPlate } from "../InfoPlate";
@@ -19,11 +18,12 @@ import { Catcher } from "./Catcher";
 import { GameCanvas } from "./GameCanvas";
 import type { FallingItem } from "../../models/GameTypes";
 import { Button } from "../Buttons";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { CountDown } from "../CountDown";
 
 
 export default function GameScreen() {
+  const navigate = useNavigate();
   const [isCountingDown, setIsCountingDown] = useState<boolean>(true);
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
 
@@ -90,9 +90,9 @@ export default function GameScreen() {
     return <Navigate to={"/"} />
   }
 
-  return (
-    <Layout>
 
+  return (
+    <div className="flex flex-col flex-1 my-0 py-4 gap-1 h-full max-h-screen">
       {/* position: relative SO THE CATCHER CAN USE position: absolute INSIDE IT */}
       <GameCanvas ref={canvasRef}>
 
@@ -103,15 +103,19 @@ export default function GameScreen() {
       {!isCountingDown && 
         isGameOver && 
           
-          <Modal className="inset-0 h-full">
+          <Modal className="inset-0 h-full" 
+            innerClassName="border-none">
             
             <Typography text={"Game Over"} type="span" font="main" size={5} color="pink"/>
             <Typography text={`Your winnings: `} type="span" font="body" size={0} color="white" className="pb-8 font-bold"/>
 
-            <img src="/fluff-blue.svg" />
+            <img src="/fluff-blue.svg" alt="tivoli stamp" />
 
-            <Button variant="secondary" href="/score" className="mt-8">
-            To scoreboard
+            <Button 
+              variant="secondary" 
+              onClick={() => navigate("/score")}
+              className="mt-8">
+              To scoreboard
             </Button>
 
           </Modal>}
@@ -132,7 +136,6 @@ export default function GameScreen() {
         <Typography text={caughtItems} size={6} font={"main"} color="green"/>
         <Typography text={"HS"} size={1} font={"body"} color="white"/>
       </InfoPlate>
-
-    </Layout>
+    </div>
   );
 }

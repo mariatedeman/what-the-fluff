@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 
 import { Button } from "../components/Buttons";
 import TextInput from "../components/TextInput";
-import { Layout } from "../components/layout/Layout";
 import { Modal } from "../components/modal/Modal";
 import { Typography } from "../components/Typography";
 import { ScoreBoardRow } from "../components/ScoreBoardRow";
@@ -76,7 +75,7 @@ export default function Home() {
 
   // STEP 3 — START SESSION (charges Tivoli for students), THEN NAVIGATE TO /game
   const startAndGo = async (playerName: string) => {
-    const isStudent = token !== null;
+    const isStudent = typeof token === "string" && token.trim().length > 0;
     const payload = isStudent
       ? { player_name: playerName, identity_token: token! }
       : { player_name: playerName };
@@ -109,6 +108,7 @@ export default function Home() {
       navigate("/game", {
         state: {
           playerName,
+          isStudent,
           sessionId: res.data.id,
           tivoliTransactionId: res.data.tivoli_transaction_id,
         },
@@ -134,13 +134,14 @@ export default function Home() {
 
 
   return (
-    <Layout>
+    <div className="flex flex-col flex-1 justify-center">
       <section className="flex flex-col self-center gap-4 w-3xs">
         <div className="flex flex-col">
 
-          <svg viewBox="0 0 160 70" className="mx-auto my- h-auto w-40">
-            <use href={"/logo.svg"} />
-          </svg>
+          <img src="/logo.svg" 
+            alt="what the fluff logo" 
+            className="mx-auto h-auto w-40" />
+
           <Typography
             font="body"
             text={"The interactive cotton candy stand"}
@@ -178,6 +179,7 @@ export default function Home() {
                 id="name"
                 placeholder="Name"
                 value={name}
+                className="text-white"
                 onChange={(e) => setName(e.currentTarget.value)}
               />
 
@@ -221,12 +223,12 @@ export default function Home() {
         <div className="w-3xs sm:w-xs items-center flex flex-col">
           {highestScore &&
             <>
-              <Typography text={"CURRENT HIGHSCORE"} type="h3" size={2} className="mb-0" />
+              <Typography text={"CURRENT HIGHSCORE"} type="h3" size={3} color="pink" className="mb-0" />
               <ScoreBoardRow placement={1} name={highestScore?.player_name} score={highestScore?.score} className="w-full text-center" />
             </>
           }
         </div>
       </div>
-    </Layout>
+    </div>
   );
 }
