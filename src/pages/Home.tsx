@@ -15,6 +15,7 @@ import { getIdentity } from "../services/tivoliService";
 
 import type { ApiError } from "../lib/apiError";
 import type { IdentityResponse } from "../types/tivoli";
+import { LoadingSVG } from "../components/LoadingSVG";
 
 
 
@@ -155,6 +156,8 @@ export default function Home() {
               text={error}
               className="mb-4" />    
           )}
+
+          {loading && <LoadingSVG />}
 
           {identity ? (
             <>

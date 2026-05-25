@@ -14,6 +14,7 @@ import { useIdentityToken } from "../hooks/useIdentityToken";
 
 // Services
 import type { ScoresSort } from "../services/gameService";
+import { LoadingSVG } from "../components/LoadingSVG";
 
 export default function Score() {
   const [sort, setSort] = useState<ScoresSort>("best");
@@ -60,7 +61,7 @@ export default function Score() {
 
 
       {/* SHOW LOADING OR ERROR OR IF LIST IS EMPTY */}
-      {loading && <p>Loading…</p>}
+      {loading && <LoadingSVG />}
 
       {error && (
         <Typography 
