@@ -30,6 +30,7 @@
     "supabase/functions/_shared/tivoli.ts",
     "supabase/functions/_shared/centralbank-generated.ts",
     "supabase/functions/_shared/database.ts",
-    "supabase/functions/_shared/edge.ts"
+    "supabase/functions/_shared/edge.ts",
+    "supabase/functions/_shared/gameConfig.ts"
   ]
 }

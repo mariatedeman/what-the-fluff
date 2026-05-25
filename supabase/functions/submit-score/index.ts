@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { json, preflight } from "../_shared/responses.ts";
 import type { Database, TablesUpdate } from "../_shared/database.ts";
 import type { SubmitScoreRequest, SubmitScoreResponse } from "../_shared/edge.ts";
+import { GAME_CONFIG, maxCatchableScore } from "../_shared/gameConfig.ts";
 
 
 type SessionUpdate = TablesUpdate<"game_sessions">;
@@ -33,7 +34,6 @@ Deno.serve(async (req) => {
     const { session_id, score } = body;
 
     // VALIDATE BEFORE TOUCHING THE DB.
-    // TYPED BODY ONLY MEANS TS BELIEVES THE SHAPE — RUNTIME STILL NEEDS A CHECK.
     if (
       typeof session_id !== "number" || !Number.isInteger(session_id) || session_id <= 0 ||
       typeof score !== "number" || !Number.isInteger(score) || score < 0
@@ -46,10 +46,60 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
+    // READ SESSION FIRST — created_at NEEDED FOR TIME-BASED CEILING.
+    const { data: session, error: readErr } = await supabase
+      .from("game_sessions")
+      .select("id, created_at, score")
+      .eq("id", session_id)
+      .maybeSingle();
+
+    if (readErr) {
+      console.error("Failed to read session", { error: readErr.message, session_id });
+      return json<SubmitScoreResponse>({ success: false, error: "Failed to submit score" }, 500);
+    }
+    if (!session) {
+      return json<SubmitScoreResponse>({ success: false, error: "Session not found" }, 404);
+    }
+    if (session.score !== null) {
+      return json<SubmitScoreResponse>(
+        { success: false, error: "Score already submitted" },
+        409
+      );
+    }
+
+    // VALIDATE SCORE AGAINST TIME ELAPSED AND HARD CEILING.
+    const elapsedMs = Date.now() - new Date(session.created_at).getTime();
+
+    if (elapsedMs < GAME_CONFIG.MIN_PLAY_MS) {
+      console.warn("Score rejected: submitted too quickly", { session_id, elapsedMs });
+      return json<SubmitScoreResponse>(
+        { success: false, error: "Submitted too quickly" },
+        400
+      );
+    }
+
+    if (score > GAME_CONFIG.ABSOLUTE_MAX_SCORE) {
+      console.warn("Score rejected: above absolute max", { session_id, score });
+      return json<SubmitScoreResponse>(
+        { success: false, error: "Score exceeds maximum" },
+        400
+      );
+    }
+
+    const allowed = maxCatchableScore(elapsedMs);
+    if (score > allowed) {
+      console.warn("Score rejected: above time-based ceiling", {
+        session_id, score, allowed, elapsedMs,
+      });
+      return json<SubmitScoreResponse>(
+        { success: false, error: "Score exceeds physical maximum for elapsed time" },
+        400
+      );
+    }
+
     const update: SessionUpdate = { score };
 
     // .is("score", null) PROTECTS AGAINST DOUBLE-SUBMIT — UPDATE IS A NO-OP IF SCORE IS ALREADY SET.
-    // .maybeSingle() RETURNS data: null FOR ZERO ROWS INSTEAD OF .single() THROWING A CRYPTIC POSTGREST ERROR.
     const { data, error } = await supabase
       .from("game_sessions")
       .update(update)
@@ -63,8 +113,7 @@ Deno.serve(async (req) => {
       return json<SubmitScoreResponse>({ success: false, error: "Failed to submit score" }, 500);
     }
 
-    // ZERO ROWS = SESSION DOESN'T EXIST OR ITS SCORE WAS ALREADY SUBMITTED.
-    // 409 (CONFLICT) IS THE RIGHT STATUS — RESOURCE STATE BLOCKS THE UPDATE.
+    // ZERO ROWS HERE = RACE: SCORE WAS SUBMITTED BETWEEN READ AND UPDATE.
     if (!data) {
       return json<SubmitScoreResponse>(
         { success: false, error: "Session not found or score already submitted" },
@@ -72,7 +121,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    return json<SubmitScoreResponse>({ success: true, data: { id: data.id, score } }, 200);
+    return json<SubmitScoreResponse>({ success: true, data: { id: data.id, score: data.score ?? score } }, 200);
   } catch (err) {
     console.error("Unhandled error in submit-score", err);
     return json<SubmitScoreResponse>({ success: false, error: "Internal server error" }, 500);

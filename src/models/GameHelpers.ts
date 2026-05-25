@@ -1,8 +1,9 @@
 import { colors, ITEM_SIZE, type FallingItem } from "./GameTypes";
+import { GAME_CONFIG } from "../../supabase/functions/_shared/gameConfig.ts";
 
 // Create a new falling item with a random horizontal position and color.
 export function createNewItem(canvasWidth: number): FallingItem {
-  const isRaindrop = Math.random() > 0.7;
+  const isRaindrop = Math.random() > GAME_CONFIG.ITEM_PROBABILITY;
   return {
     id: Date.now(),
     x: Math.random() * (canvasWidth - ITEM_SIZE),

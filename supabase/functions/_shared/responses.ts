@@ -14,10 +14,7 @@ export const json = <T = unknown>(body: T, status: number) =>
 export const preflight = () => new Response("ok", { headers: corsHeaders });
 
 
-// EXTRACT A CLEAN ERROR MESSAGE FROM A FAILED TIVOLI RESPONSE
-// TIVOLI WITH Accept: application/json USUALLY RETURNS { message: "..." } ON ERROR
-// BUT HTML/PLAIN-TEXT FALLBACKS ARE POSSIBLE (e.g. ROUTE-NOT-FOUND IN LARAVEL)
-// .text() FIRST AND DEFENSIVELY PARSE AS JSON
+// EXTRACT A CLEAN ERROR MESSAGE FROM A FAILED TIVOLI RESPONSE.
 export const tivoliErrorMessage = async (response: Response): Promise<string> => {
   const text = await response.text();
   try {
@@ -26,9 +23,13 @@ export const tivoliErrorMessage = async (response: Response): Promise<string> =>
       return parsed.message;
     }
   } catch {
-    console.warn(
-      `tivoliErrorMessage: non-JSON body (status=${response.status}, preview=${text.slice(0, 100)})`
-    );
+    // Intentionally empty — both parse failure and missing `message`
+   // share the same fallthrough handling below.
   }
-  return text;
+
+  console.warn("tivoliErrorMessage: no structured message", {
+    status: response.status,
+    preview: text.slice(0, 200),
+  });
+  return "";
 };

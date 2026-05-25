@@ -42,7 +42,10 @@ function extractErrorMessage(body: unknown, fallback: string): string {
       return (body as { message: string }).message;
     }
   }
-  if (typeof body === "string" && body.length > 0) return body;
+
+  if (typeof body === "string" && body.length > 0) {
+    console.warn("extractErrorMessage: non-JSON body", { preview: body.slice(0, 200) });
+  }
   return fallback;
 }
 
