@@ -1,7 +1,9 @@
 import { corsHeaders } from "npm:@supabase/supabase-js@^2/cors";
 
 // JSON RESPONSE WITH STATUS + CORS HEADERS
-export const json = (body: unknown, status: number) =>
+// Generic so each edge function can pin its response shape
+// for different body in success response
+export const json = <T = unknown>(body: T, status: number) =>
   new Response(JSON.stringify(body), {
     status,
     headers: { ...corsHeaders, "Content-Type": "application/json" },

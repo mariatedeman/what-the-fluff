@@ -2,12 +2,8 @@ import "@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "@supabase/supabase-js";
 import { json, preflight } from "../_shared/responses.ts";
 import type { Database, TablesUpdate } from "../_shared/database.ts";
+import type { SubmitScoreRequest, SubmitScoreResponse } from "../_shared/edge.ts";
 
-
-type RequestBody = {
-  session_id: number;
-  score: number;
-};
 
 type SessionUpdate = TablesUpdate<"game_sessions">;
 
@@ -18,15 +14,19 @@ Deno.serve(async (req) => {
   }
 
   if (req.method !== "POST") {
-    return json({ success: false, error: "Method not allowed" }, 405);
+    return json<SubmitScoreResponse>({ success: false, error: "Method not allowed" }, 405);
   }
 
   // PARSE BODY - MALFORMED JSON IS A CLIENT ERROR (400), NOT A SERVER ERROR
-  let body: Partial<RequestBody>;
+  let body: Partial<SubmitScoreRequest>;
   try {
     body = await req.json();
   } catch {
-    return json({ success: false, error: "Invalid JSON body" }, 400);
+    return json<SubmitScoreResponse>({ success: false, error: "Invalid JSON body" }, 400);
+  }
+
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    return json<SubmitScoreResponse>({ success: false, error: "Invalid JSON body" }, 400);
   }
 
   try {
@@ -38,7 +38,7 @@ Deno.serve(async (req) => {
       typeof session_id !== "number" || !Number.isInteger(session_id) || session_id <= 0 ||
       typeof score !== "number" || !Number.isInteger(score) || score < 0
     ) {
-      return json({ success: false, error: "Invalid input" }, 400);
+      return json<SubmitScoreResponse>({ success: false, error: "Invalid input" }, 400);
     }
 
     const supabase = createClient<Database>(
@@ -59,20 +59,22 @@ Deno.serve(async (req) => {
       .maybeSingle();
 
     if (error) {
-      return json({ success: false, error: error.message }, 400);
+      console.error("Failed to update score", { error: error.message, session_id });
+      return json<SubmitScoreResponse>({ success: false, error: "Failed to submit score" }, 500);
     }
 
     // ZERO ROWS = SESSION DOESN'T EXIST OR ITS SCORE WAS ALREADY SUBMITTED.
     // 409 (CONFLICT) IS THE RIGHT STATUS — RESOURCE STATE BLOCKS THE UPDATE.
     if (!data) {
-      return json(
+      return json<SubmitScoreResponse>(
         { success: false, error: "Session not found or score already submitted" },
         409
       );
     }
 
-    return json({ success: true, data }, 200);
+    return json<SubmitScoreResponse>({ success: true, data: { id: data.id, score } }, 200);
   } catch (err) {
-    return json({ success: false, error: (err as Error).message }, 500);
+    console.error("Unhandled error in submit-score", err);
+    return json<SubmitScoreResponse>({ success: false, error: "Internal server error" }, 500);
   }
 });

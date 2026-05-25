@@ -23,6 +23,10 @@ Deno.serve(async (req) => {
     return json({ error: "Invalid JSON body" }, 400);
   }
 
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    return json({ error: "Invalid JSON body" }, 400);
+  }
+
   try {
     const { transaction_id, amount } = body;
 
@@ -38,8 +42,9 @@ Deno.serve(async (req) => {
     const apiKey = Deno.env.get("TIVOLI_API_KEY");
     const baseUrl = Deno.env.get("TIVOLI_API_BASE_URL");
     if (!apiKey || !baseUrl) {
+      console.error("Missing Tivoli env vars", { hasApiKey: !!apiKey, hasBaseUrl: !!baseUrl });
       return json(
-        { error: "Server misconfigured: missing TIVOLI_API_KEY or TIVOLI_API_BASE_URL" },
+        { error: "Server configuration error" },
         500
       );
     }
@@ -74,6 +79,7 @@ Deno.serve(async (req) => {
 
   } catch (err) {
     // NETWORK ERROR REACHING TIVOLI OR UNEXPECTED RUNTIME FAILURE
-    return json({ error: (err as Error).message }, 500);
+    console.error("Unhandled error in tivoli-payout", err);
+    return json({ error: "Internal server error" }, 500);
   }
 });

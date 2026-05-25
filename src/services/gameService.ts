@@ -1,61 +1,35 @@
 import { supabase } from "../lib/supabase";
+import { extractInvokeError } from "../lib/apiError";
 import type { Tables } from "../types/database";
-import type { Stamp } from "../types/tivoli";
+import type {
+  StartSessionRequest,
+  StartSessionResponse,
+  SubmitScoreRequest,
+  SubmitScoreResponse,
+} from "../types/edge";
 
 
 // ── TYPES ──────────────────────────────────────────────────────
 
-// FULL game_sessions TABLE-ROW
+// Full game_sessions table row.
 export type GameSession = Tables<"game_sessions">;
 
 
-// INPUT TYPE WHEN STARTING A GAME SESSION
-export type PlayerOptions = {
-  player_name: string;
-  stake_amount?: number;
-  identity_token?: string;
-};
-
-
-// SORT DIRECTION FOR THE SCORE LEADERBOARD
+// Sort direction for the score leaderboard.
 export type ScoresSort = "best" | "worst";
 
 
-// PARAMS FOR getScores / useScores
+// Params for getScores / useScores.
 export type GetScoresParams = {
   sort?: ScoresSort;
   search?: string;
 };
 
 
-// RESPONSE FROM start-session EDGE FUNCTION
-export type StartSessionResponse = {
-  success: boolean;
-  data?: {
-    id: number;
-    tivoli_transaction_id: number | null;
-    stamp: Stamp | null;
-  };
-  error?: string;
-};
-
-
-// RESPONSE FROM submit-score EDGE FUNCTION
-export type SubmitScoreResponse = {
-  success: boolean;
-  data?: {
-    id: number;
-    score: number;
-  };
-  error?: string;
-};
-
-
 // ── FUNCTIONS ──────────────────────────────────────────────────
 
-// FETCH THE HIGHEST SCORE FROM DB
-// Uses .maybeSingle() which returns null when there are 0 rows
-// (vs .single() which would throw — bad UX when the leaderboard is empty)
+
+// Fetch the single highest score
 export async function getHighestScore(): Promise<GameSession | null> {
   const { data, error } = await supabase
     .from("game_sessions")
@@ -66,7 +40,7 @@ export async function getHighestScore(): Promise<GameSession | null> {
     .maybeSingle();
 
   if (error) {
-    console.error("Error fetching highest score:", error);
+    console.error("getHighestScore error:", error);
     throw new Error("Could not fetch highest score");
   }
 
@@ -74,10 +48,12 @@ export async function getHighestScore(): Promise<GameSession | null> {
 }
 
 
-// FETCH SCORES FROM game_sessions
-// TOP 10 BEST SCORES AS DEFAULT
-// WILL NOT GET SCORES IF COLUMN IS NULL
-export async function getScores({ sort, search }: GetScoresParams) {
+// Fetch 10 scores from game_sessions, 
+// optionally filtered by name or low vs high
+export async function getScores({
+  sort = "best",
+  search,
+}: GetScoresParams): Promise<GameSession[]> {
   let query = supabase
     .from("game_sessions")
     .select("*")
@@ -85,54 +61,62 @@ export async function getScores({ sort, search }: GetScoresParams) {
     .order("score", { ascending: sort === "worst" })
     .limit(10);
 
-    // FROM SEARCH FIELD
-    if (search) {
-      query = query.ilike("player_name", `%${search}%`);
-    }
+  if (search) {
+    query = query.ilike("player_name", `%${search}%`);
+  }
 
-    const { data, error } = await query;
+  const { data, error } = await query;
 
-    if (error) {
-      console.error("getScores error:", error);
-      return [];
-    }
+  if (error) {
+    console.error("getScores error:", error);
+    throw new Error("Could not fetch scores");
+  }
+
+  return data ?? [];
+}
+
+
+// Start-session edgefunction -returns a discriminated envelope 
+export async function startSession(
+  opts: StartSessionRequest
+): Promise<StartSessionResponse> {
+  const { data, error } = await supabase.functions.invoke<StartSessionResponse>(
+    "start-session",
+    { body: opts }
+  );
+
+  if (error) {
+    console.error("start-session error:", error);
+    const message = await extractInvokeError(error, "Something went wrong");
+    return { success: false, error: message };
+  }
+
+  if (!data) {
+    return { success: false, error: "No data returned from start-session" };
+  }
 
   return data;
 }
 
 
-// START SESSION VIA EDGE FUNCTION
-// INSERTs a game_sessions row without score and returns the new row id.
-export const startSession = async (
-  opts: PlayerOptions
-): Promise<StartSessionResponse> => {
-  const { data, error } = await supabase.functions.invoke("start-session", {
-    body: opts,
-  });
-
-  if (error) {
-    console.error("start-session error:", error);
-    return { success: false, error: "Something went wrong" };
-  }
-
-  return data as StartSessionResponse;
-};
-
-
-// SUBMIT SCORE VIA EDGE FUNCTION
-// UPDATEs the existing game_sessions row identified by sessionId with the final score.
-export const submitScore = async (
-  sessionId: number,
-  score: number
-): Promise<SubmitScoreResponse> => {
-  const { data, error } = await supabase.functions.invoke("submit-score", {
-    body: { session_id: sessionId, score },
-  });
+// Submit-score edgefunction  - returns a discriminated envelope
+export async function submitScore(
+  body: SubmitScoreRequest
+): Promise<SubmitScoreResponse> {
+  const { data, error } = await supabase.functions.invoke<SubmitScoreResponse>(
+    "submit-score",
+    { body }
+  );
 
   if (error) {
     console.error("submit-score error:", error);
-    return { success: false, error: "Something went wrong" };
+    const message = await extractInvokeError(error, "Something went wrong");
+    return { success: false, error: message };
   }
 
-  return data as SubmitScoreResponse;
-};
+  if (!data) {
+    return { success: false, error: "No data returned from submit-score" };
+  }
+
+  return data;
+}
