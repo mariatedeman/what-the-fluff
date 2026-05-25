@@ -5,13 +5,15 @@ import { ScoreBoardRow } from "../components/ScoreBoardRow";
 import { InfoPlate } from "../components/InfoPlate";
 import TextInput from "../components/TextInput";
 import { Button } from "../components/Buttons";
+import { Typography } from "../components/Typography";
 
 // Hooks
 import { useScores } from "../hooks/useScores";
-import type { ScoresSort } from "../services/gameService";
 import { useDebouncedValue } from "../hooks/useDebouncedValue";
 import { useIdentityToken } from "../hooks/useIdentityToken";
 
+// Services
+import type { ScoresSort } from "../services/gameService";
 
 export default function Score() {
   const [sort, setSort] = useState<ScoresSort>("best");
@@ -33,7 +35,7 @@ export default function Score() {
 
   
   return (
-    <div className="flex flex-col flex-1 justify-center items-center h-full">
+    <div className="flex flex-col flex-1 justify-start items-center h-full">
 
     <div className="sm:min-w-xl min-w-xs">
 
@@ -59,9 +61,19 @@ export default function Score() {
 
       {/* SHOW LOADING OR ERROR OR IF LIST IS EMPTY */}
       {loading && <p>Loading…</p>}
-      {error && <p>{error}</p>}
-      {!loading && !error && scores.length === 0 && 
-        <p>No scores yet.</p>
+
+      {error && (
+        <Typography 
+          type="error"
+          text={error}
+          className="mb-4" />    
+      )}
+
+      {!loading && !error && scores.length === 0 &&
+       <Typography 
+        type="error" 
+        text={"No scores found"}
+        className="p-4" />
       }
 
 

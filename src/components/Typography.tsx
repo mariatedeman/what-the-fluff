@@ -28,17 +28,27 @@ export function Typography({
     font = "body",
     className,
 }: {
-    type?: "p" | "span" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6",
+    type?: "p" | "span" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "error",
     text: string | number, 
     color?: keyof typeof colorMap, 
     size?: keyof typeof fontSizeMap,
     font?: keyof typeof fontMap,
     className?: string
 }) {
+    
+    const baseStyling = "flex self-center justify-center";
 
+    // ERROR MESSAGE
+    if (type === "error") {
+        return (
+            <span className={`${baseStyling} font-body italic ${className}`}>
+                {text}
+            </span>
+        )
+    }
+    
     const Tag = type;
     const isHeading = ["h1","h2","h3","h4","h5","h6"].includes(Tag);
-    const baseStyling = "flex self-center justify-center";
 
     return (
         <Tag className={`

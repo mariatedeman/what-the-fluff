@@ -149,6 +149,13 @@ export default function Home() {
             className="pt-4 pb-8 italic"
           />
 
+          {error && (
+            <Typography 
+              type="error"
+              text={error}
+              className="mb-4" />    
+          )}
+
           {identity ? (
             <>
               <Typography
@@ -200,9 +207,6 @@ export default function Home() {
             Instructions
           </Button>
 
-          {error && (
-            <p className="text-red-300 text-sm pt-2">{error}</p>
-          )}
         </div>
       </section>
 
