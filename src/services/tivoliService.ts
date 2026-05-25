@@ -9,6 +9,10 @@ import type {
 
 const TIVOLI_API_BASE_URL = import.meta.env.VITE_TIVOLI_API_BASE_URL;
 
+if (!TIVOLI_API_BASE_URL) {
+  throw new Error("Missing VITE_TIVOLI_API_BASE_URL in environment");
+}
+
 
 // GET /identity-tokens/{token}
 export async function getIdentity(

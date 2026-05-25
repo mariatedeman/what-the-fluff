@@ -25,6 +25,10 @@ Deno.serve(async (req) => {
     return json<SubmitScoreResponse>({ success: false, error: "Invalid JSON body" }, 400);
   }
 
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    return json<SubmitScoreResponse>({ success: false, error: "Invalid JSON body" }, 400);
+  }
+
   try {
     const { session_id, score } = body;
 

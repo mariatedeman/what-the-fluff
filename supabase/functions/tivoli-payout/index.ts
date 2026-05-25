@@ -23,6 +23,10 @@ Deno.serve(async (req) => {
     return json({ error: "Invalid JSON body" }, 400);
   }
 
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    return json({ error: "Invalid JSON body" }, 400);
+  }
+
   try {
     const { transaction_id, amount } = body;
 
