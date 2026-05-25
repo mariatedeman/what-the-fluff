@@ -1,10 +1,12 @@
+import { GAME_CONFIG } from "../../supabase/functions/_shared/gameConfig.ts";
+
 // CATCHER SIZE AND Y-POSITION FROM TOP OF CANVAS, IN PIXELS
 export const CATCHER_WIDTH = 24;
 export const CATCHER_HEIGHT = 52;
 export const CATCHER_SPEED = 800;
 export const CATCHER_Y = 500;
 export const ITEM_SIZE = 30;
-export const SPAWN_INTERVAL = 500;
+export const SPAWN_INTERVAL = GAME_CONFIG.SPAWN_INTERVAL_MS;
 export const STACK_OVERLAP_PX = 12;
 
 // Decides permitted values for item colors.
