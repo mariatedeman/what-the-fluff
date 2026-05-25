@@ -55,7 +55,8 @@ Deno.serve(async (req) => {
       .maybeSingle();
 
     if (error) {
-      return json<SubmitScoreResponse>({ success: false, error: error.message }, 400);
+      console.error("Failed to update score", { error: error.message, session_id });
+      return json<SubmitScoreResponse>({ success: false, error: "Failed to submit score" }, 500);
     }
 
     // ZERO ROWS = SESSION DOESN'T EXIST OR ITS SCORE WAS ALREADY SUBMITTED.
@@ -69,6 +70,7 @@ Deno.serve(async (req) => {
 
     return json<SubmitScoreResponse>({ success: true, data: { id: data.id, score } }, 200);
   } catch (err) {
-    return json<SubmitScoreResponse>({ success: false, error: (err as Error).message }, 500);
+    console.error("Unhandled error in submit-score", err);
+    return json<SubmitScoreResponse>({ success: false, error: "Internal server error" }, 500);
   }
 });
