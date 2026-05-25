@@ -10,16 +10,18 @@ export const STACK_OVERLAP_PX = 12;
 // Decides permitted values for item colors.
 export type Color = "pink" | "yellow" | "green";
 
+export type ItemType = "item" | "raindrop";
+
 // Shared item model used both while items fall and after they are stacked.
-export type FallingItem = {
-  id: number;
+export interface FallingItem {
+  readonly id: number;
   x: number;
   y: number;
   size: number;
   speed: number;
-  type: "item" | "raindrop";
-  color: Color | undefined;
-};
+  type: ItemType;
+  color?: Color;
+}
 
 // Array to randomize from when spawning a new item.
 export const colors: Color[] = ["pink", "yellow", "green"];

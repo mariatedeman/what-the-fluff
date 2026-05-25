@@ -1,10 +1,11 @@
+import type { ReactNode } from "react";
 import type { ModalProps } from "../../models/Types";
 
 export function Modal({
   children,
   className = "",
   innerClassName = "",
-}: ModalProps) {
+}: ModalProps): ReactNode {
   return (
     <div
       className={`

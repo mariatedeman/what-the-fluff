@@ -1,14 +1,15 @@
-import type { ScoreBoardRow } from "../models/Types";
+import type { ReactNode } from "react";
+import type { ScoreBoardRow as ScoreBoardRowProps } from "../models/Types";
 
 export function ScoreBoardRow({
   placement,
   name,
   score,
   className,
-}: ScoreBoardRow) {
+}: ScoreBoardRowProps): ReactNode {
   return (
     <div
-      className={`relative h-22 w-full m-1 group justify-self-center ${className || ""}`}
+      className={`relative h-22 w-full group justify-self-center ${className || ""}`}
     >
       {/* Transparent bg */}
       <div

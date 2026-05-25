@@ -1,6 +1,7 @@
+import type { ReactNode } from "react";
 import type { LayoutProps } from "../../models/Types";
 
-export function Layout({ children, className = "" }: LayoutProps) {
+export function Layout({ children, className = "" }: LayoutProps): ReactNode {
   return (
     <main
       className={`

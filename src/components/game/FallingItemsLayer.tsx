@@ -1,12 +1,13 @@
+import type { ReactNode } from "react";
 import { FallingItemsSVG } from "./FallingItemsSVG";
 import { type FallingItem as FallingItemType } from "../../models/GameTypes";
 
-interface Props {
+export interface FallingItemsLayerProps {
   items: FallingItemType[];
 }
 
 /* FALLING ITEMS: THESE ARE STILL MOVING DOWNWARD */
-export function FallingItemsLayer({ items }: Props) {
+export function FallingItemsLayer({ items }: FallingItemsLayerProps): ReactNode {
   return (
     <>
       {items.map((item) => (

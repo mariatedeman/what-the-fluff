@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Button } from "../components/Buttons";
@@ -17,7 +18,7 @@ import type { ApiError } from "../lib/apiError";
 import type { IdentityResponse } from "../types/tivoli";
 import { LoadingSVG } from "../components/LoadingSVG";
 
-export default function Home() {
+export default function Home(): ReactNode {
   const token = useIdentityToken();
   const { highestScore } = useHighestScore();
   const navigate = useNavigate();
@@ -126,7 +127,6 @@ export default function Home() {
       setError((err as ApiError).message ?? "Start session failed");
       setLoading(null);
     }
-    
   };
 
   const onStudentPlay = () => {
@@ -192,6 +192,9 @@ export default function Home() {
                 onGuestSubmit();
               }}
             >
+              <label htmlFor="name" className="sr-only">
+                Player Name
+              </label>
               <TextInput
                 id="name"
                 placeholder="Name"

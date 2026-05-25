@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type JSX } from "react";
 
 // Components
 import { ScoreBoardRow } from "../components/ScoreBoardRow";
@@ -16,7 +16,7 @@ import { useIdentityToken } from "../hooks/useIdentityToken";
 import type { ScoresSort } from "../services/gameService";
 import { LoadingSVG } from "../components/LoadingSVG";
 
-export default function Score() {
+export default function Score(): JSX.Element {
   const [sort, setSort] = useState<ScoresSort>("best");
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebouncedValue(search, 600);
@@ -83,7 +83,7 @@ export default function Score() {
           );
         })}
 
-        {/* KNAPPAR BASERAT PÅ OM ANVÄNDAREN ÄR STUDENT ELLER INTE */}
+        {/* BUTTONS BASED ON WHETHER THE USER IS A STUDENT OR NOT */}
         {isStudent ? (
           <div className="flex flex-col gap-2 mb-8">
             <Button

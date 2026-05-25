@@ -1,14 +1,19 @@
+import type { ReactNode } from "react";
+import { type ItemType } from "../../models/GameTypes";
+
 // Returns correct svg for cotton candy or raindrop
+
+export interface FallingItemsSVGProps {
+  type: ItemType;
+  color?: string;
+  size: number;
+}
 
 export function FallingItemsSVG({
   type,
   color,
   size,
-}: {
-  type: "item" | "raindrop";
-  color?: string;
-  size: number;
-}) {
+}: FallingItemsSVGProps): ReactNode {
   // Raindrops
   if (type === "raindrop") {
     return (
