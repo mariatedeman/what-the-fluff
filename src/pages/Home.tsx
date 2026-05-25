@@ -2,21 +2,28 @@ import { useState, useEffect } from "react";
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 
+// Components
 import { Button } from "../components/Buttons";
 import TextInput from "../components/TextInput";
 import { Modal } from "../components/Modal";
 import { Typography } from "../components/Typography";
 import { ScoreBoardRow } from "../components/scoreboard/ScoreBoardRow";
-import { startSession } from "../services/gameService";
 
+// Hooks
 import { useHighestScore } from "../hooks/useHighestScore";
 import { useIdentityToken } from "../hooks/useIdentityToken";
 
+// Services
+import { startSession } from "../services/gameService";
 import { getIdentity } from "../services/tivoliService";
 
-import type { ApiError } from "../lib/apiError";
+// Types
 import type { IdentityResponse } from "../types/tivoli";
+
+// Errors & loading
 import { LoadingSVG } from "../components/LoadingSVG";
+import type { ApiError } from "../lib/apiError";
+
 
 export default function Home(): ReactNode {
   const token = useIdentityToken();

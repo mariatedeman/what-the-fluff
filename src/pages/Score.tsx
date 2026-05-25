@@ -2,10 +2,11 @@ import { useState, type JSX } from "react";
 
 // Components
 import { ScoreBoardRow } from "../components/scoreboard/ScoreBoardRow";
-import { InfoPlate } from "../components/game/InfoPlate";
 import TextInput from "../components/TextInput";
 import { Button } from "../components/Buttons";
 import { Typography } from "../components/Typography";
+import { ScoreBoardWrapper } from "../components/scoreboard/ScoreBoardWrapper";
+import { ScoreFilter } from "../components/scoreboard/ScoreFilter";
 
 // Hooks
 import { useScores } from "../hooks/useScores";
@@ -14,9 +15,10 @@ import { useIdentityToken } from "../hooks/useIdentityToken";
 
 // Services
 import type { ScoresSort } from "../services/gameService";
+
+// Loading
 import { LoadingSVG } from "../components/LoadingSVG";
-import { ScoreBoardWrapper } from "../components/scoreboard/ScoreBoardWrapper";
-import { ScoreFilter } from "../components/scoreboard/ScoreFilter";
+
 
 export default function Score(): JSX.Element {
   const [sort, setSort] = useState<ScoresSort>("best");

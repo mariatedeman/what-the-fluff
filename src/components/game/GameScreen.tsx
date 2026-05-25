@@ -20,7 +20,7 @@ import { GameCanvas } from "./GameCanvas";
 import type { FallingItem } from "../../models/GameTypes";
 import { Button } from "../Buttons";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
-import { CountDown } from "../CountDown";
+import { CountDown } from "./CountDown";
 import { useIdentityToken } from "../../hooks/useIdentityToken";
 import { getUsersHighestScore } from "../../services/gameService";
 

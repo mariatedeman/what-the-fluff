@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
-import { Modal } from "./Modal";
+import { Modal } from "../Modal";
 
 interface CountDownProps {
   initialTime: number;
