@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 
-import { submitScore } from "./../services/gameService";
-import type { SubmitScoreResponse } from "./../services/gameService";
+import { submitScore } from "../services/gameService";
+import type { SubmitScoreResponse } from "../types/edge";
 
 
 // READS playerName + sessionId FROM ROUTER STATE PROVIDED BY Home.
@@ -59,7 +59,7 @@ export function useGameSession(isGameOver: boolean, caughtItems: number) {
       );
       setSubmitLoading(true);
       try {
-        const res = await submitScore(sessionId, caughtItems);
+        const res = await submitScore({ session_id: sessionId, score: caughtItems });
         console.log("%c[game-session] submit-score response:", "color: #0a0", res);
         setSubmitResult(res);
       } catch (err) {

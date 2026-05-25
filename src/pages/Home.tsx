@@ -18,9 +18,6 @@ import type { ApiError } from "../lib/apiError";
 import type { IdentityResponse } from "../types/tivoli";
 
 
-// STAKE FOR STUDENT FLOW — TODO: SOURCE FROM CONFIG OR AMUSEMENT pricing
-const STUDENT_STAKE_AMOUNT = 2;
-
 
 export default function Home() {
   const token = useIdentityToken();
@@ -81,7 +78,7 @@ export default function Home() {
   const startAndGo = async (playerName: string) => {
     const isStudent = token !== null;
     const payload = isStudent
-      ? { player_name: playerName, identity_token: token!, stake_amount: STUDENT_STAKE_AMOUNT }
+      ? { player_name: playerName, identity_token: token! }
       : { player_name: playerName };
 
     console.log("%c[home] step 3 — start-session payload:", "color: #06f", payload);
@@ -92,10 +89,9 @@ export default function Home() {
       const res = await startSession(payload);
       console.log("%c[home] step 3 — start-session response:", "color: #0a0", res);
 
-      if (!res.success || !res.data) {
-        const msg = res.error ?? "Start session failed";
-        console.warn("[home] step 3 — start-session failed:", msg);
-        setError(msg);
+      if (!res.success) {
+        console.warn("[home] step 3 — start-session failed:", res.error);
+        setError(res.error);
         setLoading(null);
         return;
       }
@@ -172,7 +168,7 @@ export default function Home() {
                   onClick={onStudentPlay}
                   disabled={loading !== null}
                 >
-                  {loading === "session" ? "Starting..." : `Play game for ${STUDENT_STAKE_AMOUNT}`}
+                  {loading === "session" ? "Starting..." : "Play Game" }
                 </Button>
               </div>
             </>

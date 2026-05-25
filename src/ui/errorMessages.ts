@@ -1,6 +1,7 @@
 import { ApiError } from "../lib/apiError";
 
 
+// Maps a (status, endpoint) pair to a user-facing error message.
 export type TivoliEndpoint = "transaction" | "payout" | "identity";
 
 
