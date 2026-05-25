@@ -1,7 +1,6 @@
 import { useState } from "react";
 
 // Components
-import { Layout } from "../components/layout/Layout";
 import { ScoreBoardRow } from "../components/ScoreBoardRow";
 import { InfoPlate } from "../components/InfoPlate";
 import TextInput from "../components/TextInput";
@@ -20,7 +19,7 @@ export default function Score() {
   const debouncedSearch = useDebouncedValue(search, 600);
 
   const token = useIdentityToken();
-  const isStudent = token !== null;
+  const isStudent = typeof token === "string" && token.trim().length > 0;
   
   const handleSort = () => {
     if (sort === "best") {
@@ -34,7 +33,7 @@ export default function Score() {
 
   
   return (
-    <Layout>
+    <div className="flex flex-col flex-1 justify-center items-center h-full">
 
     <div className="sm:min-w-xl min-w-xs">
 
@@ -102,6 +101,6 @@ export default function Score() {
       )}
     
     </div>
-    </Layout>
+    </div>
     )
 }

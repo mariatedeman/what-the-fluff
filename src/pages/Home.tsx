@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 
 import { Button } from "../components/Buttons";
 import TextInput from "../components/TextInput";
-import { Layout } from "../components/layout/Layout";
 import { Modal } from "../components/modal/Modal";
 import { Typography } from "../components/Typography";
 import { ScoreBoardRow } from "../components/ScoreBoardRow";
@@ -79,7 +78,7 @@ export default function Home() {
 
   // STEP 3 — START SESSION (charges Tivoli for students), THEN NAVIGATE TO /game
   const startAndGo = async (playerName: string) => {
-    const isStudent = token !== null;
+    const isStudent = typeof token === "string" && token.trim().length > 0;
     const payload = isStudent
       ? { player_name: playerName, identity_token: token!, stake_amount: STUDENT_STAKE_AMOUNT }
       : { player_name: playerName };
@@ -139,7 +138,7 @@ export default function Home() {
 
 
   return (
-    <Layout className="justify-center">
+    <div className="flex flex-col flex-1 justify-center">
       <section className="flex flex-col self-center gap-4 w-3xs">
         <div className="flex flex-col">
 
@@ -234,6 +233,6 @@ export default function Home() {
           }
         </div>
       </div>
-    </Layout>
+    </div>
   );
 }
