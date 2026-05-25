@@ -2,14 +2,13 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import Home from "./pages/Home";
 import Game from "./pages/Game";
 import Score from "./pages/Score";
-// import Nav from "./components/Nav";
+import { Layout } from "./components/layout/Layout";
 
 function App() {
   const location = useLocation();
 
   return (
     <Layout>
-      {/* <Nav /> */}
       {location.pathname === "/score" && 
         <img src="/logo.svg" 
           alt="what the fluff logo" 
