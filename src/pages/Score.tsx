@@ -11,22 +11,14 @@ import { Button } from "../components/Buttons";
 import { useScores } from "../hooks/useScores";
 import type { ScoresSort } from "../services/gameService";
 import { useDebouncedValue } from "../hooks/useDebouncedValue";
-
-// Types
-import { Typography } from "../components/Typography";
-import { useLocation } from "react-router-dom";
 import { useIdentityToken } from "../hooks/useIdentityToken";
 
 
 export default function Score() {
   const [sort, setSort] = useState<ScoresSort>("best");
   const [search, setSearch] = useState("");
-  const debouncedSearch = useDebouncedValue(search, 600)
+  const debouncedSearch = useDebouncedValue(search, 600);
 
-  const location = useLocation();
-  const state = location.state || {};
-  const { playerName } = state;
-  
   const token = useIdentityToken();
   const isStudent = token !== null;
   
