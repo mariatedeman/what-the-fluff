@@ -68,5 +68,7 @@ export const playSound = ({ type, volume = 0.4 }: AudioProps ): void => {
   sound.volume = volume;
   sound.currentTime = 0;
 
-  void sound.play().catch(err => console.log("Could not play audio: ", err))
+  void sound.play().catch(() => {
+    // Browsers block autoplay until user interaction — ignore silently.
+  });
 }
