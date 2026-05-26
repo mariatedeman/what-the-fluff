@@ -20,7 +20,6 @@ import { startSession } from "../services/gameService";
 import { LoadingSVG } from "../components/LoadingSVG";
 import type { ApiError } from "../lib/apiError";
 import { InstructionsModal } from "./../components/modals/InstructionsModal";
-import { Modal } from "../components/modals/Modal";
 
 export default function Home(): ReactNode {
   const token = useIdentityToken();
