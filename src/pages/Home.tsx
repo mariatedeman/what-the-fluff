@@ -1,27 +1,25 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 
 // Components
 import { Button } from "../components/Buttons";
 import TextInput from "../components/TextInput";
-import { Modal } from "../components/Modal";
 import { Typography } from "../components/Typography";
 import { ScoreBoardRow } from "../components/scoreboard/ScoreBoardRow";
 
 // Hooks
 import { useHighestScore } from "../hooks/useHighestScore";
 import { useIdentityToken } from "../hooks/useIdentityToken";
+import { useIdentitySetup } from "../hooks/useIdentitySetup";
 
 // Types, Services & Helpers
 import { startSession } from "../services/gameService";
-import { getIdentity } from "../services/tivoliService";
-import type { IdentityResponse } from "../types/tivoli";
 
 // Errors & loading
 import { LoadingSVG } from "../components/LoadingSVG";
-import type { ApiError } from "../lib/apiError";
-
+import { ApiError } from "../lib/apiError";
+import { InstructionsModal } from "./../components/modals/InstructionsModal";
 
 export default function Home(): ReactNode {
   const token = useIdentityToken();
@@ -29,94 +27,34 @@ export default function Home(): ReactNode {
   const navigate = useNavigate();
 
   const [name, setName] = useState<string>("");
-  const [identity, setIdentity] = useState<IdentityResponse | null>(null);
-  const [loading, setLoading] = useState<"identity" | "session" | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
 
-  // STEP 1 — LOG TOKEN PRESENCE
-  useEffect(() => {
-    console.log(
-      "%c[home] step 1 — identity_token:",
-      "color: #06f",
-      token ?? "(none — guest flow)",
-    );
-  }, [token]);
+  const { identity, loading, setLoading, error, setError } =
+    useIdentitySetup(token);
 
-  // STEP 2 — FETCH IDENTITY WHEN TOKEN PRESENT
-  useEffect(() => {
-    if (!token) return;
-    let cancelled = false;
-
-    const fetchIdentity = async () => {
-      console.log(
-        "%c[home] step 2 — GET /identity-tokens/{token} ...",
-        "color: #06f",
-      );
-      setLoading("identity");
-      setError(null);
-      try {
-        const res = await getIdentity(token);
-        console.log("%c[home] step 2 — identity response:", "color: #0a0", res);
-        if (!cancelled) {
-          setIdentity(res);
-          sessionStorage.setItem("playerName", res.user.name);
-        }
-      } catch (err) {
-        console.error("[home] step 2 — identity error:", err);
-        if (!cancelled) {
-          setError((err as ApiError).message ?? "Greet failed");
-        }
-      } finally {
-        if (!cancelled) setLoading(null);
-      }
-    };
-
-    fetchIdentity();
-    return () => {
-      cancelled = true;
-    };
-  }, [token]);
-
-  // STEP 3 — START SESSION (charges Tivoli for students), THEN NAVIGATE TO /game
+  // Charges Tivoli for students, then navigates to /game.
   const startAndGo = async (playerName: string) => {
     const isStudent = typeof token === "string" && token.trim().length > 0;
     const payload = isStudent
       ? { player_name: playerName, identity_token: token! }
       : { player_name: playerName };
 
-    console.log(
-      "%c[home] step 3 — start-session payload:",
-      "color: #06f",
-      payload,
-    );
     setLoading("session");
     setError(null);
 
     try {
       const res = await startSession(payload);
-      console.log(
-        "%c[home] step 3 — start-session response:",
-        "color: #0a0",
-        res,
-      );
 
       if (!res.success) {
-        console.warn("[home] step 3 — start-session failed:", res.error);
         setError(res.error);
         setLoading(null);
         return;
       }
 
       sessionStorage.setItem("playerName", playerName);
-      // CLEAR hasPlayed FROM ANY PREVIOUS SESSION — A NEW sessionId MEANS A NEW ATTEMPT.
-      // WITHOUT THIS, GameScreen BOUNCES BACK TO Home WHEN A STALE hasPlayed="true" IS STILL IN STORAGE.
+      // Clear hasPlayed from any previous session — a new sessionId means a new attempt.
+      // Without this, GameScreen bounces back to Home when a stale hasPlayed="true" is still in storage.
       sessionStorage.removeItem("hasPlayed");
-
-      console.log("%c[home] step 4 — navigate to /game", "color: #06f", {
-        sessionId: res.data.id,
-        tivoliTransactionId: res.data.tivoli_transaction_id,
-      });
 
       navigate("/game", {
         state: {
@@ -128,8 +66,7 @@ export default function Home(): ReactNode {
         },
       });
     } catch (err) {
-      console.error("[home] step 3 — start-session threw:", err);
-      setError((err as ApiError).message ?? "Start session failed");
+      setError(err instanceof ApiError ? err.message : "Start session failed");
       setLoading(null);
     }
   };
@@ -145,9 +82,8 @@ export default function Home(): ReactNode {
     void startAndGo(trimmed);
   };
 
-
   return (
-    <div className="flex flex-col flex-1 justify-center">
+    <div className="relative flex flex-col min-h-screen justify-center items-center overflow-x-hidden">
       <section className="flex flex-col self-center gap-4 w-3xs">
         <div className="flex flex-col">
           <img
@@ -164,9 +100,9 @@ export default function Home(): ReactNode {
           />
 
           {error && <Typography type="error" text={error} className="mb-4" />}
-
           {loading && <LoadingSVG />}
 
+          {/* USER FROM API */}
           {identity ? (
             <>
               <Typography
@@ -192,6 +128,8 @@ export default function Home(): ReactNode {
               </div>
             </>
           ) : (
+
+            // GUEST
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -203,6 +141,7 @@ export default function Home(): ReactNode {
               </label>
               <TextInput
                 id="name"
+                maxlength={20}
                 placeholder="Name"
                 value={name}
                 className="text-white"
@@ -225,47 +164,11 @@ export default function Home(): ReactNode {
         </div>
       </section>
 
+      {/* INSTRUCTIONS */}
       {modalIsOpen && (
-        <Modal className="inset-0 m-auto h-1/2 w-11/12">
-          <Typography
-            text={"Instructions"}
-            font="main"
-            size={3}
-            color="green"
-            className="mb-4"
-          />
-          <Typography
-            text={"1. Collect cotton candy to gain points"}
-            font="body"
-            size={0}
-            color="white"
-          />
-          <Typography
-            text={
-              "2. Collect three in a row of the same color to make them disappear"
-            }
-            font="body"
-            size={0}
-            color="white"
-          />
-          <Typography
-            text={
-              "3. Beware of the raindrops, no one likes rain on the tivoli!"
-            }
-            font="body"
-            size={0}
-            color="white"
-          />
-
-          <Button
-            variant="secondary"
-            onClick={() => setModalIsOpen(false)}
-            className="m-8"
-          >
-            Close
-          </Button>
-        </Modal>
+        <InstructionsModal onClose={() => setModalIsOpen(false)} />
       )}
+
 
       <div className="flex flex-col items-center my-10 w-full max-w-full">
         <div className="w-3xs sm:w-xs items-center flex flex-col">
@@ -287,7 +190,6 @@ export default function Home(): ReactNode {
               />
             </>
           )}
-          
         </div>
       </div>
     </div>

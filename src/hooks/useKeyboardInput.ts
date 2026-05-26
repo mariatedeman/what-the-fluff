@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { type KeysPressed } from "../models/GameTypes";
 
-export function useKeyboardInput(keysPressed: { current: KeysPressed }) {
+export function useKeyboardInput(keysPressed: { current: KeysPressed }): void {
 
 // HANDLE KEYBOARD CONTROL --> LEFT AND RIGHT
   useEffect(() => {

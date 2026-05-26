@@ -30,7 +30,7 @@ export function useGameAnimation(
   setIsGameOver: React.Dispatch<React.SetStateAction<boolean>>,
   catcherXRef: { current: number },
   isCountingDown: boolean,
-) {
+): void {
  
   // REFS
   // COPY OF FALLING ITEMS, USED SO THE ANIMATION LOOP CAN READ THE LATEST ARRAY

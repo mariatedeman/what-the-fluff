@@ -1,5 +1,11 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
+import { Navigate, useLocation } from "react-router-dom";
 
 // Hooks
 import { useGameSession } from "../../hooks/useGameSession";
@@ -11,22 +17,19 @@ import { useMouseInput } from "../../hooks/useMouseInput";
 import { useIdentityToken } from "../../hooks/useIdentityToken";
 
 // Components
-import { Modal } from "../Modal";
-import { Typography } from "../Typography";
-import { InfoPlate } from "./InfoPlate";
 import { FallingItemsLayer } from "./FallingItemsLayer";
 import { StackedItemsLayer } from "./StackedItemsLayer";
 import { Catcher } from "./Catcher";
 import { GameCanvas } from "./GameCanvas";
-import { Button } from "../Buttons";
 import { CountDown } from "./CountDown";
 
 // Types, serices & helpers
 import type { FallingItem } from "../../models/GameTypes";
-import { getUsersHighestScore } from "../../services/gameService";
+import { GameOverModal } from "./GameOverModal";
+import { GameHUD } from "./GameHUD";
+import { usePlayerHighscore } from "../../hooks/usePlayerHighscore";
 
 export default function GameScreen(): ReactNode {
-  const navigate = useNavigate();
   const location = useLocation();
   const [isCountingDown, setIsCountingDown] = useState<boolean>(true);
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
@@ -46,27 +49,16 @@ export default function GameScreen(): ReactNode {
   const [caughtItems, setCaughtItems] = useState<number>(0); // Caught items
   const [stackedItems, setStackedItems] = useState<FallingItem[]>([]); // Currently stacked items
 
-  // USE GAME SESSION — TRIGGERS submit-score AT GAME OVER
-  const { playerName } = useGameSession(isGameOver, caughtItems);
+  // USE GAME SESSION — TRIGGERS submit-score AT GAME OVER,
+  // AND tivoli-payout FOR ELIGIBLE STUDENTS.
+  const { playerName, payoutResult, isEligibleForPayout } = useGameSession(
+    isGameOver,
+    caughtItems,
+    isStudent,
+  );
 
   // FETCH PLAYER'S PREVIOUS HIGHEST SCORE
-  const [highscore, setHighscore] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (!playerName) return;
-
-    const fetchHighscore = async () => {
-      try {
-        const result = await getUsersHighestScore(playerName);
-        setHighscore(result?.score ?? null);
-      } catch (err) {
-        console.error("Failed to fetch user's highest score:", err);
-        setHighscore(null);
-      }
-    };
-
-    void fetchHighscore();
-  }, [playerName]);
+  const highscore = usePlayerHighscore(playerName);
 
   // CATCHER
   const [catcherX, setCatcherX] = useState(0); // HORIZONTAL POSITION, UPDATES ON MOUSE MOVEMENT
@@ -128,55 +120,12 @@ export default function GameScreen(): ReactNode {
         )}
 
         {!isCountingDown && isGameOver && (
-          <Modal className="inset-0 h-full">
-            <Typography
-              text={"Game Over"}
-              type="span"
-              font="main"
-              size={5}
-              color="pink"
-            />
-
-            {/* Display stamp and winnings */}
-            {isStudent && (
-              <>
-                <Typography
-                  text={`Your winnings: `}
-                  type="span"
-                  font="body"
-                  size={0}
-                  color="white"
-                  className="pb-8 font-bold"
-                />
-
-                {stamp?.image_url ? (
-                  <img
-                    className="
-                      rounded-3xl border-4 border-border border-dotted 
-                      h-30 p-4 bg-white"
-                    src={stamp.image_url}
-                    alt="tivoli stamp"
-                  />
-                ) : (
-                  <Typography
-                    text="No stamp available"
-                    type="span"
-                    font="body"
-                    size={0}
-                    color="white"
-                  />
-                )}
-              </>
-            )}
-
-            <Button
-              variant="secondary"
-              onClick={() => navigate("/score")}
-              className="mt-8"
-            >
-              To scoreboard
-            </Button>
-          </Modal>
+          <GameOverModal
+            isStudent={isStudent}
+            isEligibleForPayout={isEligibleForPayout}
+            payoutResult={payoutResult}
+            stamp={stamp}
+          />
         )}
 
         {/* FALLING ITEMS: THESE ARE STILL MOVING DOWNWARD */}
@@ -189,23 +138,12 @@ export default function GameScreen(): ReactNode {
         <Catcher catcherX={catcherX}></Catcher>
       </GameCanvas>
 
-      <InfoPlate className="flex-row h-22">
-        <Typography
-          text={playerName ?? ""}
-          size={1}
-          font={"body"}
-          color="white"
-        />
-
-        <Typography text={caughtItems} size={6} font={"main"} color="green" />
-
-        <Typography
-          text={`☆ ${highscore ?? caughtItems}p`}
-          size={1}
-          font={"body"}
-          color="white"
-        />
-      </InfoPlate>
+      <GameHUD
+        playerName={playerName}
+        caughtItems={caughtItems}
+        highscore={highscore}
+        isStudent={isStudent}
+      />
     </div>
   );
 }

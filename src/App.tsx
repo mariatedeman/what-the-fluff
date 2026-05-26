@@ -3,6 +3,7 @@ import Home from "./pages/Home";
 import Game from "./pages/Game";
 import Score from "./pages/Score";
 import { Layout } from "./components/layout/Layout";
+import NotFound from "./pages/NotFound";
 
 function App() {
   const location = useLocation();
@@ -21,7 +22,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/game" element={<Game />} />
         <Route path="/score" element={<Score />} />
-        <Route path="*" element={<div>404 - Page not found</div>} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Layout>
   );

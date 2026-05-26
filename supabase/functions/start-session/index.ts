@@ -1,12 +1,15 @@
 import "@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "@supabase/supabase-js";
 import { json, preflight, tivoliErrorMessage } from "../_shared/responses.ts";
-import type { TablesInsert } from "../_shared/database.ts";
+import type { Database, TablesInsert } from "../_shared/database.ts";
 import type { Stamp, TransactionRequest, TransactionResponse } from "../_shared/tivoli.ts";
-import type { StartSessionResponse } from "../_shared/edge.ts";
+import type { StartSessionRequest, StartSessionResponse } from "../_shared/edge.ts";
 
 
 type SessionInsert = TablesInsert<"game_sessions">;
+
+// Player names longer than this are silently truncated before insert.
+const PLAYER_NAME_MAX_LENGTH = 20;
 
 
 Deno.serve(async (req) => {
@@ -19,7 +22,7 @@ Deno.serve(async (req) => {
   }
 
   // PARSE BODY - MALFORMED JSON IS A CLIENT ERROR (400), NOT A SERVER ERROR
-  let body;
+  let body: Partial<StartSessionRequest>;
   try {
     body = await req.json();
   } catch {
@@ -39,6 +42,8 @@ Deno.serve(async (req) => {
     ) {
       return json<StartSessionResponse>({ success: false, error: "Invalid input" }, 400);
     }
+    
+    const trimmedName = player_name.trim().slice(0, PLAYER_NAME_MAX_LENGTH);
 
     const isStudent = identity_token !== undefined;
 
@@ -85,13 +90,13 @@ Deno.serve(async (req) => {
       tivoliStamp = tivoliData.stamp;
     }
 
-    const supabase = createClient(
+    const supabase = createClient<Database>(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
     const row: SessionInsert = {
-      player_name,
+      player_name: trimmedName,
       stake_amount: tivoliAmount,
       is_student: isStudent,
       tivoli_transaction_id: tivoliTransactionId,
@@ -108,11 +113,11 @@ Deno.serve(async (req) => {
         console.error("ORPHAN_TIVOLI_TX", {
           tivoli_transaction_id: tivoliTransactionId,
           amount: tivoliAmount,
-          player_name,
+          player_name: trimmedName,
           db_error: error.message,
         });
       } else {
-        console.error("DB insert failed", { error: error.message, player_name });
+        console.error("DB insert failed", { error: error.message, player_name: trimmedName });
       }
       return json<StartSessionResponse>(
         { success: false, error: "Failed to start session" },

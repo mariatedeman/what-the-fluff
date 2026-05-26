@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
-import { Modal } from "../Modal";
+import { Modal } from "../modals/Modal";
 import { playSound } from "../../models/GameHelpers";
 
 interface CountDownProps {

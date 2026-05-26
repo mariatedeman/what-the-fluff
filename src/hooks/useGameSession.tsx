@@ -2,11 +2,24 @@ import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 
 import { submitScore } from "../services/gameService";
-import type { SubmitScoreResponse } from "../types/edge";
+import { payout } from "../services/tivoliService";
+import type { TivoliPayoutResponse } from "../types/edge";
+import { GAME_CONFIG } from "../../supabase/functions/_shared/gameConfig.ts";
+
+export type UseGameSessionResult = {
+  playerName: string | undefined;
+  payoutResult: TivoliPayoutResponse | null;
+  isEligibleForPayout: boolean;
+};
 
 // READS playerName + sessionId FROM ROUTER STATE PROVIDED BY Home.
-// Home OWNS start-session — THIS HOOK ONLY HANDLES submit-score AT GAME OVER.
-export function useGameSession(isGameOver: boolean, caughtItems: number) {
+// HANDLES submit-score AT GAME OVER
+// FOR STUDENTS - RUN tivoli-payout
+export function useGameSession(
+  isGameOver: boolean,
+  caughtItems: number,
+  isStudent: boolean,
+): UseGameSessionResult {
   const location = useLocation();
 
   const playerName =
@@ -15,78 +28,62 @@ export function useGameSession(isGameOver: boolean, caughtItems: number) {
     undefined;
   const sessionId: number | null = location.state?.sessionId ?? null;
 
-  const [hasPlayed, setHasPlayed] = useState<boolean>(false);
-  const [submitLoading, setSubmitLoading] = useState<boolean>(false);
-  const [submitResult, setSubmitResult] = useState<SubmitScoreResponse | null>(
+  const [payoutResult, setPayoutResult] = useState<TivoliPayoutResponse | null>(
     null,
   );
 
   const submitAttemptedRef = useRef(false);
 
-  // LOG SESSION INFO ON MOUNT
-  useEffect(() => {
-    console.log("%c[game-session] mounted", "color: #06f", {
-      playerName,
-      sessionId,
-      isGameOver,
-    });
-    if (sessionId === null) {
-      console.warn(
-        "[game-session] no sessionId in router state — score will NOT be submitted " +
-          "(this happens if /game is opened directly without going through Home)",
-      );
-    }
-  }, [playerName, sessionId]);
-
-  // SUBMIT SCORE WHEN GAME ENDS
+  // SUBMIT SCORE WHEN GAME ENDS; CHAIN PAYOUT IF ELIGIBLE
   useEffect(() => {
     if (!isGameOver) return;
     if (submitAttemptedRef.current) return;
     if (sessionId === null) {
-      console.warn(
-        "[game-session] game over but no sessionId — skipping submit-score",
-      );
       submitAttemptedRef.current = true;
-      setHasPlayed(true);
       sessionStorage.setItem("hasPlayed", "true");
       return;
     }
 
     submitAttemptedRef.current = true;
 
-    const submit = async () => {
-      console.log("%c[game-session] submit-score payload:", "color: #06f", {
-        session_id: sessionId,
-        score: caughtItems,
-      });
-      setSubmitLoading(true);
+    const run = async () => {
+      let scoreSubmitted = false;
       try {
         const res = await submitScore({
           session_id: sessionId,
           score: caughtItems,
         });
-        console.log(
-          "%c[game-session] submit-score response:",
-          "color: #0a0",
-          res,
-        );
-        setSubmitResult(res);
-      } catch (err) {
-        console.error("[game-session] submit-score threw:", err);
-      } finally {
-        setSubmitLoading(false);
-        setHasPlayed(true);
-        sessionStorage.setItem("hasPlayed", "true");
+        scoreSubmitted = res.success;
+      } catch {
+        // Swallow unexpected throws so the hasPlayed flag still sets.
       }
+
+      const eligibleForPayout =
+        scoreSubmitted &&
+        isStudent &&
+        caughtItems >= GAME_CONFIG.PAYOUT_THRESHOLD;
+
+      if (eligibleForPayout) {
+        try {
+          const res = await payout({ session_id: sessionId });
+          setPayoutResult(res);
+        } catch {
+          // Swallow unexpected throws so the hasPlayed flag still sets.
+        }
+      }
+
+      sessionStorage.setItem("hasPlayed", "true");
     };
 
-    void submit();
-  }, [isGameOver, sessionId, caughtItems]);
+    void run();
+  }, [isGameOver, sessionId, caughtItems, isStudent]);
+
+  const isEligibleForPayout =
+    isStudent && caughtItems >= GAME_CONFIG.PAYOUT_THRESHOLD;
 
   return {
     playerName,
-    submitLoading,
-    submitResult,
-    hasPlayed,
+    payoutResult,
+    isEligibleForPayout,
   };
 }

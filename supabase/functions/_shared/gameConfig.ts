@@ -6,6 +6,13 @@ export const GAME_CONFIG = {
   MIN_PLAY_MS: 3_000,
   CATCH_BUFFER: 5,
   ABSOLUTE_MAX_SCORE: 300,
+  PAYOUT_THRESHOLD: 100,
+  
+  // Falling-item speed ramp. Items start at BASE and gain INCREMENT per catch
+  // until the player has caught RAMP_CAP items; speed is constant after that.
+  ITEM_BASE_SPEED_PX_PER_SEC: 300,
+  ITEM_SPEED_INCREMENT_PER_CATCH: 4,
+  ITEM_SPEED_RAMP_CAP_CATCHES: 80,
 } as const;
 
  /**
