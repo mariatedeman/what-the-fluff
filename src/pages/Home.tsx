@@ -34,36 +34,20 @@ export default function Home(): ReactNode {
   const [error, setError] = useState<string | null>(null);
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
 
-  // STEP 1 — LOG TOKEN PRESENCE
-  useEffect(() => {
-    console.log(
-      "%c[home] step 1 — identity_token:",
-      "color: #06f",
-      token ?? "(none — guest flow)",
-    );
-  }, [token]);
-
-  // STEP 2 — FETCH IDENTITY WHEN TOKEN PRESENT
   useEffect(() => {
     if (!token) return;
     let cancelled = false;
 
     const fetchIdentity = async () => {
-      console.log(
-        "%c[home] step 2 — GET /identity-tokens/{token} ...",
-        "color: #06f",
-      );
       setLoading("identity");
       setError(null);
       try {
         const res = await getIdentity(token);
-        console.log("%c[home] step 2 — identity response:", "color: #0a0", res);
         if (!cancelled) {
           setIdentity(res);
           sessionStorage.setItem("playerName", res.user.name);
         }
       } catch (err) {
-        console.error("[home] step 2 — identity error:", err);
         if (!cancelled) {
           setError((err as ApiError).message ?? "Greet failed");
         }
@@ -78,45 +62,29 @@ export default function Home(): ReactNode {
     };
   }, [token]);
 
-  // STEP 3 — START SESSION (charges Tivoli for students), THEN NAVIGATE TO /game
+  // Charges Tivoli for students, then navigates to /game.
   const startAndGo = async (playerName: string) => {
     const isStudent = typeof token === "string" && token.trim().length > 0;
     const payload = isStudent
       ? { player_name: playerName, identity_token: token! }
       : { player_name: playerName };
 
-    console.log(
-      "%c[home] step 3 — start-session payload:",
-      "color: #06f",
-      payload,
-    );
     setLoading("session");
     setError(null);
 
     try {
       const res = await startSession(payload);
-      console.log(
-        "%c[home] step 3 — start-session response:",
-        "color: #0a0",
-        res,
-      );
 
       if (!res.success) {
-        console.warn("[home] step 3 — start-session failed:", res.error);
         setError(res.error);
         setLoading(null);
         return;
       }
 
       sessionStorage.setItem("playerName", playerName);
-      // CLEAR hasPlayed FROM ANY PREVIOUS SESSION — A NEW sessionId MEANS A NEW ATTEMPT.
-      // WITHOUT THIS, GameScreen BOUNCES BACK TO Home WHEN A STALE hasPlayed="true" IS STILL IN STORAGE.
+      // Clear hasPlayed from any previous session — a new sessionId means a new attempt.
+      // Without this, GameScreen bounces back to Home when a stale hasPlayed="true" is still in storage.
       sessionStorage.removeItem("hasPlayed");
-
-      console.log("%c[home] step 4 — navigate to /game", "color: #06f", {
-        sessionId: res.data.id,
-        tivoliTransactionId: res.data.tivoli_transaction_id,
-      });
 
       navigate("/game", {
         state: {
@@ -128,7 +96,6 @@ export default function Home(): ReactNode {
         },
       });
     } catch (err) {
-      console.error("[home] step 3 — start-session threw:", err);
       setError((err as ApiError).message ?? "Start session failed");
       setLoading(null);
     }
