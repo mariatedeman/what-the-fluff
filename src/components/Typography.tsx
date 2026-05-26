@@ -1,9 +1,13 @@
+import type { ReactNode } from "react";
+
 const colorMap = {
   pink: "text-pink-dark",
   green: "text-green-dark",
   white: "text-white",
   default: "text-text",
 };
+
+export type TypographyColor = keyof typeof colorMap;
 
 const fontSizeMap = {
   0: "",
@@ -15,10 +19,23 @@ const fontSizeMap = {
   6: "text-6xl",
 };
 
+export type TypographySize = keyof typeof fontSizeMap;
+
 const fontMap = {
   main: "font-h",
   body: "font-body",
 };
+
+export type TypographyFont = keyof typeof fontMap;
+
+export interface TypographyProps {
+  type?: "p" | "span" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "error";
+  text: string | number;
+  color?: TypographyColor;
+  size?: TypographySize;
+  font?: TypographyFont;
+  className?: string;
+}
 
 export function Typography({
   type = "p",
@@ -27,14 +44,7 @@ export function Typography({
   size = 3,
   font = "body",
   className = "",
-}: {
-  type?: "p" | "span" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "error";
-  text: string | number;
-  color?: keyof typeof colorMap;
-  size?: keyof typeof fontSizeMap;
-  font?: keyof typeof fontMap;
-  className?: string;
-}) {
+}: TypographyProps): ReactNode {
   const baseStyling = "flex self-center justify-center";
 
   // ERROR MESSAGE

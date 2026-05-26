@@ -1,13 +1,16 @@
 import { useEffect, useRef, useState } from "react";
-import { Modal } from "./modal/Modal";
+import type { ReactNode } from "react";
+import { Modal } from "../Modal";
+
+interface CountDownProps {
+  initialTime: number;
+  onComplete?: () => void;
+}
 
 export function CountDown({
   initialTime,
   onComplete,
-}: {
-  initialTime: number;
-  onComplete?: () => void;
-}) {
+}: CountDownProps): ReactNode {
   // Hold remaining time
   const [timeRemaining, setTimeRemaining] = useState<number>(initialTime);
 

@@ -26,6 +26,7 @@ export type ScoreBoardRow = {
     name: string | undefined,
     score: number | null | undefined,
     className?: string,
+    background?: boolean,
 }
 
 // BUTTONS

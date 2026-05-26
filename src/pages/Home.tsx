@@ -1,23 +1,31 @@
 import { useState, useEffect } from "react";
+import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 
+// Components
 import { Button } from "../components/Buttons";
 import TextInput from "../components/TextInput";
-import { Modal } from "../components/modal/Modal";
+import { Modal } from "../components/Modal";
 import { Typography } from "../components/Typography";
-import { ScoreBoardRow } from "../components/ScoreBoardRow";
-import { startSession } from "../services/gameService";
+import { ScoreBoardRow } from "../components/scoreboard/ScoreBoardRow";
 
+// Hooks
 import { useHighestScore } from "../hooks/useHighestScore";
 import { useIdentityToken } from "../hooks/useIdentityToken";
 
+// Services
+import { startSession } from "../services/gameService";
 import { getIdentity } from "../services/tivoliService";
 
-import type { ApiError } from "../lib/apiError";
+// Types
 import type { IdentityResponse } from "../types/tivoli";
-import { LoadingSVG } from "../components/LoadingSVG";
 
-export default function Home() {
+// Errors & loading
+import { LoadingSVG } from "../components/LoadingSVG";
+import type { ApiError } from "../lib/apiError";
+
+
+export default function Home(): ReactNode {
   const token = useIdentityToken();
   const { highestScore } = useHighestScore();
   const navigate = useNavigate();
@@ -126,7 +134,6 @@ export default function Home() {
       setError((err as ApiError).message ?? "Start session failed");
       setLoading(null);
     }
-    
   };
 
   const onStudentPlay = () => {
@@ -139,6 +146,7 @@ export default function Home() {
     if (!trimmed) return;
     void startAndGo(trimmed);
   };
+
 
   return (
     <div className="flex flex-col flex-1 justify-center">
@@ -192,6 +200,9 @@ export default function Home() {
                 onGuestSubmit();
               }}
             >
+              <label htmlFor="name" className="sr-only">
+                Player Name
+              </label>
               <TextInput
                 id="name"
                 placeholder="Name"
@@ -274,9 +285,11 @@ export default function Home() {
                 name={highestScore?.player_name}
                 score={highestScore?.score}
                 className="w-full text-center"
+                background={true}
               />
             </>
           )}
+          
         </div>
       </div>
     </div>

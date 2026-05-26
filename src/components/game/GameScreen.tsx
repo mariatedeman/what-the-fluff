@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { ReactNode } from "react";
 
 // Hooks
 import { useGameSession } from "../../hooks/useGameSession";
@@ -9,9 +10,9 @@ import { useTouchInput } from "../../hooks/useTouchInput";
 import { useMouseInput } from "../../hooks/useMouseInput";
 
 // Components
-import { Modal } from "../modal/Modal";
+import { Modal } from "../Modal";
 import { Typography } from "../Typography";
-import { InfoPlate } from "../InfoPlate";
+import { InfoPlate } from "./InfoPlate";
 import { FallingItemsLayer } from "./FallingItemsLayer";
 import { StackedItemsLayer } from "./StackedItemsLayer";
 import { Catcher } from "./Catcher";
@@ -19,11 +20,11 @@ import { GameCanvas } from "./GameCanvas";
 import type { FallingItem } from "../../models/GameTypes";
 import { Button } from "../Buttons";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
-import { CountDown } from "../CountDown";
+import { CountDown } from "./CountDown";
 import { useIdentityToken } from "../../hooks/useIdentityToken";
 import { getUsersHighestScore } from "../../services/gameService";
 
-export default function GameScreen() {
+export default function GameScreen(): ReactNode {
   const navigate = useNavigate();
   const location = useLocation();
   const [isCountingDown, setIsCountingDown] = useState<boolean>(true);
@@ -122,7 +123,7 @@ export default function GameScreen() {
   }
 
   return (
-    <div className="flex flex-col flex-1 my-0 py-4 gap-1 h-full max-h-screen">
+    <div className="flex flex-col flex-1 my-0 py-4 gap-1 h-full max-h-dvh sm:justify-center">
       {/* position: relative SO THE CATCHER CAN USE position: absolute INSIDE IT */}
       <GameCanvas ref={canvasRef}>
         {isCountingDown && !storedHasPlayed && (
