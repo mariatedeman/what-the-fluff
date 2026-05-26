@@ -22,7 +22,6 @@ import type { IdentityResponse } from "../types/tivoli";
 import { LoadingSVG } from "../components/LoadingSVG";
 import type { ApiError } from "../lib/apiError";
 
-
 export default function Home(): ReactNode {
   const token = useIdentityToken();
   const { highestScore } = useHighestScore();
@@ -145,7 +144,6 @@ export default function Home(): ReactNode {
     void startAndGo(trimmed);
   };
 
-
   return (
     <div className="flex flex-col flex-1 justify-center">
       <section className="flex flex-col self-center gap-4 w-3xs">
@@ -203,6 +201,7 @@ export default function Home(): ReactNode {
               </label>
               <TextInput
                 id="name"
+                maxlength={20}
                 placeholder="Name"
                 value={name}
                 className="text-white"
@@ -226,7 +225,7 @@ export default function Home(): ReactNode {
       </section>
 
       {modalIsOpen && (
-        <Modal className="inset-0 m-auto h-1/2 w-11/12">
+        <Modal className="inset-0 m-auto h-full w-full">
           <Typography
             text={"Instructions"}
             font="main"
@@ -235,22 +234,51 @@ export default function Home(): ReactNode {
             className="mb-4"
           />
           <Typography
-            text={"1. Collect cotton candy to gain points"}
+            text={"Catch and Collect"}
             font="body"
             size={0}
             color="white"
+            className="font-bold"
           />
           <Typography
             text={
-              "2. Collect three in a row of the same color to make them disappear"
+              "Gather the falling cotton candy to rack up points and build your stack."
             }
             font="body"
             size={0}
             color="white"
+            className="pb-4"
           />
           <Typography
             text={
-              "3. Beware of the raindrops, no one likes rain on the tivoli!"
+              "Match Colors"
+            }
+            font="body"
+            size={0}
+            color="white"
+            className="font-bold"
+          />
+          <Typography
+            text={
+              "Stack three of the same color in a row to pop them, clear space, and keep the game going."
+            }
+            font="body"
+            size={0}
+            color="white"
+            className="pb-4"
+          />
+          <Typography
+            text={
+              "Watch the Skies"
+            }
+            font="body"
+            size={0}
+            color="white"
+            className="font-bold"
+          />
+          <Typography
+            text={
+              "Avoid the raindrops—no one likes rain at the tivoli! Keep your stack from reaching the top, or it's Game Over."
             }
             font="body"
             size={0}
@@ -287,7 +315,6 @@ export default function Home(): ReactNode {
               />
             </>
           )}
-          
         </div>
       </div>
     </div>

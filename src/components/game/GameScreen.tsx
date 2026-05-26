@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
 // Hooks
@@ -203,20 +209,31 @@ export default function GameScreen(): ReactNode {
       </GameCanvas>
 
       <InfoPlate className="flex-row h-22">
-        <Typography
-          text={playerName ?? ""}
-          size={1}
-          font={"body"}
-          color="white"
-        />
+        <div className="w-1/3 min-w-0 flex justify-start">
+          <Typography
+            text={playerName ?? ""}
+            size={1}
+            font={"body"}
+            color="white"
+            className="block! justify-start! truncate w-full text-left"
+          />
+        </div>
 
-        <Typography text={caughtItems} size={6} font={"main"} color="green" />
+
+        <Typography
+          text={caughtItems}
+          size={6}
+          font={"main"}
+          color="green"
+          className="w-1/3 text-center"
+        />
 
         <Typography
           text={`☆ ${highscore ?? caughtItems}p`}
           size={1}
           font={"body"}
           color="white"
+          className="w-1/3 justify-end"
         />
       </InfoPlate>
     </div>

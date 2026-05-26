@@ -7,6 +7,7 @@ export default function TextInput({
   value,
   onChange,
   className,
+  maxlength = 10,
 }: TextInputProps): ReactNode {
   return (
     <div className="relative h-15 w-3xs m-1 group justify-self-center">
@@ -21,6 +22,7 @@ export default function TextInput({
       <input
         id={id}
         name={id}
+        maxLength={maxlength}
         aria-label={placeholder}
         type="text"
         className={`
