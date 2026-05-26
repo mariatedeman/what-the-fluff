@@ -8,6 +8,9 @@ import type { StartSessionResponse } from "../_shared/edge.ts";
 
 type SessionInsert = TablesInsert<"game_sessions">;
 
+// Player names longer than this are silently truncated before insert.
+const PLAYER_NAME_MAX_LENGTH = 20;
+
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -39,6 +42,8 @@ Deno.serve(async (req) => {
     ) {
       return json<StartSessionResponse>({ success: false, error: "Invalid input" }, 400);
     }
+    
+    const trimmedName = player_name.trim().slice(0, PLAYER_NAME_MAX_LENGTH);
 
     const isStudent = identity_token !== undefined;
 
@@ -91,7 +96,7 @@ Deno.serve(async (req) => {
     );
 
     const row: SessionInsert = {
-      player_name,
+      player_name: trimmedName,
       stake_amount: tivoliAmount,
       is_student: isStudent,
       tivoli_transaction_id: tivoliTransactionId,
@@ -108,11 +113,11 @@ Deno.serve(async (req) => {
         console.error("ORPHAN_TIVOLI_TX", {
           tivoli_transaction_id: tivoliTransactionId,
           amount: tivoliAmount,
-          player_name,
+          player_name: trimmedName,
           db_error: error.message,
         });
       } else {
-        console.error("DB insert failed", { error: error.message, player_name });
+        console.error("DB insert failed", { error: error.message, player_name: trimmedName });
       }
       return json<StartSessionResponse>(
         { success: false, error: "Failed to start session" },
