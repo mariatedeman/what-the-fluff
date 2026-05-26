@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { ModalProps } from "../models/Types";
+import type { ModalProps } from "../../models/Types";
 
 export function Modal({
   children,
