@@ -17,18 +17,28 @@ export function useCanvasDimensions(
 
   // HANDLE SCREEN RESIZE
   useEffect(() => {
-    if (!canvasRef.current) return;
+    // 1. Store the current element in a local variable for safe cleanup reference
+    const currentCanvas = canvasRef.current;
+    if (!currentCanvas) return;
+
     const observer = new ResizeObserver(() => {
-      const rect = canvasRef.current!.getBoundingClientRect();
+      // 2. Safe check: If the component unmounted during the resize event, do nothing
+      if (!canvasRef.current) return;
+      
+      const rect = canvasRef.current.getBoundingClientRect();
       canvasHeightRef.current = rect.height;
       canvasWidthRef.current = rect.width;
       setCatcherX((prev) => Math.min(prev, rect.width - CATCHER_WIDTH));
     });
+
     // Capture the initial canvas dimensions immediately so the RAF loop has cached values from the start.
-    const rect = canvasRef.current.getBoundingClientRect();
+    const rect = currentCanvas.getBoundingClientRect();
     canvasHeightRef.current = rect.height;
     canvasWidthRef.current = rect.width;
-    observer.observe(canvasRef.current);
+    // Start observing the cached element
+    observer.observe(currentCanvas);
+
+    // Clean up using the safely captured element reference
     return () => observer.disconnect();
   }, [setCatcherX]);
 
