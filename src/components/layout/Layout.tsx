@@ -1,0 +1,18 @@
+import type { ReactNode } from "react";
+import type { LayoutProps } from "../../models/Types";
+
+export function Layout({ children, className = "" }: LayoutProps): ReactNode {
+  return (
+    <main
+      className={`
+            flex flex-col
+            mx-auto my-auto
+            h-dvh
+            w-[90vw] sm:max-w-screen-sm
+            ${className}
+        `}
+    >
+      {children}
+    </main>
+  );
+}

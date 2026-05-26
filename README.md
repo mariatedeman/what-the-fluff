@@ -1,16 +1,37 @@
-# React + Vite
+# What the Fluff ☁️
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A web-based amusement game built for the Tivoli ecosystem. Catch the falling cotton candy to earn points, compete on the leaderboard, and win stamps!
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Frontend**: React, TypeScript, Vite, Tailwind CSS
+- **Backend/Services**: Supabase (Database & Edge Functions), Deno
+- **Integrations**: Tivoli API (Central Bank) for Identity Tokens, Stamps, and Payouts.
 
-## React Compiler
+## Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Interactive Game**: Control the catcher using keyboard, mouse, or touch.
+- **Score System**: Leaderboard and highscore tracking integrated through Supabase.
+- **Tivoli Economy**: Earn payouts by catching items, handling real money via the Tivoli Central Bank.
+- **Accessible Design**: Fully keyboard accessible (WCAG 2.1 AAA target sizes, focus configurations).
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+To run this project locally, make sure you have an `.env` file set up with the required variables (Supabase connections and `VITE_TIVOLI_API_BASE_URL`).
+
+1. Install dependencies
+
+```bash
+npm install
+```
+
+2. Start the development server
+
+```bash
+npm run dev
+```
+
+## Team
+
+- **Frontend:** Maria Tedeman (mariatedeman)
+- **Backend:** Hanna Johansson (HannaJ95)
