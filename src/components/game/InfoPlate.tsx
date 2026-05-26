@@ -1,10 +1,14 @@
+import type { ReactNode } from "react";
+
+export interface InfoPlateProps {
+  children: ReactNode;
+  className?: string;
+}
+
 export function InfoPlate({
   children,
   className = "",
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
+}: InfoPlateProps): ReactNode {
   return (
     <section className="relative w-full">
       {/* Background with blend mode */}

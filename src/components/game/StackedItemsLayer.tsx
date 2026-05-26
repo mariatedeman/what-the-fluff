@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { FallingItemsSVG } from "./FallingItemsSVG";
 import {
   type FallingItem as FallingItemType,
@@ -6,12 +7,12 @@ import {
   STACK_OVERLAP_PX,
 } from "../../models/GameTypes";
 
-interface Props {
+export interface StackedItemsLayerProps {
   items: FallingItemType[];
   catcherX: number;
 }
 
-export function StackedItemsLayer({ items, catcherX }: Props) {
+export function StackedItemsLayer({ items, catcherX }: StackedItemsLayerProps): ReactNode {
   return (
     <>
       {items.map((item, index) => (

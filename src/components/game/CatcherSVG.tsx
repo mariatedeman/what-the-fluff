@@ -1,10 +1,14 @@
+import type { ReactNode } from "react";
+
+export interface CatcherSVGProps {
+  width: number;
+  height: number;
+}
+
 export function CatcherSVG({
   width,
   height,
-}: {
-  width: number;
-  height: number;
-}) {
+}: CatcherSVGProps): ReactNode {
   return (
     <img
       src="/catcher.svg"

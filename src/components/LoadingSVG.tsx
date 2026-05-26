@@ -1,4 +1,5 @@
 import { useId } from "react";
+import type { ReactNode } from "react";
 
 const colorMap = {
   pink: "#ED7EC8",
@@ -6,9 +7,13 @@ const colorMap = {
   yellow: "#fcbd00",
 } as const;
 
-type ColorKey = keyof typeof colorMap;
+export type ColorKey = keyof typeof colorMap;
 
-export function LoadingSVG({ color = "pink" }: { color?: ColorKey }) {
+export interface LoadingSVGProps {
+  color?: ColorKey;
+}
+
+export function LoadingSVG({ color = "pink" }: LoadingSVGProps): ReactNode {
   const baseId = useId().replace(/:/g, "");
   const id1 = `spinner_1_${baseId}`;
   const id2 = `spinner_2_${baseId}`;
