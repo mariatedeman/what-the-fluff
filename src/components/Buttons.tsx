@@ -12,7 +12,7 @@ export function Button(props: ButtonProps): ReactNode {
 
   const buttonStyles: string = `
             flex items-center justify-center self-center
-            mb-1 px-4 min-h-11 min-w-[44px] h-14 w-3xs
+            mb-1 px-4 min-h-11 min-w-11 h-14 w-3xs
             text-white font-bold font-body
             rounded-xl cursor-pointer
             focus:outline-none focus-visible:ring-4 focus-visible:ring-offset-2 focus-visible:ring-text

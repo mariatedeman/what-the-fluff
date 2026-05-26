@@ -15,8 +15,13 @@ export function DottedBox({
   rounded = "rounded-2xl",
   as: Tag = "div",
 }: DottedBoxProps) {
+  
+  // Check if position is explicitly defined in incoming classes, otherwise default to relative
+  const hasPosition = className.includes("absolute") || className.includes("fixed");
+  const positionClass = hasPosition ? "" : "relative";
+
   return (
-    <Tag className={`relative ${className}`}>
+    <Tag className={`${positionClass} ${className}`}>
 
       {/* EXCLUSION BLEND BACKGROUND */}
       <div
