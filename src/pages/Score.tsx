@@ -19,7 +19,6 @@ import type { ScoresSort } from "../services/gameService";
 // Loading
 import { LoadingSVG } from "../components/LoadingSVG";
 
-
 export default function Score(): JSX.Element {
   const [sort, setSort] = useState<ScoresSort>("best");
   const [search, setSearch] = useState("");
