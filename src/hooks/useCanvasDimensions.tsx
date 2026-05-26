@@ -1,9 +1,15 @@
 import { useEffect, useRef } from "react";
 import { CATCHER_WIDTH } from "./../models/GameTypes";
 
+export type UseCanvasDimensionsResult = {
+  canvasRef: React.RefObject<HTMLElement | null>;
+  canvasHeightRef: React.RefObject<number>;
+  canvasWidthRef: React.RefObject<number>;
+};
+
 export function useCanvasDimensions(
   setCatcherX: React.Dispatch<React.SetStateAction<number>>,
-) {
+): UseCanvasDimensionsResult {
   const canvasRef = useRef<HTMLElement>(null); // CANVAS-DIV, USED TO READ ITS SIZE AND POSITION
   const canvasHeightRef = useRef(0); // CANVAS HEIGHT SO RAF LOOP DOES NOT HAVE TO MEASURE IT EVERY FRAME
   const canvasWidthRef = useRef(0); // CANVAS WIDTH SO THE RAF LOOP DOES NOT HAVE TO MEASURE IT EVERY FRAME

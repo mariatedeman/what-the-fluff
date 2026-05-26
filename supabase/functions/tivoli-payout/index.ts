@@ -34,7 +34,7 @@ Deno.serve(async (req) => {
   try {
     const { session_id } = body;
 
-    if (!Number.isInteger(session_id) || (session_id as number) <= 0) {
+    if (typeof session_id !== "number" || !Number.isInteger(session_id) || session_id <= 0) {
       return json<TivoliPayoutResponse>({ success: false, error: "Invalid input" }, 400);
     }
 
@@ -57,7 +57,7 @@ Deno.serve(async (req) => {
     const { data: session, error: readErr } = await supabase
       .from("game_sessions")
       .select("id, score, tivoli_transaction_id, tivoli_payout_id, is_student")
-      .eq("id", session_id as number)
+      .eq("id", session_id)
       .maybeSingle();
 
     if (readErr) {
@@ -146,7 +146,7 @@ Deno.serve(async (req) => {
     const { data: updated, error: updateErr } = await supabase
       .from("game_sessions")
       .update(update)
-      .eq("id", session_id as number)
+      .eq("id", session_id)
       .is("tivoli_payout_id", null)
       .select("id, tivoli_payout_id")
       .maybeSingle();

@@ -5,7 +5,7 @@ export function useMouseInput(
         canvasRef: React.RefObject<HTMLElement | null>,
         catcherXRef: { current: number },
         setCatcherX: React.Dispatch<React.SetStateAction<number>>
-    ) {
+    ): void {
 
 // HANDLE MOUSE CONTROL --> FOLLOW THE MOUSE HORIZONTALLY
   useEffect(() => {

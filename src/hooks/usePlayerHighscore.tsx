@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { getUsersHighestScore } from "../services/gameService";
 
-export function usePlayerHighscore(playerName: string | undefined) {
+export function usePlayerHighscore(playerName: string | undefined): number | null {
   // FETCH PLAYER'S PREVIOUS HIGHEST SCORE
   const [highscore, setHighscore] = useState<number | null>(null);
 

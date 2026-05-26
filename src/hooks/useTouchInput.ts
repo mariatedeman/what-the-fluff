@@ -5,7 +5,7 @@ export function useTouchInput(
     canvasRef: React.RefObject<HTMLElement | null>,
     catcherXRef: { current: number },
     setCatcherX: React.Dispatch<React.SetStateAction<number>>
-) {
+): void {
 
 // HANDLE TOUCH CONTROL --> FOLLOW TOUCH MOVEMENT HORIZONTALLY
   useEffect(() => {

@@ -3,7 +3,7 @@ import { corsHeaders } from "npm:@supabase/supabase-js@^2/cors";
 // JSON RESPONSE WITH STATUS + CORS HEADERS
 // Generic so each edge function can pin its response shape
 // for different body in success response
-export const json = <T = unknown>(body: T, status: number) =>
+export const json = <T = unknown>(body: T, status: number): Response =>
   new Response(JSON.stringify(body), {
     status,
     headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -11,7 +11,7 @@ export const json = <T = unknown>(body: T, status: number) =>
 
 
 // CORS PREFLIGHT RESPONSE - REPLY TO BROWSER'S OPTIONS REQUEST
-export const preflight = () => new Response("ok", { headers: corsHeaders });
+export const preflight = (): Response => new Response("ok", { headers: corsHeaders });
 
 
 // EXTRACT A CLEAN ERROR MESSAGE FROM A FAILED TIVOLI RESPONSE.

@@ -1,9 +1,9 @@
 import "@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "@supabase/supabase-js";
 import { json, preflight, tivoliErrorMessage } from "../_shared/responses.ts";
-import type { TablesInsert } from "../_shared/database.ts";
+import type { Database, TablesInsert } from "../_shared/database.ts";
 import type { Stamp, TransactionRequest, TransactionResponse } from "../_shared/tivoli.ts";
-import type { StartSessionResponse } from "../_shared/edge.ts";
+import type { StartSessionRequest, StartSessionResponse } from "../_shared/edge.ts";
 
 
 type SessionInsert = TablesInsert<"game_sessions">;
@@ -22,7 +22,7 @@ Deno.serve(async (req) => {
   }
 
   // PARSE BODY - MALFORMED JSON IS A CLIENT ERROR (400), NOT A SERVER ERROR
-  let body;
+  let body: Partial<StartSessionRequest>;
   try {
     body = await req.json();
   } catch {
@@ -90,7 +90,7 @@ Deno.serve(async (req) => {
       tivoliStamp = tivoliData.stamp;
     }
 
-    const supabase = createClient(
+    const supabase = createClient<Database>(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );

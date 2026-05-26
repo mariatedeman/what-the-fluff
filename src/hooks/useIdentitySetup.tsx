@@ -3,9 +3,21 @@ import { ApiError } from "../lib/apiError";
 import { getIdentity } from "../services/tivoliService";
 import type { IdentityResponse } from "../types/tivoli";
 
-export function useIdentitySetup(token: string | null | undefined) {
+export type IdentityLoading = "identity" | "session" | null;
+
+export type UseIdentitySetupResult = {
+  identity: IdentityResponse | null;
+  loading: IdentityLoading;
+  error: string | null;
+  setLoading: React.Dispatch<React.SetStateAction<IdentityLoading>>;
+  setError: React.Dispatch<React.SetStateAction<string | null>>;
+};
+
+export function useIdentitySetup(
+  token: string | null | undefined,
+): UseIdentitySetupResult {
   const [identity, setIdentity] = useState<IdentityResponse | null>(null);
-  const [loading, setLoading] = useState<"identity" | "session" | null>(null);
+  const [loading, setLoading] = useState<IdentityLoading>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
