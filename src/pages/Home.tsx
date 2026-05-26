@@ -22,7 +22,6 @@ import type { IdentityResponse } from "../types/tivoli";
 import { LoadingSVG } from "../components/LoadingSVG";
 import type { ApiError } from "../lib/apiError";
 
-
 export default function Home(): ReactNode {
   const token = useIdentityToken();
   const { highestScore } = useHighestScore();
@@ -144,7 +143,6 @@ export default function Home(): ReactNode {
     if (!trimmed) return;
     void startAndGo(trimmed);
   };
-
 
   return (
     <div className="flex flex-col flex-1 justify-center">
@@ -287,7 +285,6 @@ export default function Home(): ReactNode {
               />
             </>
           )}
-          
         </div>
       </div>
     </div>
