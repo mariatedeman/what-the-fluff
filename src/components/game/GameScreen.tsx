@@ -148,11 +148,11 @@ export default function GameScreen(): ReactNode {
                 <Typography
                   text={
                     !isEligibleForPayout
-                      ? "No winnings"
+                      ? "No win this time"
                       : payoutResult?.success
-                        ? `Your winnings: €${payoutResult.data.amount}`
+                        ? `Congratulations! You won €${payoutResult.data.amount}`
                         : payoutResult
-                          ? "No winnings"
+                          ? "No win this time"
                           : "Processing winnings…"
                   }
                   type="span"
