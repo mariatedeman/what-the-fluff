@@ -3,7 +3,6 @@ import {
   FunctionsRelayError,
   FunctionsFetchError,
 } from "@supabase/supabase-js";
-import { supabase } from "./supabase";
 
 
 // Real Error subclass so it has a stack trace and works with `instanceof Error`.
@@ -99,22 +98,4 @@ export async function extractInvokeError(
 ): Promise<string> {
   const { message } = await parseInvokeError(error, fallback);
   return message;
-}
-
-
-// Generic helper for invoking Supabase edge functions with typed responses.
-// Throws ApiError on failure with .status, .message, .body — use with try/catch.
-export async function invokeEdge<T>(name: string, body?: object): Promise<T> {
-  const { data, error } = await supabase.functions.invoke<T>(name, { body });
-
-  if (error) {
-    const parsed = await parseInvokeError(error, error.message);
-    throw new ApiError(parsed.message, parsed.status, parsed.body);
-  }
-
-  if (data === null) {
-    throw new ApiError(`Edge function "${name}" returned no data`);
-  }
-
-  return data;
 }
