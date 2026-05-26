@@ -225,7 +225,7 @@ export default function Home(): ReactNode {
       </section>
 
       {modalIsOpen && (
-        <Modal className="inset-0 m-auto h-full w-full">
+        <Modal className="inset-0 m-auto h-full w-full sm:h-auto sm:w-auto">
           <Typography
             text={"Instructions"}
             font="main"
