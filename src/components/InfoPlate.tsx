@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { DottedBox } from "./DottedBox";
 
 export interface InfoPlateProps {
   children: ReactNode;
@@ -10,32 +11,14 @@ export function InfoPlate({
   className = "",
 }: InfoPlateProps): ReactNode {
   return (
-    <section className="relative w-full">
-      {/* Background with blend mode */}
-      <div
-        className="
-                absolute inset-0 pointer-events-none
-                bg-bg mix-blend-exclusion rounded-2xl"
-      />
-
-      <div
-        className={`
-                relative w-full flex justify-center self-center
-                border-4 border-border border-dotted rounded-2xl
-                ${className}`}
-      >
-        
-        {/* Content */}
-        <div
-          className="
-                    relative z-10 w-full h-full p-4
+    <DottedBox
+      as="section"
+      className="w-full"
+      innerClassName={`h-full p-4
                     flex items-center justify-between gap-2
-                    font-h text-white"
-        >
-          {children}
-        </div>
-        
-      </div>
-    </section>
+                    font-h text-white ${className}`}
+    >
+      {children}
+    </DottedBox>
   );
 }
