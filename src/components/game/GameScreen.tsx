@@ -96,6 +96,7 @@ export default function GameScreen(): ReactNode {
     stackedItems,
     setStackedItems,
     setCatcherX,
+    caughtItems,
     setCaughtItems,
     isGameOver,
     setIsGameOver,

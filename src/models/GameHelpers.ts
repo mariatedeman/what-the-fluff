@@ -2,14 +2,22 @@ import { colors, ITEM_SIZE, type FallingItem } from "./GameTypes";
 import { GAME_CONFIG } from "../../supabase/functions/_shared/gameConfig.ts";
 
 // Create a new falling item with a random horizontal position and color.
-export function createNewItem(canvasWidth: number): FallingItem {
+export function createNewItem(canvasWidth: number, caughtItems: number): FallingItem {
   const isRaindrop = Math.random() > GAME_CONFIG.ITEM_PROBABILITY;
+
+  // SPEED CALCULATION
+  const baseSpeed = 300;
+  // Increase speed up to 90 cought items
+  const gainedPoints = Math.min(caughtItems, 80);
+  const speedIncrease = gainedPoints * 4;
+  const currentSpeed = baseSpeed + speedIncrease;
+
   return {
     id: Date.now(),
     x: Math.random() * (canvasWidth - ITEM_SIZE),
     y: -ITEM_SIZE,
     size: ITEM_SIZE,
-    speed: 300,
+    speed: currentSpeed,
     type: isRaindrop ? "raindrop" : "item",
     color: isRaindrop ? undefined : colors[Math.floor(Math.random() * colors.length)],
   };

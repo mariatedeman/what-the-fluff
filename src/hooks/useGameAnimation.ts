@@ -24,6 +24,7 @@ export function useGameAnimation(
   stackedItems: FallingItem[],
   setStackedItems: React.Dispatch<React.SetStateAction<FallingItem[]>>,
   setCatcherX: React.Dispatch<React.SetStateAction<number>>,
+  caughtItems: number,
   setCaughtItems: React.Dispatch<React.SetStateAction<number>>,
   isGameOver: boolean,
   setIsGameOver: React.Dispatch<React.SetStateAction<boolean>>,
@@ -31,14 +32,14 @@ export function useGameAnimation(
   isCountingDown: boolean,
 ) {
  
-  // REF COPY OF FALLING ITEMS, USED SO THE ANIMATION LOOP CAN READ THE LATEST ARRAY
+  // REFS
+  // COPY OF FALLING ITEMS, USED SO THE ANIMATION LOOP CAN READ THE LATEST ARRAY
   const itemsRef = useRef<FallingItem[]>([]);
-  // REF COPY OF STACKED ITEMS, USED SO COLLISION TARGET HEIGHT STAYS UP TO DATE
+  // COPY OF STACKED ITEMS, USED SO COLLISION TARGET HEIGHT STAYS UP TO DATE
   const stackedItemsRef = useRef<FallingItem[]>([]);
-
-  // REF GAME OVER
-  const isGameOverRef = useRef(false);
-  const isCountingDownRef = useRef(isCountingDown);
+  const isGameOverRef = useRef(false); // GAME OVER
+  const isCountingDownRef = useRef(isCountingDown); // COUNT DOWN
+  const caughtItemsRef = useRef(0);
 
   useEffect(() => {
     isCountingDownRef.current = isCountingDown;
@@ -108,6 +109,8 @@ export function useGameAnimation(
 
         return { stillFalling, newlyCaught };
       }
+
+
 
       // MAIN ANIMATION LOOP: UPDATE FALLING ITEMS EVERY FRAME
       const tick = (time: number) => {
@@ -197,6 +200,10 @@ export function useGameAnimation(
       return () => cancelAnimationFrame(frameId);
     }, []);
 
+    useEffect(() => {
+      caughtItemsRef.current = caughtItems;
+    }, [caughtItems])
+
 
     // EFFECT: Spawn new falling items at regular intervals
     useEffect(() => {
@@ -208,7 +215,7 @@ export function useGameAnimation(
         const canvasWidth: number = canvasWidthRef.current;
         if (!canvasWidth) return;
 
-        const newItem = createNewItem(canvasWidth);
+        const newItem = createNewItem(canvasWidth, caughtItemsRef.current);
         // Update state and keep itemsRef in sync immediately to avoid races
         setItems((prev) => {
           const next = [...prev, newItem];
