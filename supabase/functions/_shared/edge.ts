@@ -29,3 +29,19 @@ export type SubmitScoreRequest = {
 export type SubmitScoreResponse =
   | { success: true; data: { id: number; score: number } }
   | { success: false; error: string };
+
+// POST /functions/v1/tivoli-payout — REQUEST BODY
+export type TivoliPayoutRequest = {
+  session_id: number;
+};
+
+// POST /functions/v1/tivoli-payout — RESPONSE
+export type TivoliPayoutResponse =
+  | {
+      success: true;
+      data: {
+        payout_transaction_id: number;
+        amount: number;
+      };
+    }
+  | { success: false; error: string };

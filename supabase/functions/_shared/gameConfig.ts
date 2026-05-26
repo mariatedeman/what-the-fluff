@@ -6,6 +6,7 @@ export const GAME_CONFIG = {
   MIN_PLAY_MS: 3_000,
   CATCH_BUFFER: 5,
   ABSOLUTE_MAX_SCORE: 300,
+  PAYOUT_THRESHOLD: 30,
 } as const;
 
  /**

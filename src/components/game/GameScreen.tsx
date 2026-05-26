@@ -44,8 +44,13 @@ export default function GameScreen() {
   const [caughtItems, setCaughtItems] = useState<number>(0); // Caught items
   const [stackedItems, setStackedItems] = useState<FallingItem[]>([]); // Currently stacked items
 
-  // USE GAME SESSION — TRIGGERS submit-score AT GAME OVER
-  const { playerName } = useGameSession(isGameOver, caughtItems);
+  // USE GAME SESSION — TRIGGERS submit-score AT GAME OVER,
+  // AND tivoli-payout FOR ELIGIBLE STUDENTS.
+  const { playerName, payoutResult, isEligibleForPayout } = useGameSession(
+    isGameOver,
+    caughtItems,
+    isStudent,
+  );
 
   // FETCH PLAYER'S PREVIOUS HIGHEST SCORE
   const [highscore, setHighscore] = useState<number | null>(null);
@@ -138,7 +143,15 @@ export default function GameScreen() {
             {isStudent && (
               <>
                 <Typography
-                  text={`Your winnings: `}
+                  text={
+                    !isEligibleForPayout
+                      ? "No winnings"
+                      : payoutResult?.success
+                        ? `Your winnings: €${payoutResult.data.amount}`
+                        : payoutResult
+                          ? "No winnings"
+                          : "Processing winnings…"
+                  }
                   type="span"
                   font="body"
                   size={0}
