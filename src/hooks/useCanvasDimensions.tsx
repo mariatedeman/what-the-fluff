@@ -7,7 +7,6 @@ export function useCanvasDimensions(
   const canvasRef = useRef<HTMLElement>(null); // CANVAS-DIV, USED TO READ ITS SIZE AND POSITION
   const canvasHeightRef = useRef(0); // CANVAS HEIGHT SO RAF LOOP DOES NOT HAVE TO MEASURE IT EVERY FRAME
   const canvasWidthRef = useRef(0); // CANVAS WIDTH SO THE RAF LOOP DOES NOT HAVE TO MEASURE IT EVERY FRAME
-  const isCanvasReadyRef = useRef(false); // TRACKS IF CANVAS IS INITIALIZED (prevents spawn interval from starting too early)
 
   // CENTER THE CATCHER ON FIRST RENDER
   useEffect(() => {
@@ -36,24 +35,16 @@ export function useCanvasDimensions(
     const rect = currentCanvas.getBoundingClientRect();
     canvasHeightRef.current = rect.height;
     canvasWidthRef.current = rect.width;
-    
-    // Mark canvas as ready so spawn interval can begin
-    isCanvasReadyRef.current = true;
-    
     // Start observing the cached element
     observer.observe(currentCanvas);
 
-    // 3. Clean up using the safely captured element reference
-    return () => {
-      observer.disconnect();
-      isCanvasReadyRef.current = false;
-    };
+    // Clean up using the safely captured element reference
+    return () => observer.disconnect();
   }, [setCatcherX]);
 
   return {
     canvasRef,
     canvasHeightRef,
     canvasWidthRef,
-    isCanvasReadyRef,
   };
 }
