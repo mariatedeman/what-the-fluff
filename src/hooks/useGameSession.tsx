@@ -6,6 +6,12 @@ import { payout } from "../services/tivoliService";
 import type { TivoliPayoutResponse } from "../types/edge";
 import { GAME_CONFIG } from "../../supabase/functions/_shared/gameConfig.ts";
 
+export type UseGameSessionResult = {
+  playerName: string | undefined;
+  payoutResult: TivoliPayoutResponse | null;
+  isEligibleForPayout: boolean;
+};
+
 // READS playerName + sessionId FROM ROUTER STATE PROVIDED BY Home.
 // HANDLES submit-score AT GAME OVER
 // FOR STUDENTS - RUN tivoli-payout
@@ -13,7 +19,7 @@ export function useGameSession(
   isGameOver: boolean,
   caughtItems: number,
   isStudent: boolean,
-) {
+): UseGameSessionResult {
   const location = useLocation();
 
   const playerName =

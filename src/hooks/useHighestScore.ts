@@ -2,8 +2,14 @@ import { useState, useEffect } from "react";
 import { getHighestScore } from "../services/gameService";
 import type { GameSession } from "../services/gameService";
 
+export type UseHighestScoreResult = {
+  highestScore: GameSession | null;
+  loading: boolean;
+  error: string | null;
+};
+
 // Fetches the single highest score from game_sessions. Runs once on mount.
-export function useHighestScore() {
+export function useHighestScore(): UseHighestScoreResult {
   const [highestScore, setHighestScore] = useState<GameSession | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

@@ -2,11 +2,17 @@ import { useState, useEffect } from "react";
 import { getScores } from "../services/gameService";
 import type { GameSession, GetScoresParams } from "../services/gameService";
 
+export type UseScoresResult = {
+  scores: GameSession[];
+  loading: boolean;
+  error: string | null;
+};
+
 // Fetches scores from game_sessions. Re-fetches when sort or search changes.
 export function useScores({
   sort = "best",
   search = "",
-}: GetScoresParams = {}) {
+}: GetScoresParams = {}): UseScoresResult {
   const [scores, setScores] = useState<GameSession[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
