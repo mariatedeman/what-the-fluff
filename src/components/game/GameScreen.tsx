@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import type { ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
 // Hooks
 import { useGameSession } from "../../hooks/useGameSession";
@@ -8,6 +8,7 @@ import { useCanvasDimensions } from "../../hooks/useCanvasDimensions";
 import { useKeyboardInput } from "../../hooks/useKeyboardInput";
 import { useTouchInput } from "../../hooks/useTouchInput";
 import { useMouseInput } from "../../hooks/useMouseInput";
+import { useIdentityToken } from "../../hooks/useIdentityToken";
 
 // Components
 import { Modal } from "../Modal";
@@ -17,11 +18,11 @@ import { FallingItemsLayer } from "./FallingItemsLayer";
 import { StackedItemsLayer } from "./StackedItemsLayer";
 import { Catcher } from "./Catcher";
 import { GameCanvas } from "./GameCanvas";
-import type { FallingItem } from "../../models/GameTypes";
 import { Button } from "../Buttons";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { CountDown } from "./CountDown";
-import { useIdentityToken } from "../../hooks/useIdentityToken";
+
+// Types, serices & helpers
+import type { FallingItem } from "../../models/GameTypes";
 import { getUsersHighestScore } from "../../services/gameService";
 
 export default function GameScreen(): ReactNode {
@@ -96,6 +97,7 @@ export default function GameScreen(): ReactNode {
     stackedItems,
     setStackedItems,
     setCatcherX,
+    caughtItems,
     setCaughtItems,
     isGameOver,
     setIsGameOver,

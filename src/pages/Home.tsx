@@ -13,11 +13,9 @@ import { ScoreBoardRow } from "../components/scoreboard/ScoreBoardRow";
 import { useHighestScore } from "../hooks/useHighestScore";
 import { useIdentityToken } from "../hooks/useIdentityToken";
 
-// Services
+// Types, Services & Helpers
 import { startSession } from "../services/gameService";
 import { getIdentity } from "../services/tivoliService";
-
-// Types
 import type { IdentityResponse } from "../types/tivoli";
 
 // Errors & loading
