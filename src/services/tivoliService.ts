@@ -1,10 +1,7 @@
-import { invokeEdge } from "../lib/apiError";
-import { throwApiErrorFromResponse } from "../lib/apiError";
-import type {
-  IdentityResponse,
-  IdentityToken,
-  PayoutResponse,
-} from "../types/tivoli";
+import { supabase } from "../lib/supabase";
+import { extractInvokeError, throwApiErrorFromResponse } from "../lib/apiError";
+import type { IdentityResponse, IdentityToken } from "../types/tivoli";
+import type { TivoliPayoutRequest, TivoliPayoutResponse } from "../types/edge";
 
 
 const TIVOLI_API_BASE_URL = import.meta.env.VITE_TIVOLI_API_BASE_URL;
@@ -32,14 +29,23 @@ export async function getIdentity(
 }
 
 
-// POST /transactions/{id}/payout
 export async function payout(
-  transactionId: number,
-  amount: number
-): Promise<PayoutResponse> {
+  body: TivoliPayoutRequest
+): Promise<TivoliPayoutResponse> {
+  const { data, error } = await supabase.functions.invoke<TivoliPayoutResponse>(
+    "tivoli-payout",
+    { body }
+  );
 
-  return invokeEdge<PayoutResponse>("tivoli-payout", {
-    transaction_id: transactionId,
-    amount,
-  });
+  if (error) {
+    console.error("tivoli-payout error:", error);
+    const message = await extractInvokeError(error, "Something went wrong");
+    return { success: false, error: message };
+  }
+
+  if (!data) {
+    return { success: false, error: "No data returned from tivoli-payout" };
+  }
+
+  return data;
 }

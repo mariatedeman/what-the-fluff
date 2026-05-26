@@ -2,11 +2,18 @@ import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 
 import { submitScore } from "../services/gameService";
-import type { SubmitScoreResponse } from "../types/edge";
+import { payout } from "../services/tivoliService";
+import type { SubmitScoreResponse, TivoliPayoutResponse } from "../types/edge";
+import { GAME_CONFIG } from "../../supabase/functions/_shared/gameConfig.ts";
 
 // READS playerName + sessionId FROM ROUTER STATE PROVIDED BY Home.
-// Home OWNS start-session — THIS HOOK ONLY HANDLES submit-score AT GAME OVER.
-export function useGameSession(isGameOver: boolean, caughtItems: number) {
+// HANDLES submit-score AT GAME OVER
+// FOR STUDENTS - RUN tivoli-payout
+export function useGameSession(
+  isGameOver: boolean,
+  caughtItems: number,
+  isStudent: boolean,
+) {
   const location = useLocation();
 
   const playerName =
@@ -18,6 +25,10 @@ export function useGameSession(isGameOver: boolean, caughtItems: number) {
   const [hasPlayed, setHasPlayed] = useState<boolean>(false);
   const [submitLoading, setSubmitLoading] = useState<boolean>(false);
   const [submitResult, setSubmitResult] = useState<SubmitScoreResponse | null>(
+    null,
+  );
+  const [payoutLoading, setPayoutLoading] = useState<boolean>(false);
+  const [payoutResult, setPayoutResult] = useState<TivoliPayoutResponse | null>(
     null,
   );
 
@@ -38,7 +49,7 @@ export function useGameSession(isGameOver: boolean, caughtItems: number) {
     }
   }, [playerName, sessionId]);
 
-  // SUBMIT SCORE WHEN GAME ENDS
+  // SUBMIT SCORE WHEN GAME ENDS; CHAIN PAYOUT IF ELIGIBLE
   useEffect(() => {
     if (!isGameOver) return;
     if (submitAttemptedRef.current) return;
@@ -54,12 +65,14 @@ export function useGameSession(isGameOver: boolean, caughtItems: number) {
 
     submitAttemptedRef.current = true;
 
-    const submit = async () => {
+    const run = async () => {
       console.log("%c[game-session] submit-score payload:", "color: #06f", {
         session_id: sessionId,
         score: caughtItems,
       });
       setSubmitLoading(true);
+
+      let scoreSubmitted = false;
       try {
         const res = await submitScore({
           session_id: sessionId,
@@ -71,22 +84,55 @@ export function useGameSession(isGameOver: boolean, caughtItems: number) {
           res,
         );
         setSubmitResult(res);
+        scoreSubmitted = res.success;
       } catch (err) {
         console.error("[game-session] submit-score threw:", err);
       } finally {
         setSubmitLoading(false);
-        setHasPlayed(true);
-        sessionStorage.setItem("hasPlayed", "true");
       }
+
+      const eligibleForPayout =
+        scoreSubmitted &&
+        isStudent &&
+        caughtItems >= GAME_CONFIG.PAYOUT_THRESHOLD;
+
+      if (eligibleForPayout) {
+        console.log("%c[game-session] tivoli-payout payload:", "color: #06f", {
+          session_id: sessionId,
+        });
+        setPayoutLoading(true);
+        try {
+          const res = await payout({ session_id: sessionId });
+          console.log(
+            "%c[game-session] tivoli-payout response:",
+            "color: #0a0",
+            res,
+          );
+          setPayoutResult(res);
+        } catch (err) {
+          console.error("[game-session] tivoli-payout threw:", err);
+        } finally {
+          setPayoutLoading(false);
+        }
+      }
+
+      setHasPlayed(true);
+      sessionStorage.setItem("hasPlayed", "true");
     };
 
-    void submit();
-  }, [isGameOver, sessionId, caughtItems]);
+    void run();
+  }, [isGameOver, sessionId, caughtItems, isStudent]);
+
+  const isEligibleForPayout =
+    isStudent && caughtItems >= GAME_CONFIG.PAYOUT_THRESHOLD;
 
   return {
     playerName,
     submitLoading,
     submitResult,
+    payoutLoading,
+    payoutResult,
     hasPlayed,
+    isEligibleForPayout,
   };
 }
