@@ -53,7 +53,8 @@ export default function Score(): JSX.Element {
               variant="secondary"
               children="↑↓"
               onClick={() => handleSort()}
-              className="w-fit text-green-dark"
+              aria-label={`Sort scores, currently sorting by ${sort === "best" ? "highest first" : "lowest first"}`}
+              className="w-11 px-3 text-green-dark flex items-center justify-center transition-transform active:scale-95"
             />
           </ScoreFilter>
 

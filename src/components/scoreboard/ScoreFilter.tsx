@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-export interface InfoPlateProps {
+export interface ScoreFilterProps {
   children: ReactNode;
   className?: string;
 }
@@ -8,7 +8,7 @@ export interface InfoPlateProps {
 export function ScoreFilter({
   children,
   className = "",
-}: InfoPlateProps): ReactNode {
+}: ScoreFilterProps): ReactNode {
   return (
     <section className="relative w-full">
       <div
