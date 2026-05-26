@@ -34,6 +34,7 @@ export function removeThreeInRow(prevStack: FallingItem[], incoming: FallingItem
   const c = next[next.length - 3];
 
   if (a.color === b.color && b.color === c.color) {
+    playSound({type: "removeThree"});
     return next.slice(0, -3);
   }
 
@@ -42,16 +43,30 @@ export function removeThreeInRow(prevStack: FallingItem[], incoming: FallingItem
 
 // GAME AUDIO
 // Preload audios
-const catchSound = new Audio("/sounds/catch.mp3");
-const gameoverSound = new Audio("/sounds/splash.mp3");
+const catchSound = new Audio("sounds/catch.mp3");
+const gameoverSound = new Audio("sounds/splash.mp3");
+const countDownSound = new Audio("sounds/countdown.mp3");
+const removeThreeSound = new Audio("sounds/removeThree.mp3");
 
 export interface AudioProps {
-  type: "catch" | "gameover",
+  type: "catch" | "gameover" | "start" | "removeThree",
   volume?: number,
 }
 
 export const playSound = ({ type, volume = 0.4 }: AudioProps ): void => {
-  const sound = type === "catch" ? catchSound : gameoverSound;
+
+  let sound: HTMLAudioElement;
+  
+  if (type === "catch") {
+    sound = catchSound;
+  } else if (type === "gameover") {
+    sound = gameoverSound
+  } else if (type === "removeThree") {
+    sound = removeThreeSound
+  } else {
+    sound = countDownSound;
+  }
+
   sound.volume = volume;
   sound.currentTime = 0;
 
