@@ -24,7 +24,6 @@ import { CountDown } from "./CountDown";
 // Types, serices & helpers
 import type { FallingItem } from "../../models/GameTypes";
 import { getUsersHighestScore } from "../../services/gameService";
-import { playSound } from "../../models/GameHelpers";
 
 export default function GameScreen(): ReactNode {
   const navigate = useNavigate();
