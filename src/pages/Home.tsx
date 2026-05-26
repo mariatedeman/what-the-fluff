@@ -20,6 +20,7 @@ import { startSession } from "../services/gameService";
 import { LoadingSVG } from "../components/LoadingSVG";
 import type { ApiError } from "../lib/apiError";
 import { InstructionsModal } from "./../components/modals/InstructionsModal";
+import { Modal } from "../components/modals/Modal";
 
 export default function Home(): ReactNode {
   const token = useIdentityToken();
@@ -100,7 +101,7 @@ export default function Home(): ReactNode {
   };
 
   return (
-    <div className="flex flex-col flex-1 justify-center">
+    <div className="relative flex flex-col min-h-screen justify-center items-center overflow-x-hidden">
       <section className="flex flex-col self-center gap-4 w-3xs">
         <div className="flex flex-col">
           <img
@@ -185,6 +186,7 @@ export default function Home(): ReactNode {
       {modalIsOpen && (
         <InstructionsModal onClose={() => setModalIsOpen(false)} />
       )}
+
 
       <div className="flex flex-col items-center my-10 w-full max-w-full">
         <div className="w-3xs sm:w-xs items-center flex flex-col">
