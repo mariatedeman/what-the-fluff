@@ -5,11 +5,9 @@ import { GAME_CONFIG } from "../../supabase/functions/_shared/gameConfig.ts";
 export function createNewItem(canvasWidth: number, caughtItems: number): FallingItem {
   const isRaindrop = Math.random() > GAME_CONFIG.ITEM_PROBABILITY;
 
-  // SPEED CALCULATION
-  const baseSpeed = 300;
-  // Increase speed up to 90 cought items
-  const gainedPoints = Math.min(caughtItems, 80);
-  const speedIncrease = gainedPoints * 4;
+  const baseSpeed = GAME_CONFIG.ITEM_BASE_SPEED_PX_PER_SEC;
+  const gainedPoints = Math.min(caughtItems, GAME_CONFIG.ITEM_SPEED_RAMP_CAP_CATCHES);
+  const speedIncrease = gainedPoints * GAME_CONFIG.ITEM_SPEED_INCREMENT_PER_CATCH;
   const currentSpeed = baseSpeed + speedIncrease;
 
   return {
