@@ -13,7 +13,7 @@ import {
 } from "../models/GameTypes";
 
 // Helpers
-import { createNewItem, removeThreeInRow } from "../models/GameHelpers";
+import { createNewItem, playSound, removeThreeInRow } from "../models/GameHelpers";
 
 export function useGameAnimation(
   canvasWidthRef: { current: number },
@@ -170,6 +170,7 @@ export function useGameAnimation(
           // CHECK IF ANY CAUGHT ITEMS ARE RAINDROPS (GAME OVER CONDITION)
           const caughtRaindrops = result.newlyCaught.filter(item => item.type === "raindrop").length;
           if (caughtRaindrops > 0) {
+            playSound({type: 'gameover'});
             setIsGameOver(true);
             sessionStorage.setItem("isGameOver", "true");
             isGameOverRef.current = true;  // STOP IMMEDIATELY INSTEAD OF WAITING FOR STATE UPDATE
@@ -189,6 +190,7 @@ export function useGameAnimation(
           // ONLY COUNT REGULAR ITEMS
           const caughtRegularItems = result.newlyCaught.filter(item => item.type === "item").length;
           if (caughtRegularItems > 0) {
+            playSound({type: "catch"});
             setCaughtItems(prev => prev + caughtRegularItems)
           }
         }

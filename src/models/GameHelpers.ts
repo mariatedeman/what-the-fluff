@@ -39,3 +39,21 @@ export function removeThreeInRow(prevStack: FallingItem[], incoming: FallingItem
 
   return next;
 }
+
+// GAME AUDIO
+// Preload audios
+const catchSound = new Audio("/sounds/catch.mp3");
+const gameoverSound = new Audio("/sounds/splash.mp3");
+
+export interface AudioProps {
+  type: "catch" | "gameover",
+  volume?: number,
+}
+
+export const playSound = ({ type, volume = 0.4 }: AudioProps ): void => {
+  const sound = type === "catch" ? catchSound : gameoverSound;
+  sound.volume = volume;
+  sound.currentTime = 0;
+
+  void sound.play().catch(err => console.log("Could not play audio: ", err))
+}
