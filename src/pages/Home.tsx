@@ -1,26 +1,25 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 
 // Components
 import { Button } from "../components/Buttons";
 import TextInput from "../components/TextInput";
-import { Modal } from "../components/Modal";
 import { Typography } from "../components/Typography";
 import { ScoreBoardRow } from "../components/scoreboard/ScoreBoardRow";
 
 // Hooks
 import { useHighestScore } from "../hooks/useHighestScore";
 import { useIdentityToken } from "../hooks/useIdentityToken";
+import { useIdentitySetup } from "../hooks/useIdentitySetup";
 
 // Types, Services & Helpers
 import { startSession } from "../services/gameService";
-import { getIdentity } from "../services/tivoliService";
-import type { IdentityResponse } from "../types/tivoli";
 
 // Errors & loading
 import { LoadingSVG } from "../components/LoadingSVG";
 import type { ApiError } from "../lib/apiError";
+import { InstructionsModal } from "../components/modals/InstructionsModal";
 
 export default function Home(): ReactNode {
   const token = useIdentityToken();
@@ -28,54 +27,10 @@ export default function Home(): ReactNode {
   const navigate = useNavigate();
 
   const [name, setName] = useState<string>("");
-  const [identity, setIdentity] = useState<IdentityResponse | null>(null);
-  const [loading, setLoading] = useState<"identity" | "session" | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
 
-  // STEP 1 — LOG TOKEN PRESENCE
-  useEffect(() => {
-    console.log(
-      "%c[home] step 1 — identity_token:",
-      "color: #06f",
-      token ?? "(none — guest flow)",
-    );
-  }, [token]);
-
-  // STEP 2 — FETCH IDENTITY WHEN TOKEN PRESENT
-  useEffect(() => {
-    if (!token) return;
-    let cancelled = false;
-
-    const fetchIdentity = async () => {
-      console.log(
-        "%c[home] step 2 — GET /identity-tokens/{token} ...",
-        "color: #06f",
-      );
-      setLoading("identity");
-      setError(null);
-      try {
-        const res = await getIdentity(token);
-        console.log("%c[home] step 2 — identity response:", "color: #0a0", res);
-        if (!cancelled) {
-          setIdentity(res);
-          sessionStorage.setItem("playerName", res.user.name);
-        }
-      } catch (err) {
-        console.error("[home] step 2 — identity error:", err);
-        if (!cancelled) {
-          setError((err as ApiError).message ?? "Greet failed");
-        }
-      } finally {
-        if (!cancelled) setLoading(null);
-      }
-    };
-
-    fetchIdentity();
-    return () => {
-      cancelled = true;
-    };
-  }, [token]);
+  const { identity, loading, setLoading, error, setError } =
+    useIdentitySetup(token);
 
   // STEP 3 — START SESSION (charges Tivoli for students), THEN NAVIGATE TO /game
   const startAndGo = async (playerName: string) => {
@@ -162,9 +117,9 @@ export default function Home(): ReactNode {
           />
 
           {error && <Typography type="error" text={error} className="mb-4" />}
-
           {loading && <LoadingSVG />}
 
+          {/* USER FROM API */}
           {identity ? (
             <>
               <Typography
@@ -190,6 +145,8 @@ export default function Home(): ReactNode {
               </div>
             </>
           ) : (
+
+            // GUEST
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -224,71 +181,9 @@ export default function Home(): ReactNode {
         </div>
       </section>
 
+      {/* INSTRUCTIONS */}
       {modalIsOpen && (
-        <Modal className="inset-0 m-auto h-full w-full sm:h-auto sm:w-auto">
-          <Typography
-            text={"Instructions"}
-            font="main"
-            size={3}
-            color="green"
-            className="mb-4"
-          />
-          <Typography
-            text={"Catch and Collect"}
-            font="body"
-            size={0}
-            color="white"
-            className="font-bold"
-          />
-          <Typography
-            text={
-              "Gather the falling cotton candy to rack up points and build your stack. Catch 100 to win!"
-            }
-            font="body"
-            size={0}
-            color="white"
-            className="pb-4"
-          />
-          <Typography
-            text={"Match Colors"}
-            font="body"
-            size={0}
-            color="white"
-            className="font-bold"
-          />
-          <Typography
-            text={
-              "Stack three of the same color in a row to pop them, clear space, and keep the game going."
-            }
-            font="body"
-            size={0}
-            color="white"
-            className="pb-4"
-          />
-          <Typography
-            text={"Watch the Skies"}
-            font="body"
-            size={0}
-            color="white"
-            className="font-bold"
-          />
-          <Typography
-            text={
-              "Avoid the raindrops—no one likes rain at the tivoli! Keep your stack from reaching the top, or it's Game Over."
-            }
-            font="body"
-            size={0}
-            color="white"
-          />
-
-          <Button
-            variant="secondary"
-            onClick={() => setModalIsOpen(false)}
-            className="m-8"
-          >
-            Close
-          </Button>
-        </Modal>
+        <InstructionsModal onClose={() => setModalIsOpen(false)} />
       )}
 
       <div className="flex flex-col items-center my-10 w-full max-w-full">

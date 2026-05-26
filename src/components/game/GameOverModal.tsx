@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "../Buttons";
-import { Modal } from "../Modal";
+import { Modal } from "../modals/Modal";
 import { Typography } from "../Typography";
 import type { TivoliPayoutResponse } from "../../types/edge";
 

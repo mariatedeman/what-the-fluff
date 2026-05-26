@@ -18,7 +18,7 @@ export interface TextInputProps {
     value: string,
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
     className?: string,
-    maxlength: number,
+    maxlength?: number,
 }
 
 // SCORES
