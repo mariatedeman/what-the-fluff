@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { ApiError } from "../lib/apiError";
+import { ApiError } from "../lib/apiError";
 import { getIdentity } from "../services/tivoliService";
 import type { IdentityResponse } from "../types/tivoli";
 
@@ -23,7 +23,7 @@ export function useIdentitySetup(token: string | null | undefined) {
         }
       } catch (err) {
         if (!cancelled) {
-          setError((err as ApiError).message ?? "Greet failed");
+          setError(err instanceof ApiError ? err.message : "Greet failed");
         }
       } finally {
         if (!cancelled) setLoading(null);

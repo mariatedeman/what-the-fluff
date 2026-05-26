@@ -18,7 +18,7 @@ import { startSession } from "../services/gameService";
 
 // Errors & loading
 import { LoadingSVG } from "../components/LoadingSVG";
-import type { ApiError } from "../lib/apiError";
+import { ApiError } from "../lib/apiError";
 import { InstructionsModal } from "./../components/modals/InstructionsModal";
 
 export default function Home(): ReactNode {
@@ -66,7 +66,7 @@ export default function Home(): ReactNode {
         },
       });
     } catch (err) {
-      setError((err as ApiError).message ?? "Start session failed");
+      setError(err instanceof ApiError ? err.message : "Start session failed");
       setLoading(null);
     }
   };
