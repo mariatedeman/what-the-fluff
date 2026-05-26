@@ -242,7 +242,7 @@ export default function Home(): ReactNode {
           />
           <Typography
             text={
-              "Gather the falling cotton candy to rack up points and build your stack."
+              "Gather the falling cotton candy to rack up points and build your stack. Catch 100 to win!"
             }
             font="body"
             size={0}
@@ -250,9 +250,7 @@ export default function Home(): ReactNode {
             className="pb-4"
           />
           <Typography
-            text={
-              "Match Colors"
-            }
+            text={"Match Colors"}
             font="body"
             size={0}
             color="white"
@@ -268,9 +266,7 @@ export default function Home(): ReactNode {
             className="pb-4"
           />
           <Typography
-            text={
-              "Watch the Skies"
-            }
+            text={"Watch the Skies"}
             font="body"
             size={0}
             color="white"
