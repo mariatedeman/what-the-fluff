@@ -13,7 +13,7 @@ import {
 } from "../models/GameTypes";
 
 // Helpers
-import { createNewItem, removeThreeInRow } from "../models/GameHelpers";
+import { createNewItem, playSound, removeThreeInRow } from "../models/GameHelpers";
 
 export function useGameAnimation(
   canvasWidthRef: { current: number },
@@ -24,6 +24,7 @@ export function useGameAnimation(
   stackedItems: FallingItem[],
   setStackedItems: React.Dispatch<React.SetStateAction<FallingItem[]>>,
   setCatcherX: React.Dispatch<React.SetStateAction<number>>,
+  caughtItems: number,
   setCaughtItems: React.Dispatch<React.SetStateAction<number>>,
   isGameOver: boolean,
   setIsGameOver: React.Dispatch<React.SetStateAction<boolean>>,
@@ -31,14 +32,14 @@ export function useGameAnimation(
   isCountingDown: boolean,
 ) {
  
-  // REF COPY OF FALLING ITEMS, USED SO THE ANIMATION LOOP CAN READ THE LATEST ARRAY
+  // REFS
+  // COPY OF FALLING ITEMS, USED SO THE ANIMATION LOOP CAN READ THE LATEST ARRAY
   const itemsRef = useRef<FallingItem[]>([]);
-  // REF COPY OF STACKED ITEMS, USED SO COLLISION TARGET HEIGHT STAYS UP TO DATE
+  // COPY OF STACKED ITEMS, USED SO COLLISION TARGET HEIGHT STAYS UP TO DATE
   const stackedItemsRef = useRef<FallingItem[]>([]);
-
-  // REF GAME OVER
-  const isGameOverRef = useRef(false);
-  const isCountingDownRef = useRef(isCountingDown);
+  const isGameOverRef = useRef(false); // GAME OVER
+  const isCountingDownRef = useRef(isCountingDown); // COUNT DOWN
+  const caughtItemsRef = useRef(0);
 
   useEffect(() => {
     isCountingDownRef.current = isCountingDown;
@@ -109,6 +110,8 @@ export function useGameAnimation(
         return { stillFalling, newlyCaught };
       }
 
+
+
       // MAIN ANIMATION LOOP: UPDATE FALLING ITEMS EVERY FRAME
       const tick = (time: number) => {
         // STOP THE ANIMATION LOOP COMPLETELY IF THE GAME IS OVER
@@ -167,6 +170,7 @@ export function useGameAnimation(
           // CHECK IF ANY CAUGHT ITEMS ARE RAINDROPS (GAME OVER CONDITION)
           const caughtRaindrops = result.newlyCaught.filter(item => item.type === "raindrop").length;
           if (caughtRaindrops > 0) {
+            playSound({type: 'gameover'});
             setIsGameOver(true);
             sessionStorage.setItem("isGameOver", "true");
             isGameOverRef.current = true;  // STOP IMMEDIATELY INSTEAD OF WAITING FOR STATE UPDATE
@@ -186,6 +190,7 @@ export function useGameAnimation(
           // ONLY COUNT REGULAR ITEMS
           const caughtRegularItems = result.newlyCaught.filter(item => item.type === "item").length;
           if (caughtRegularItems > 0) {
+            playSound({type: "catch"});
             setCaughtItems(prev => prev + caughtRegularItems)
           }
         }
@@ -196,6 +201,10 @@ export function useGameAnimation(
       frameId = requestAnimationFrame(tick);
       return () => cancelAnimationFrame(frameId);
     }, []);
+
+    useEffect(() => {
+      caughtItemsRef.current = caughtItems;
+    }, [caughtItems])
 
 
     // EFFECT: Spawn new falling items at regular intervals
@@ -208,7 +217,7 @@ export function useGameAnimation(
         const canvasWidth: number = canvasWidthRef.current;
         if (!canvasWidth) return;
 
-        const newItem = createNewItem(canvasWidth);
+        const newItem = createNewItem(canvasWidth, caughtItemsRef.current);
         // Update state and keep itemsRef in sync immediately to avoid races
         setItems((prev) => {
           const next = [...prev, newItem];

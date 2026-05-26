@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { Modal } from "../Modal";
+import { playSound } from "../../models/GameHelpers";
 
 interface CountDownProps {
   initialTime: number;
@@ -17,7 +18,10 @@ export function CountDown({
   // REF to hold interval ID
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  
   useEffect(() => {
+    playSound({type: "start"})
+    
     // Start countdown
     intervalRef.current = setInterval(() => {
       setTimeRemaining((prevTime) => (prevTime <= 1 ? 0 : prevTime - 1));
