@@ -9,6 +9,22 @@ export function ScoreBoardRow({
   className,
   background,
 }: ScoreBoardRowProps): ReactNode {
+  const rowContent = (
+    <>
+      <div className="flex gap-6 items-center min-w-0">
+        <span className="font-h text-6xl text-green-dark text-center min-w-15">
+          {placement}
+        </span>
+        <span className="font-body font-bold max-w-4/5 text-left text-xl truncate">
+          {name}
+        </span>
+      </div>
+      <span className="text-xl font-body font-bold min-w-10 text-left">
+        {score}p
+      </span>
+    </>
+  );
+
   return (
     <div
       className={`relative w-full group justify-self-center shrink-0 ${className || ""}`}
@@ -19,34 +35,14 @@ export function ScoreBoardRow({
           className="w-full"
           innerClassName="w-full p-4 bg-transparent outline-none text-center text-white flex justify-between items-center"
         >
-          <div className="flex gap-6 items-center min-w-0">
-            <span className="font-h text-6xl text-green-dark text-center min-w-15">
-              {placement}
-            </span>
-            <span className="font-body font-bold max-w-4/5 text-left text-xl truncate">
-              {name}
-            </span>
-          </div>
-          <span className="text-xl font-body font-bold min-w-10 text-left">
-            {score}p
-          </span>
+          {rowContent}
         </DottedBox>
       ) : (
         /* Without backdrops for scoreboard */
         <div
           className="relative z-10 w-full p-4 bg-transparent outline-none text-center text-white border-t-4 border-border border-dotted flex justify-between items-center"
         >
-          <div className="flex gap-6 items-center min-w-0">
-            <span className="font-h text-6xl text-green-dark text-center min-w-15">
-              {placement}
-            </span>
-            <span className="font-body font-bold max-w-4/5 text-left text-xl truncate">
-              {name}
-            </span>
-          </div>
-          <span className="text-xl font-body font-bold min-w-10 text-left">
-            {score}p
-          </span>
+          {rowContent}
         </div>
       )}
     </div>
