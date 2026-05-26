@@ -27,13 +27,7 @@ export default function Score(): JSX.Element {
   const token = useIdentityToken();
   const isStudent = typeof token === "string" && token.trim().length > 0;
 
-  const handleSort = () => {
-    if (sort === "best") {
-      setSort("worst");
-    } else {
-      setSort("best");
-    }
-  };
+  const handleSort = () => setSort(s => s === "best" ? "worst" : "best");
 
   const { scores, loading, error } = useScores({
     sort,
