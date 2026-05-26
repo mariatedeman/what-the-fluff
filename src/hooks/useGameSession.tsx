@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 
 import { submitScore } from "../services/gameService";
 import { payout } from "../services/tivoliService";
-import type { SubmitScoreResponse, TivoliPayoutResponse } from "../types/edge";
+import type { TivoliPayoutResponse } from "../types/edge";
 import { GAME_CONFIG } from "../../supabase/functions/_shared/gameConfig.ts";
 
 // READS playerName + sessionId FROM ROUTER STATE PROVIDED BY Home.
@@ -22,12 +22,6 @@ export function useGameSession(
     undefined;
   const sessionId: number | null = location.state?.sessionId ?? null;
 
-  const [hasPlayed, setHasPlayed] = useState<boolean>(false);
-  const [submitLoading, setSubmitLoading] = useState<boolean>(false);
-  const [submitResult, setSubmitResult] = useState<SubmitScoreResponse | null>(
-    null,
-  );
-  const [payoutLoading, setPayoutLoading] = useState<boolean>(false);
   const [payoutResult, setPayoutResult] = useState<TivoliPayoutResponse | null>(
     null,
   );
@@ -40,7 +34,6 @@ export function useGameSession(
     if (submitAttemptedRef.current) return;
     if (sessionId === null) {
       submitAttemptedRef.current = true;
-      setHasPlayed(true);
       sessionStorage.setItem("hasPlayed", "true");
       return;
     }
@@ -48,20 +41,15 @@ export function useGameSession(
     submitAttemptedRef.current = true;
 
     const run = async () => {
-      setSubmitLoading(true);
-
       let scoreSubmitted = false;
       try {
         const res = await submitScore({
           session_id: sessionId,
           score: caughtItems,
         });
-        setSubmitResult(res);
         scoreSubmitted = res.success;
       } catch {
         // Swallow unexpected throws so the hasPlayed flag still sets.
-      } finally {
-        setSubmitLoading(false);
       }
 
       const eligibleForPayout =
@@ -70,18 +58,14 @@ export function useGameSession(
         caughtItems >= GAME_CONFIG.PAYOUT_THRESHOLD;
 
       if (eligibleForPayout) {
-        setPayoutLoading(true);
         try {
           const res = await payout({ session_id: sessionId });
           setPayoutResult(res);
         } catch {
           // Swallow unexpected throws so the hasPlayed flag still sets.
-        } finally {
-          setPayoutLoading(false);
         }
       }
 
-      setHasPlayed(true);
       sessionStorage.setItem("hasPlayed", "true");
     };
 
@@ -93,11 +77,7 @@ export function useGameSession(
 
   return {
     playerName,
-    submitLoading,
-    submitResult,
-    payoutLoading,
     payoutResult,
-    hasPlayed,
     isEligibleForPayout,
   };
 }

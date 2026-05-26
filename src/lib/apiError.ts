@@ -62,7 +62,6 @@ export async function throwApiErrorFromResponse(
 
 
 // Parse a supabase.functions.invoke error into { message, status?, body? }.
-// Shared by extractInvokeError (envelope-style) and invokeEdge (throw-style).
 // Three distinct failure modes per Supabase docs:
 //   - FunctionsHttpError:  edge fn returned non-2xx — read body for real message
 //   - FunctionsRelayError: Supabase rejected before calling our fn (not deployed, auth)
