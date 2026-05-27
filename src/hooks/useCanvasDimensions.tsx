@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { CATCHER_WIDTH } from "./../models/GameTypes";
+import { CATCHER_WIDTH, CATCHER_HEIGHT } from "./../models/GameTypes";
 
 export type UseCanvasDimensionsResult = {
   canvasRef: React.RefObject<HTMLElement | null>;
@@ -9,6 +9,7 @@ export type UseCanvasDimensionsResult = {
 
 export function useCanvasDimensions(
   setCatcherX: React.Dispatch<React.SetStateAction<number>>,
+  setCatcherY: React.Dispatch<React.SetStateAction<number>>,
 ): UseCanvasDimensionsResult {
   const canvasRef = useRef<HTMLElement>(null); // CANVAS-DIV, USED TO READ ITS SIZE AND POSITION
   const canvasHeightRef = useRef(0); // CANVAS HEIGHT SO RAF LOOP DOES NOT HAVE TO MEASURE IT EVERY FRAME
@@ -19,6 +20,7 @@ export function useCanvasDimensions(
     if (!canvasRef.current) return;
     const rect = canvasRef.current.getBoundingClientRect();
     setCatcherX(rect.width / 2 - CATCHER_WIDTH / 2);
+    setCatcherY(rect.height / 2 - CATCHER_HEIGHT / 2);
   }, [setCatcherX]);
 
   // HANDLE SCREEN RESIZE
@@ -35,6 +37,7 @@ export function useCanvasDimensions(
       canvasHeightRef.current = rect.height;
       canvasWidthRef.current = rect.width;
       setCatcherX((prev) => Math.min(prev, rect.width - CATCHER_WIDTH));
+      setCatcherY(rect.height - CATCHER_HEIGHT - 20);
     });
 
     // Capture the initial canvas dimensions immediately so the RAF loop has cached values from the start.
@@ -46,7 +49,7 @@ export function useCanvasDimensions(
 
     // Clean up using the safely captured element reference
     return () => observer.disconnect();
-  }, [setCatcherX]);
+  }, [setCatcherX, setCatcherY]);
 
   return {
     canvasRef,
