@@ -47,6 +47,7 @@ export function CountDown({
 
   return (
     <Modal
+    overlay="absolute" stretch
       className="
             inset-0 h-full
             font-h text-8xl text-pink-dark

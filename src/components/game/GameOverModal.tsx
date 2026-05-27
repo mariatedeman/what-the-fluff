@@ -20,7 +20,8 @@ export function GameOverModal({
     const navigate = useNavigate();
 
     return (
-        <Modal className="inset-0 h-full">
+      
+        <Modal overlay="absolute" stretch>
             <Typography
               text={"Game Over"}
               type="span"

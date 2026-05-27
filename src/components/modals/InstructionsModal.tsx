@@ -9,8 +9,8 @@ interface InstructionsModalProps {
 export function InstructionsModal({ onClose }: InstructionsModalProps) {
   return (
     <Modal
-      onClose={onClose} 
-      className="absolute inset-0 m-auto rounded-2xl"
+      onClose={onClose}
+      className="mx-4 w-full sm:max-w-md"
     >
 
         <Typography text={"Instructions"} color="green" type="h2"/>
