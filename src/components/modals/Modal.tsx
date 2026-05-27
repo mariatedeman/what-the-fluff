@@ -7,6 +7,8 @@ interface ModalProps {
   className?: string;
   innerClassName?: string;
   onClose?: () => void;
+  overlay?: "fixed" | "absolute";
+  stretch?: boolean;
 }
 
 export function Modal({
@@ -14,6 +16,8 @@ export function Modal({
   className = "",
   innerClassName = "",
   onClose,
+  overlay = "fixed",
+  stretch = false,
 }: ModalProps): ReactNode {
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -35,9 +39,9 @@ export function Modal({
 
     // Discover all interactive element nodes inside this tree branch
     const focusableElements = modalRef.current.querySelectorAll<HTMLElement>(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
     );
-    
+
     const firstElement = focusableElements[0];
     const lastElement = focusableElements[focusableElements.length - 1];
 
@@ -70,12 +74,14 @@ export function Modal({
   }, []);
 
   return (
-    <div ref={modalRef} className="contents">
+    <div
+      ref={modalRef}
+      className={`${overlay} inset-0 z-50 flex items-center justify-center bg-black/40`}
+      onClick={(e) => e.target === e.currentTarget && onClose?.()}
+    >
       <DottedBox
-        // Outer wrapper controls positioning layers and the active color exclusion blend backdrop
-        className={` z-50 sm:max-w-screen-sm flex flex-col items-center self-center justify-center ${className}`}
-        // Inner wrapper provides standard safe margins, padding constraints, and deep background tint
-        innerClassName={`w-full h-full p-8 flex flex-col items-center justify-center bg-black/70 ${innerClassName}`}
+        className={`w-full flex flex-col ${stretch ? "h-full" : ""} ${className}`}
+        innerClassName={`w-full p-8 flex flex-col items-center justify-center bg-black/70 ${stretch ? "h-full" : ""} ${innerClassName}`}
       >
         {children}
       </DottedBox>
