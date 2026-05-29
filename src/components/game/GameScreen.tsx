@@ -62,8 +62,11 @@ export default function GameScreen(): ReactNode {
 
   // CATCHER
   const [catcherX, setCatcherX] = useState(0); // HORIZONTAL POSITION, UPDATES ON MOUSE MOVEMENT
-  const { canvasRef, canvasHeightRef, canvasWidthRef } =
-    useCanvasDimensions(setCatcherX);
+  const [catcherY, setCatcherY] = useState(0); // VERTICAL POSITION, UPDATES ON MOUSE MOVEMENT
+  const { canvasRef, canvasHeightRef, canvasWidthRef } = useCanvasDimensions(
+    setCatcherX,
+    setCatcherY,
+  );
 
   // REFS
   const catcherXRef = useRef(0); // CATCHER X, USED INSIDE ANIMATION LOOP TO ALWAYS HAS THE LATEST VALUE
@@ -132,10 +135,10 @@ export default function GameScreen(): ReactNode {
         <FallingItemsLayer items={items} />
 
         {/* STACKED ITEMS: THESE ARE STACKED ON CATCHER */}
-        <StackedItemsLayer items={stackedItems} catcherX={catcherX} />
+        <StackedItemsLayer items={stackedItems} catcherX={catcherX} catcherY={catcherY} />
 
         {/* THE CATCHER: THIS IS THE TARGET THAT THE FALLING ITEMS LAND ON */}
-        <Catcher catcherX={catcherX}></Catcher>
+        <Catcher catcherX={catcherX} catcherY={catcherY}></Catcher>
       </GameCanvas>
 
       <GameHUD
