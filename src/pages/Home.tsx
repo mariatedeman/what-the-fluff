@@ -103,7 +103,7 @@ export default function Home(): ReactNode {
           {loading && <LoadingSVG />}
 
           {/* USER FROM API */}
-          {identity ? (
+          {identity && identity.user.name !== "Guest" ? (
             <>
               <Typography
                 text={"Welcome"}
