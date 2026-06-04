@@ -6,8 +6,7 @@ export function createNewItem(canvasWidth: number, caughtItems: number): Falling
   const isRaindrop = Math.random() > GAME_CONFIG.ITEM_PROBABILITY;
 
   const baseSpeed = GAME_CONFIG.ITEM_BASE_SPEED_PX_PER_SEC;
-  const gainedPoints = Math.min(caughtItems, GAME_CONFIG.ITEM_SPEED_RAMP_CAP_CATCHES);
-  const speedIncrease = gainedPoints * GAME_CONFIG.ITEM_SPEED_INCREMENT_PER_CATCH;
+  const speedIncrease = caughtItems * GAME_CONFIG.ITEM_SPEED_INCREMENT_PER_CATCH;
   const currentSpeed = baseSpeed + speedIncrease;
 
   return {
